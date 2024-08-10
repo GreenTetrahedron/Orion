@@ -12,7 +12,7 @@ namespace Server.Users.Repositories
             _dataLayer = dataLayer;
         }
 
-        public User AddUser(string username)
+        public dynamic AddUser(string username)
         {
             var user = new User() { 
                 UserId = new Guid(),
@@ -24,7 +24,7 @@ namespace Server.Users.Repositories
             return user;
         }
 
-        public User GetUser(Guid userId)
+        public dynamic GetUser(Guid userId)
         {
             return _dataLayer.GetUser(userId);
         }

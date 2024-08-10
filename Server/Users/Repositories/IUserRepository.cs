@@ -4,7 +4,7 @@ namespace Server.Users.Repositories
 {
     public interface IUserRepository
     {
-        public User AddUser(string username);
-        public User GetUser(Guid userId);
+        public dynamic AddUser(string username);
+        public dynamic GetUser(Guid userId);
     }
 }
