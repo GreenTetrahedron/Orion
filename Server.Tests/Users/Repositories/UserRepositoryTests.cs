@@ -19,9 +19,9 @@ namespace Server.Tests.Users.Repositories
         [Test]
         public void AddUserAddsUserToDB()
         {
-            var user = _userRepository.AddUser("User1");
+            User user = _userRepository.AddUser("User1");
 
-            var result = _dataLayer.GetUser(user.UserId);
+            User result = _dataLayer.GetUser(user.UserId);
             Assert.That(result?.Username == "User1", $"Username was: {result?.Username}");
         }
 
@@ -37,7 +37,7 @@ namespace Server.Tests.Users.Repositories
 
             _dataLayer.AddUser(user);
 
-            var result = _userRepository.GetUser(user.UserId);
+            User result = _userRepository.GetUser(user.UserId);
             Assert.That(result?.Username == "User1", $"Username was: {result?.Username}");
         }
     }
