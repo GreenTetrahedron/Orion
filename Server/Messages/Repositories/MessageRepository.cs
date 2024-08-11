@@ -15,7 +15,7 @@ namespace Server.Messages.Repositories
         public dynamic AddMessage(Guid senderId, string content)
         {
             var message = new Message() { 
-                MessageId = new Guid(),
+                MessageId = Guid.NewGuid(),
                 Content = content,
                 SenderId = senderId
             };

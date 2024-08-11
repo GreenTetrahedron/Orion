@@ -15,7 +15,7 @@ namespace Server.Users.Repositories
         public dynamic AddUser(string username)
         {
             var user = new User() { 
-                UserId = new Guid(),
+                UserId = Guid.NewGuid(),
                 Username = username
             };
 

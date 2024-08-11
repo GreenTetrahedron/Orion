@@ -14,23 +14,28 @@ namespace Broker
     {
         private IPEndPoint _iPEndPoint;
         private ConcurrentDictionary<Guid, Socket> _userIdToSocket;
+        private Socket _server;
+
+        private ConcurrentDictionary<string, Action<string>> _handlerToProcess;
 
 
         public RouterService(IPEndPoint iPEndPoint)
         {
             _userIdToSocket = new ConcurrentDictionary<Guid, Socket>();
+            _handlerToProcess = new ConcurrentDictionary<string, Action<string>>();
 
             _iPEndPoint = iPEndPoint;
         }
 
         public async Task Run()
         {
+            Console.WriteLine("Broker running...");
             var listener = new Socket(_iPEndPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
             listener.Bind(_iPEndPoint);
 
             listener.Listen(100);
 
-            Task.Run( () =>
+            Task.Run(() =>
             {
                 while (true)
                 {
@@ -55,16 +60,67 @@ namespace Broker
         {
             Console.WriteLine("Handling new connection...");
 
-            var message = await ReceiveTransmission(handler);
+            string message = await ReceiveTransmission(handler);
+
+            switch (message)
+            {
+                case "SERVER":
+                    ServerConnection(handler);
+                    break;
+                default:
+                    NewClientConnection(handler);
+                    break;
+            }
+            Console.WriteLine("Connection handled...");
         }
 
-        public async Task<byte[]> ReceiveTransmission(Socket handler)
+        public async Task NewClientConnection(Socket handler)
+        {
+            if (_server == null)
+            {
+                Console.WriteLine("No server... Cannot connect client...");
+                return;
+            }
+
+            string username = await ReceiveTransmission(handler);
+
+            Console.WriteLine($"Username received: {username}");
+
+            TransmitData(_server, $"NEW CLIENT: {username}");
+            _handlerToProcess[$"{username}Connection"] = (userId) => {
+                Console.WriteLine($"New user id: {userId}");
+                _userIdToSocket[Guid.Parse(userId)] = handler;
+                };
+        }
+
+        public async Task ServerConnection(Socket serverHandler)
+        {
+            _server = serverHandler;
+            Console.WriteLine("Server connected...");
+
+            while (true)
+            {
+                string message = await ReceiveTransmission(_server);
+                string[] processResult = message.Split(" ");
+
+                _handlerToProcess[processResult[0]].Invoke(processResult[1]);
+            }
+        }
+
+        public async Task<string> ReceiveTransmission(Socket handler)
         {
             var buffer = new byte[1024];
 
-            handler.ReceiveAsync(buffer, SocketFlags.None);
+            int transmissionBytesCount = await handler.ReceiveAsync(buffer, SocketFlags.None);
 
-            return buffer;
+            return Encoding.UTF8.GetString(buffer, 0, transmissionBytesCount);
+        }
+
+        public async Task<int> TransmitData(Socket handler, string message)
+        {
+            byte[] messageBytes = Encoding.UTF8.GetBytes(message);
+
+            return await handler.SendAsync(messageBytes);
         }
     }
 }
