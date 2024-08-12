@@ -16,13 +16,13 @@ namespace Broker
         private ConcurrentDictionary<Guid, Socket> _userIdToSocket;
         private Socket _server;
 
-        private ConcurrentDictionary<string, Action<string>> _handlerToProcess;
+        private ConcurrentDictionary<Guid, Action<ServerResponse>> _requestIdToHandler;
 
 
         public RouterService(IPEndPoint iPEndPoint)
         {
             _userIdToSocket = new ConcurrentDictionary<Guid, Socket>();
-            _handlerToProcess = new ConcurrentDictionary<string, Action<string>>();
+            _requestIdToHandler = new ConcurrentDictionary<Guid, Action<string>>();
 
             _iPEndPoint = iPEndPoint;
         }
@@ -87,7 +87,8 @@ namespace Broker
             Console.WriteLine($"Username received: {username}");
 
             TransmitData(_server, $"NEW CLIENT: {username}");
-            _handlerToProcess[$"{username}Connection"] = (userId) => {
+            
+            _requestIdToHandler[Guid.NewGuid()] = (userId) => {
                 Console.WriteLine($"New user id: {userId}");
                 _userIdToSocket[Guid.Parse(userId)] = handler;
                 };
