@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Security.AccessControl;
 
-namespace Broker
+namespace Orion.Models
 {
     public class ClientTransmission
     {

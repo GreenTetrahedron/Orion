@@ -1,8 +1,8 @@
-using Server.DataLayer;
-using Server.Users;
-using Server.Users.Repositories;
+using Orion.Server.DataLayer;
+using Orion.Server.Users;
+using Orion.Server.Users.Repositories;
 
-namespace Server.Tests.Users.Repositories
+namespace Orion.Server.Tests.Users.Repositories
 {
     public class UserRepositoryTests
     {

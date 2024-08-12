@@ -1,8 +1,8 @@
-using Server.DataLayer;
-using Server.Messages;
-using Server.Messages.Repositories;
+using Orion.Server.DataLayer;
+using Orion.Server.Messages;
+using Orion.Server.Messages.Repositories;
 
-namespace Server.Tests.Messages.Repositories
+namespace Orion.Server.Tests.Messages.Repositories
 {
     public class MessageRepositoryTests
     {

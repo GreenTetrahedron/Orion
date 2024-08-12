@@ -1,6 +1,6 @@
-﻿using Server.Users;
+﻿using Orion.Server.Users;
 
-namespace Server.Users.Repositories
+namespace Orion.Server.Users.Repositories
 {
     public interface IUserRepository
     {

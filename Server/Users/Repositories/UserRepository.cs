@@ -1,7 +1,7 @@
-﻿using Server.DataLayer;
-using Server.Users;
+﻿using Orion.Server.DataLayer;
+using Orion.Server.Users;
 
-namespace Server.Users.Repositories
+namespace Orion.Server.Users.Repositories
 {
     public class UserRepository : IUserRepository
     {

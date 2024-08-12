@@ -1,7 +1,7 @@
-﻿using Server.DataLayer;
-using Server.Messages.Repositories;
+﻿using Orion.Server.DataLayer;
+using Orion.Server.Messages.Repositories;
 
-namespace Server.Messages.Repositories
+namespace Orion.Server.Messages.Repositories
 {
     public class MessageRepository : IMessageRepository
     {

@@ -1,5 +1,5 @@
-﻿using Server.Messages;
-using Server.Users;
+﻿using Orion.Server.Messages;
+using Orion.Server.Users;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Server.DataLayer
+namespace Orion.Server.DataLayer
 {
     public class MockDB : IDataLayer
     {

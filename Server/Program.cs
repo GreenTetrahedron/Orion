@@ -1,6 +1,6 @@
-﻿using Server.DataLayer;
-using Server.Users;
-using Server.Users.Repositories;
+﻿using Orion.Server.DataLayer;
+using Orion.Server.Users;
+using Orion.Server.Users.Repositories;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -10,20 +10,20 @@ Console.WriteLine("SERVER");
 var hostName = Dns.GetHostName();
 Console.WriteLine($"On host: {hostName}");
 
-Console.WriteLine("Broker IP address: ");
-IPAddress brokerIPAddress = IPAddress.Parse(Console.ReadLine());
+Console.WriteLine("Router IP address: ");
+IPAddress routerIPAddress = IPAddress.Parse(Console.ReadLine());
 
-Console.WriteLine("Broker port: ");
-int brokerPort = Convert.ToInt32(Console.ReadLine());
+Console.WriteLine("Router port: ");
+int routerPort = Convert.ToInt32(Console.ReadLine());
 
-var brokerIPEndPoint = new IPEndPoint(brokerIPAddress, brokerPort);
+var routerIPEndPoint = new IPEndPoint(routerIPAddress, routerPort);
 
 var dataLayer = new DataLayer();
 var userRepository = new UserRepository(dataLayer);
 
-using (Socket server = new Socket(brokerIPEndPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp))
+using (Socket server = new Socket(routerIPEndPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp))
 {
-    await server.ConnectAsync(brokerIPEndPoint);
+    await server.ConnectAsync(routerIPEndPoint);
 
     Console.WriteLine("Server connected");
 

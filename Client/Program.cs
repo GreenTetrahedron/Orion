@@ -7,17 +7,17 @@ Console.WriteLine("CLIENT");
 var hostName = Dns.GetHostName();
 Console.WriteLine($"On host: {hostName}");
 
-Console.WriteLine("Broker IP address: ");
-IPAddress brokerIPAddress = IPAddress.Parse(Console.ReadLine());
+Console.WriteLine("Router IP address: ");
+IPAddress routerIPAddress = IPAddress.Parse(Console.ReadLine());
 
-Console.WriteLine("Broker port: ");
-int brokerPort = Convert.ToInt32(Console.ReadLine());
+Console.WriteLine("Router port: ");
+int routerPort = Convert.ToInt32(Console.ReadLine());
 
-var brokerIPEndPoint = new IPEndPoint(brokerIPAddress, brokerPort);
+var routerIPEndPoint = new IPEndPoint(routerIPAddress, routerPort);
 
-using (Socket client = new Socket(brokerIPEndPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp))
+using (Socket client = new Socket(routerIPEndPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp))
 {
-    await client.ConnectAsync(brokerIPEndPoint);
+    await client.ConnectAsync(routerIPEndPoint);
 
     await client.SendAsync(Encoding.UTF8.GetBytes("CLIENT"), SocketFlags.None);
 

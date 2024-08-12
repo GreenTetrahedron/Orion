@@ -1,4 +1,4 @@
-﻿using Server.Users;
+﻿using Orion.Server.Users;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Server.Messages
+namespace Orion.Server.Messages
 {
     public class Message
     {

@@ -8,7 +8,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Broker
+namespace Orion.Router
 {
     public class RouterService
     {
