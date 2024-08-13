@@ -17,7 +17,7 @@ namespace Orion.Server.Users.Controllers
             _userRepository = userRepository;
         }
 
-        public async Task<ServerResult?> AuthenticateUser(string username)
+        public async Task<ServerResult<User>?> AuthenticateUser(string username)
         {
             return await _userRepository.AuthenticateUser(username);
         }
