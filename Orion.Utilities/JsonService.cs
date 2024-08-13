@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Orion.JsonParser
 {
-    public class JsonParserService : IJsonParserService
+    public class JsonService : IJsonService
     {
         public T? DeserialiseJson<T>(string json)
         {

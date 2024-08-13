@@ -1,6 +1,7 @@
 using Orion.Server.DataLayer;
 using Orion.Server.Messages;
 using Orion.Server.Messages.Repositories;
+using Orion.Server.Tests.Mocks.DataLayer;
 
 namespace Orion.Server.Tests.Messages.Repositories
 {
