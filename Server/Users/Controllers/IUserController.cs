@@ -8,5 +8,6 @@ namespace Orion.Server.Users.Controllers
 {
     public interface IUserController
     {
+        public Task<dynamic> AuthenticateUser(string username);
     }
 }

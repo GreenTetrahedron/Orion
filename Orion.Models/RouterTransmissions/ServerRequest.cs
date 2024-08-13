@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Orion.Models
+namespace Orion.Models.RouterTransmissions
 {
     public class ServerRequest
     {

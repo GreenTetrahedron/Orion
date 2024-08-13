@@ -20,23 +20,30 @@ namespace Orion.Server.DataLayer
             users = new Dictionary<Guid, User>();
         }
 
-        public void AddMessage(Message message)
+        public async Task<dynamic> AddMessage(Message message)
         {
             messages.Add(message.MessageId, message);
+            return true;
         }
 
-        public void AddUser(User user)
+        public async Task<dynamic> AddUser(User user)
         {
             users.Add(user.UserId, user);
+            return true;
         }
 
-        public dynamic GetMessage(Guid messageId)
+        public async Task<dynamic> GetAllUsers()
+        {
+            return users.Values.ToList();
+        }
+
+        public async Task<dynamic> GetMessage(Guid messageId)
         {
             messages.TryGetValue(messageId, out var message);
 
             return message;
         }
-        public dynamic GetUser(Guid userId)
+        public async Task<dynamic> GetUser(Guid userId)
         {
             users.TryGetValue(userId, out var user);
 

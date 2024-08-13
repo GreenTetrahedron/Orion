@@ -4,7 +4,8 @@ namespace Orion.Server.Users.Repositories
 {
     public interface IUserRepository
     {
-        public dynamic AddUser(string username);
-        public dynamic GetUser(Guid userId);
+        public Task<dynamic> AuthenticateUser(string username);
+        public Task<dynamic> AddUser(string username);
+        public Task<dynamic> GetUser(Guid userId);
     }
 }

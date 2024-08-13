@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Security.AccessControl;
 
-namespace Orion.Models
+namespace Orion.Models.ClientTransmissions
 {
     public class ClientTransmission
     {

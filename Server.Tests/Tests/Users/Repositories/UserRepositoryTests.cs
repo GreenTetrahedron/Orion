@@ -18,6 +18,35 @@ namespace Orion.Server.Tests.Users.Repositories
         }
 
         [Test]
+        [TestCase("User1")]
+        [TestCase("American bald eagle")]
+        [TestCase("User212343441")]
+        public void AuthenticateUser_ReturnsTrueForValidUsername(string username)
+        {
+            _dataLayer.AddUser(new User()
+            {
+                UserId = Guid.NewGuid(),
+                Username = username
+            });
+
+            bool result = _userRepository.AuthenticateUser(username);
+
+            Assert.IsTrue(result);
+        }
+
+        [Test]
+        [TestCase("User1")]
+        [TestCase("American bald eagle")]
+        [TestCase("User212343441")]
+        public void AuthenticateUser_ReturnsFalseForInvalidUsername(string username)
+        {
+            Assert.That(_dataLayer.)
+
+            bool result = _userRepository.AuthenticateUser(username);
+
+            Assert.IsTrue(result);
+        }
+        [Test]
         public void AddUserAddsUserToDB()
         {
             User user = _userRepository.AddUser("User1");

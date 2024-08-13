@@ -1,5 +1,9 @@
-﻿using Orion.Server.DataLayer;
+﻿using Orion.Models.ServerTransmissions.Results;
+using Orion.Server.DataLayer;
+using Orion.Server.Messages;
+using Orion.Server.ServerResults;
 using Orion.Server.Users;
+using System.Linq;
 
 namespace Orion.Server.Users.Repositories
 {
@@ -12,21 +16,35 @@ namespace Orion.Server.Users.Repositories
             _dataLayer = dataLayer;
         }
 
-        public dynamic AddUser(string username)
+        public async Task<dynamic> AuthenticateUser(string username)
+        {
+            List<User>? users = await _dataLayer.GetAllUsers();
+
+            var user = users?
+                .Select(x => x)
+                .Where(x => x.Username == username)
+                .SingleOrDefault();
+
+            return (user == null)
+                ? ServerResultService.NewServerResult(OperationMessages.INVALID_CREDENTIALS)
+                : ServerResultService.NewServerResult(OperationMessages.VALID_CREDENTIALS, user);
+        }
+
+        public async Task<dynamic> AddUser(string username)
         {
             var user = new User() { 
                 UserId = Guid.NewGuid(),
                 Username = username
             };
 
-            _dataLayer.AddUser(user);
+            await _dataLayer.AddUser(user);
 
             return user;
         }
 
-        public dynamic GetUser(Guid userId)
+        public async Task<dynamic> GetUser(Guid userId)
         {
-            return _dataLayer.GetUser(userId);
+            return await _dataLayer.GetUser(userId);
         }
     }
 }

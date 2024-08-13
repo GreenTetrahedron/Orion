@@ -1,5 +1,5 @@
 ﻿using Orion.JsonParser;
-using Orion.Models;
+using Orion.Models.RouterTransmissions;
 using System;
 using System.Net;
 using System.Net.Sockets;
