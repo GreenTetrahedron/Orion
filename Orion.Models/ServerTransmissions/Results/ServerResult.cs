@@ -11,9 +11,9 @@ namespace Orion.Models.ServerTransmissions.Results
     {
         public OperationResult OperationResult { get; set; }
 
-        public object Data { get; set; }
+        public object? Data { get; set; }
 
-        public ServerResult(OperationResult operationResult, object data)
+        public ServerResult(OperationResult operationResult, object? data)
         {
             OperationResult = operationResult;
             Data = data;
