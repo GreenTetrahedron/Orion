@@ -7,13 +7,14 @@ using System.Threading.Tasks;
 
 namespace Orion.JsonParser
 {
-    public static class JsonParserService
+    public class JsonParserService : IJsonParserService
     {
-        public static T? DeserialiseJson<T>(string json)
+        public T? DeserialiseJson<T>(string json)
         {
             return JsonConvert.DeserializeObject<T>(json);
         }
-        public static string SerialiseObject(object objectToSerialise)
+
+        public string SerialiseObject(object objectToSerialise)
         {
             return JsonConvert.SerializeObject(objectToSerialise);
         }
