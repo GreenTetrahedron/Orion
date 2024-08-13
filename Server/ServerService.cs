@@ -21,7 +21,6 @@ namespace Orion.Server
         public ServerService(IPEndPoint routerIpEndpoint, IJsonService jsonService)
         {
             _topicToHandler = new Dictionary<string, Action<object>>();
-            _topicToHandler.Add("AuthenticateClient");
 
             _router = new Socket(routerIpEndpoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
 
@@ -39,12 +38,13 @@ namespace Orion.Server
             {
                 while(true)
                 {
-                    var request = await ReceiveRequest();
+                    var request = ReceiveRequest();
+                    request.RunSynchronously();
 
-                    if (request == null)
+                    if (request.Result == null)
                         continue;
 
-                    HandleRequest(request);
+                    HandleRequest(request.Result);
                 }
             });
 

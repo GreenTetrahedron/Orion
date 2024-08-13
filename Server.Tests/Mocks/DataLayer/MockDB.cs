@@ -21,23 +21,30 @@ namespace Orion.Server.Tests.Mocks.DataLayer
             users = new Dictionary<Guid, User>();
         }
 
-        public void AddMessage(Message message)
+        public async Task<dynamic> AddMessage(Message message)
         {
             messages.Add(message.MessageId, message);
+            return null;
         }
 
-        public void AddUser(User user)
+        public async Task<dynamic> AddUser(User user)
         {
             users.Add(user.UserId, user);
+            return null;
         }
 
-        public dynamic GetMessage(Guid messageId)
+        public async Task<dynamic> GetAllUsers()
+        {
+            return users.Values;
+        }
+
+        public async Task<dynamic> GetMessage(Guid messageId)
         {
             messages.TryGetValue(messageId, out var message);
 
             return message;
         }
-        public dynamic GetUser(Guid userId)
+        public async Task<dynamic> GetUser(Guid userId)
         {
             users.TryGetValue(userId, out var user);
 

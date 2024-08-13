@@ -21,15 +21,15 @@ namespace Orion.Server.Tests.Users.Repositories
         [TestCase("User1")]
         [TestCase("American bald eagle")]
         [TestCase("User212343441")]
-        public void AuthenticateUser_ReturnsTrueForValidUsername(string username)
+        public async Task AuthenticateUser_ReturnsTrueForValidUsername(string username)
         {
-            _dataLayer.AddUser(new User()
+            await _dataLayer.AddUser(new User()
             {
                 UserId = Guid.NewGuid(),
                 Username = username
             });
 
-            bool result = _userRepository.AuthenticateUser(username);
+            bool result = await _userRepository.AuthenticateUser(username);
 
             Assert.IsTrue(result);
         }
@@ -38,26 +38,26 @@ namespace Orion.Server.Tests.Users.Repositories
         [TestCase("User1")]
         [TestCase("American bald eagle")]
         [TestCase("User212343441")]
-        public void AuthenticateUser_ReturnsFalseForInvalidUsername(string username)
+        public async Task AuthenticateUser_ReturnsFalseForInvalidUsername(string username)
         {
-            Assert.That(_dataLayer.)
+            Assert.That((await _dataLayer.GetAllUsers()).Count == 0, "Invalid test conditions");
 
-            bool result = _userRepository.AuthenticateUser(username);
+            bool result = await _userRepository.AuthenticateUser(username);
 
             Assert.IsTrue(result);
         }
         [Test]
-        public void AddUserAddsUserToDB()
+        public async Task AddUserAddsUserToDB()
         {
-            User user = _userRepository.AddUser("User1");
+            User user = await _userRepository.AddUser("User1");
 
-            User result = _dataLayer.GetUser(user.UserId);
+            User result = await _dataLayer.GetUser(user.UserId);
             Assert.That(result?.Username == "User1", $"Username was: {result?.Username}");
         }
 
 
         [Test]
-        public void GetUserGetsUserFromDB()
+        public async Task GetUserGetsUserFromDB()
         {
             var user = new User()
             {
@@ -65,9 +65,9 @@ namespace Orion.Server.Tests.Users.Repositories
                 Username = "User1"
             };
 
-            _dataLayer.AddUser(user);
+            await _dataLayer.AddUser(user);
 
-            User result = _userRepository.GetUser(user.UserId);
+            User result = await _userRepository.GetUser(user.UserId);
             Assert.That(result?.Username == "User1", $"Username was: {result?.Username}");
         }
     }

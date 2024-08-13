@@ -16,21 +16,21 @@ namespace Orion.Server.Tests.Mocks.Users.Repositories
             methodCallStack = new Stack<string>();
         }
 
-        public dynamic AddUser(string username)
+        public async Task<dynamic> AddUser(string username)
         {
-            methodCallStack.Push("AddUser");
+            methodCallStack.Push($"AddUser: {username}");
             return null;
         }
 
-        public dynamic AuthenticateUser(string username)
+        public async Task<dynamic> AuthenticateUser(string username)
         {
-            methodCallStack.Push("AuthenticateUser");
+            methodCallStack.Push($"AuthenticateUser: {username}");
             return null;
         }
 
-        public dynamic GetUser(Guid userId)
+        public async Task<dynamic> GetUser(Guid userId)
         {
-            methodCallStack.Push("GetUser");
+            methodCallStack.Push($"GetUser: {userId}");
             return null;
         }
     }

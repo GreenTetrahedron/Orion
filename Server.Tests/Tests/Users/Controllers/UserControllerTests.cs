@@ -1,5 +1,4 @@
 ﻿using NUnit.Framework;
-using Orion.Server.Tests.Mocks.User.Repositories;
 using Orion.Server.Tests.Mocks.Users.Repositories;
 using Orion.Server.Users.Controllers;
 using Orion.Server.Users.Repositories;
@@ -24,9 +23,20 @@ namespace Orion.Server.Tests.Users.Controllers
         }
 
         [Test]
-        public void AuthenticateUser_CallsAuthenticateUserWithCorrectUsername()
+        [TestCase("Jhonny Felon")]
+        [TestCase("User1")]
+        [TestCase("Tim OB. Simon")]
+        public async Task AuthenticateUser_CallsAuthenticateUserWithCorrectUsername(string username)
         {
+            await _userController.AuthenticateUser(username);
 
+            _userRepository.methodCallStack.TryPeek(out string lastMethodCall);
+
+            Assert.That(!string.IsNullOrEmpty(lastMethodCall));
+
+            var lastMethodCallSplit = lastMethodCall.Split(": ");
+
+            Assert.That(lastMethodCallSplit[0] == "AuthenticateUser" && lastMethodCallSplit[1] == username);
         }
     }
 }

@@ -18,11 +18,11 @@ namespace Orion.Server.Tests.Messages.Repositories
         }
 
         [Test]
-        public void AddMessageAddsMessageToDB()
+        public async Task AddMessageAddsMessageToDB()
         {
             Message message = _messageRepository.AddMessage(new Guid(), "Message1");
 
-            Message result = _dataLayer.GetMessage(message.MessageId);
+            Message result = await _dataLayer.GetMessage(message.MessageId);
             Assert.That(result?.Content == "Message1", $"Content was: {result?.Content}");
         }
 

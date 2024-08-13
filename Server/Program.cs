@@ -40,7 +40,7 @@ using (Socket server = new Socket(routerIPEndPoint.AddressFamily, SocketType.Str
         
         if (splitMessage[0] == "NEW CLIENT")
         {
-            User user = userRepository.AddUser(splitMessage[1]);
+            User user = await userRepository.AddUser(splitMessage[1]);
             Console.WriteLine($"New user: {user.Username}");
 
             var header = $"{user.Username}Connection";
