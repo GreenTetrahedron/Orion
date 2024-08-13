@@ -20,7 +20,7 @@ namespace Orion.Server.Tests.Messages.Repositories
         [Test]
         public async Task AddMessageAddsMessageToDB()
         {
-            Message message = _messageRepository.AddMessage(new Guid(), "Message1");
+            Message message = await _messageRepository.AddMessage(new Guid(), "Message1");
 
             Message result = await _dataLayer.GetMessage(message.MessageId);
             Assert.That(result?.Content == "Message1", $"Content was: {result?.Content}");
@@ -28,7 +28,7 @@ namespace Orion.Server.Tests.Messages.Repositories
 
 
         [Test]
-        public void GetMessageGetsMessageFromDB()
+        public async Task GetMessageGetsMessageFromDB()
         {
             var message = new Message()
             {
@@ -37,9 +37,9 @@ namespace Orion.Server.Tests.Messages.Repositories
                 Content = "Message1"
             };
 
-            _dataLayer.AddMessage(message);
+            await _dataLayer.AddMessage(message);
 
-            Message result = _messageRepository.GetMessage(message.MessageId);
+            Message result = await _messageRepository.GetMessage(message.MessageId);
             Assert.That(result?.Content == "Message1", $"Messagename was: {result?.Content}");
         }
     }

@@ -35,7 +35,7 @@ namespace Orion.Server.Tests.Mocks.DataLayer
 
         public async Task<dynamic> GetAllUsers()
         {
-            return users.Values;
+            return users.Values.ToList();
         }
 
         public async Task<dynamic> GetMessage(Guid messageId)

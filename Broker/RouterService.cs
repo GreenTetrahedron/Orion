@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Orion.Models.ServerTransmissions;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -22,7 +23,7 @@ namespace Orion.Router
         public RouterService(IPEndPoint iPEndPoint)
         {
             _userIdToSocket = new ConcurrentDictionary<Guid, Socket>();
-            _requestIdToHandler = new ConcurrentDictionary<Guid, Action<string>>();
+            _requestIdToHandler = new ConcurrentDictionary<Guid, Action<ServerResponse>>();
 
             _iPEndPoint = iPEndPoint;
         }
@@ -88,10 +89,6 @@ namespace Orion.Router
 
             TransmitData(_server, $"NEW CLIENT: {username}");
             
-            _requestIdToHandler[Guid.NewGuid()] = (userId) => {
-                Console.WriteLine($"New user id: {userId}");
-                _userIdToSocket[Guid.Parse(userId)] = handler;
-                };
         }
 
         public async Task ServerConnection(Socket serverHandler)
@@ -104,7 +101,6 @@ namespace Orion.Router
                 string message = await ReceiveTransmission(_server);
                 string[] processResult = message.Split(" ");
 
-                _handlerToProcess[processResult[0]].Invoke(processResult[1]);
             }
         }
 

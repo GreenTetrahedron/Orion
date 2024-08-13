@@ -1,3 +1,4 @@
+using Orion.Models.ServerTransmissions.Results;
 using Orion.Server.DataLayer;
 using Orion.Server.Tests.Mocks.DataLayer;
 using Orion.Server.Users;
@@ -29,9 +30,9 @@ namespace Orion.Server.Tests.Users.Repositories
                 Username = username
             });
 
-            bool result = await _userRepository.AuthenticateUser(username);
+            ServerResult result = await _userRepository.AuthenticateUser(username);
 
-            Assert.IsTrue(result);
+            Assert.That(result.OperationResult.OperationMessage == OperationMessages.VALID_CREDENTIALS);
         }
 
         [Test]
@@ -42,9 +43,9 @@ namespace Orion.Server.Tests.Users.Repositories
         {
             Assert.That((await _dataLayer.GetAllUsers()).Count == 0, "Invalid test conditions");
 
-            bool result = await _userRepository.AuthenticateUser(username);
+            ServerResult result = await _userRepository.AuthenticateUser(username);
 
-            Assert.IsTrue(result);
+            Assert.That(result.OperationResult.OperationMessage == OperationMessages.INVALID_CREDENTIALS);
         }
         [Test]
         public async Task AddUserAddsUserToDB()
