@@ -10,12 +10,12 @@ namespace Orion.Server.DataLayer
 {
     public interface IDataLayer
     {
-        public Task<dynamic> GetAllUsers();
+        public Task<IList<User>?> GetAllUsers();
 
-        public Task<dynamic> AddUser(User user);
-        public Task<dynamic> AddMessage(Message message);
+        public Task<bool?> AddUser(User user);
+        public Task<bool?> AddMessage(Message message);
 
-        public Task<dynamic> GetUser(Guid userId);
-        public Task<dynamic> GetMessage(Guid messageId);
+        public Task<User?> GetUser(Guid userId);
+        public Task<Message?> GetMessage(Guid messageId);
     }
 }

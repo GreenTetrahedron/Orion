@@ -1,4 +1,5 @@
-﻿using Orion.Server.Users.Repositories;
+﻿using Orion.Models.ServerTransmissions.Results;
+using Orion.Server.Users.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,7 +17,7 @@ namespace Orion.Server.Users.Controllers
             _userRepository = userRepository;
         }
 
-        public async Task<dynamic> AuthenticateUser(string username)
+        public async Task<ServerResult?> AuthenticateUser(string username)
         {
             return await _userRepository.AuthenticateUser(username);
         }

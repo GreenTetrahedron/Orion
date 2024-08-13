@@ -16,9 +16,9 @@ namespace Orion.Server.Users.Repositories
             _dataLayer = dataLayer;
         }
 
-        public async Task<dynamic> AuthenticateUser(string username)
+        public async Task<ServerResult?> AuthenticateUser(string username)
         {
-            List<User>? users = await _dataLayer.GetAllUsers();
+            var users = await _dataLayer.GetAllUsers();
 
             var user = users?
                 .Select(x => x)
@@ -30,7 +30,7 @@ namespace Orion.Server.Users.Repositories
                 : ServerResultService.NewServerResult(OperationMessages.VALID_CREDENTIALS, user);
         }
 
-        public async Task<dynamic> AddUser(string username)
+        public async Task<User?> AddUser(string username)
         {
             var user = new User() { 
                 UserId = Guid.NewGuid(),
@@ -42,7 +42,7 @@ namespace Orion.Server.Users.Repositories
             return user;
         }
 
-        public async Task<dynamic> GetUser(Guid userId)
+        public async Task<User?> GetUser(Guid userId)
         {
             return await _dataLayer.GetUser(userId);
         }

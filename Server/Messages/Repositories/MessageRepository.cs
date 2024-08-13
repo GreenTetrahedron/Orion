@@ -12,7 +12,7 @@ namespace Orion.Server.Messages.Repositories
             _dataLayer = dataLayer;
         }
 
-        public async Task<dynamic> AddMessage(Guid senderId, string content)
+        public async Task<Message?> AddMessage(Guid senderId, string content)
         {
             var message = new Message() { 
                 MessageId = Guid.NewGuid(),
@@ -25,7 +25,7 @@ namespace Orion.Server.Messages.Repositories
             return message;
         }
 
-        public async Task<dynamic> GetMessage(Guid messageId)
+        public async Task<Message?> GetMessage(Guid messageId)
         {
             return await _dataLayer.GetMessage(messageId);
         }

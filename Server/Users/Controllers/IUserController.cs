@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Orion.Models.ServerTransmissions.Results;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +9,6 @@ namespace Orion.Server.Users.Controllers
 {
     public interface IUserController
     {
-        public Task<dynamic> AuthenticateUser(string username);
+        public Task<ServerResult?> AuthenticateUser(string username);
     }
 }

@@ -1,4 +1,6 @@
-﻿using Orion.Server.Users.Repositories;
+﻿using Orion.Models.ServerTransmissions.Results;
+using Orion.Server.Users;
+using Orion.Server.Users.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,19 +18,19 @@ namespace Orion.Server.Tests.Mocks.Users.Repositories
             methodCallStack = new Stack<string>();
         }
 
-        public async Task<dynamic> AddUser(string username)
+        public async Task<User?> AddUser(string username)
         {
             methodCallStack.Push($"AddUser: {username}");
             return null;
         }
 
-        public async Task<dynamic> AuthenticateUser(string username)
+        public async Task<ServerResult?> AuthenticateUser(string username)
         {
             methodCallStack.Push($"AuthenticateUser: {username}");
             return null;
         }
 
-        public async Task<dynamic> GetUser(Guid userId)
+        public async Task<User?> GetUser(Guid userId)
         {
             methodCallStack.Push($"GetUser: {userId}");
             return null;

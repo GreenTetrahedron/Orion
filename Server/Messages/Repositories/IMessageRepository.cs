@@ -4,7 +4,7 @@ namespace Orion.Server.Messages.Repositories
 {
     public interface IMessageRepository
     {
-        public Task<dynamic> AddMessage(Guid senderId, string content);
-        public Task<dynamic> GetMessage(Guid messageId);
+        public Task<Message?> AddMessage(Guid senderId, string content);
+        public Task<Message?> GetMessage(Guid messageId);
     }
 }

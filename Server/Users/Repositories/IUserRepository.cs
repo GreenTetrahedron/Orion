@@ -1,11 +1,12 @@
-﻿using Orion.Server.Users;
+﻿using Orion.Models.ServerTransmissions.Results;
+using Orion.Server.Users;
 
 namespace Orion.Server.Users.Repositories
 {
     public interface IUserRepository
     {
-        public Task<dynamic> AuthenticateUser(string username);
-        public Task<dynamic> AddUser(string username);
-        public Task<dynamic> GetUser(Guid userId);
+        public Task<ServerResult?> AuthenticateUser(string username);
+        public Task<User?> AddUser(string username);
+        public Task<User?> GetUser(Guid userId);
     }
 }

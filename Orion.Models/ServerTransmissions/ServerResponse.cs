@@ -8,7 +8,7 @@ namespace Orion.Models.ServerTransmissions
     {
         public Guid? RequestId { get; set; }
 
-        public ServerResult ServerResult { get; set; }
+        public ServerResult? ServerResult { get; set; }
 
         public string Topic { get; set; }
 
