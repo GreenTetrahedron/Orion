@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace Orion.Server.TopicHandlers
 {
-    public class TopicHandlerService
+    public class TopicHandlerService : ITopicHandlerService
     {
         private readonly IDictionary<string, Func<object, Task<object>>> topicToHandler;
 

@@ -25,7 +25,7 @@ configurationService.AddInstanceOfType<IMessageRepository>(new MessageRepository
 var topicHandlerService = new TopicHandlerService(configurationService);
 
 var handler = topicHandlerService.GetTopicHandler("AuthenticateUser");
-var response = await handler.Invoke("User1");
+var response = await handler.Invoke("Bob");
 
 Console.WriteLine(((Task<ServerResult>)response).Result.OperationResult.OperationMessage.ToString());
 

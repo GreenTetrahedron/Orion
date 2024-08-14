@@ -18,6 +18,14 @@ namespace Orion.Server.DataLayer
         {
             messages = new Dictionary<Guid, Message>();
             users = new Dictionary<Guid, User>();
+
+            var user = new User()
+            {
+                UserId = Guid.NewGuid(),
+                Username = "User1"
+            };
+
+            users[user.UserId] = user;
         }
 
         public async Task<bool?> AddMessage(Message message)

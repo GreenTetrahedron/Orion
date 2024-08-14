@@ -14,6 +14,7 @@ namespace Orion.Server
         private readonly IJsonService _jsonService;
         private readonly IPEndPoint _routerIpEndpoint;
 
+        private readonly ITopicHandler 
 
         private Socket _router;
 
@@ -53,7 +54,7 @@ namespace Orion.Server
 
         private async Task HandleRequest(ServerRequest request)
         {
-
+            
         }
 
         private async Task<ServerRequest?> ReceiveRequest()
