@@ -13,10 +13,13 @@ namespace Orion.Models.ServerTransmissions.Results
 
         public object? Data { get; set; }
 
-        public ServerResult(OperationResult operationResult, object? data)
+        public Guid[]? AffectedUsers { get; set; }
+
+        public ServerResult(OperationResult operationResult, object? data = null, Guid[]? affectedUsers = null)
         {
             OperationResult = operationResult;
             Data = data;
+            AffectedUsers = affectedUsers;
         }
     }
 }

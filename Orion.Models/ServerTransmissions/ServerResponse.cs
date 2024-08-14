@@ -12,6 +12,11 @@ namespace Orion.Models.ServerTransmissions
 
         public string Topic { get; set; }
 
-        public List<Guid>? BroadcastList { get; set; }
+        public ServerResponse(string topic, ServerResult? serverResult = null, Guid? requestId = null)
+        {
+            Topic = topic;
+            ServerResult = serverResult;
+            RequestId = requestId;
+        }
     }
 }

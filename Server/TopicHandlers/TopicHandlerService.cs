@@ -15,11 +15,11 @@ namespace Orion.Server.TopicHandlers
 {
     public class TopicHandlerService : ITopicHandlerService
     {
-        private readonly IDictionary<string, Func<object, Task<object>>> topicToHandler;
+        private readonly IDictionary<string, Func<object, Task<ServerResult>>> topicToHandler;
 
         public TopicHandlerService(IConfigurationService configurationService)
         {
-            topicToHandler = new Dictionary<string, Func<object, Task<object>>>();
+            topicToHandler = new Dictionary<string, Func<object, Task<ServerResult>>>();
 
 
             var controllers =
@@ -52,13 +52,13 @@ namespace Orion.Server.TopicHandlers
                 {
                     topicToHandler.Add(handler.GetCustomAttribute<HandlerAttribute>().Topic, async (x) =>
                     {
-                        return handler.Invoke(controllerInstance, new object[1] { x });
+                        return (ServerResult)handler.Invoke(controllerInstance, new object[1] { x });
                     });
                 }
             }
         }
 
-        public Func<object, Task<object>>? GetTopicHandler(string topic)
+        public Func<object, Task<ServerResult>>? GetTopicHandler(string topic)
         {
             topicToHandler.TryGetValue(topic, out var handler);
 

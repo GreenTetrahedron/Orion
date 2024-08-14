@@ -1,5 +1,8 @@
 ﻿using Orion.JsonParser;
 using Orion.Models.RouterTransmissions;
+using Orion.Models.ServerTransmissions;
+using Orion.Models.ServerTransmissions.Results;
+using Orion.Server.TopicHandlers;
 using System;
 using System.Net;
 using System.Net.Sockets;
@@ -9,19 +12,17 @@ namespace Orion.Server
 {
     public class ServerService
     {
-        private readonly Dictionary<string, Action<object>> _topicToHandler;
-
         private readonly IJsonService _jsonService;
+        private readonly ITopicHandlerService _topicHandlerService;
+        
         private readonly IPEndPoint _routerIpEndpoint;
-
-        private readonly ITopicHandler 
 
         private Socket _router;
 
 
-        public ServerService(IPEndPoint routerIpEndpoint, IJsonService jsonService)
+        public ServerService(IPEndPoint routerIpEndpoint, IJsonService jsonService, ITopicHandlerService topicHandlerService)
         {
-            _topicToHandler = new Dictionary<string, Action<object>>();
+            _topicHandlerService = topicHandlerService;
 
             _router = new Socket(routerIpEndpoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
 
@@ -52,9 +53,16 @@ namespace Orion.Server
             Console.ReadLine();
         }
 
-        private async Task HandleRequest(ServerRequest request)
+        private async Task<ServerResponse?> HandleRequest(ServerRequest request)
         {
-            
+            var handler = _topicHandlerService.GetTopicHandler(request.Topic);
+
+            if (handler == null)
+                throw new ApplicationException($"No handler found for topic: {request.Topic}");
+
+            ServerResult result = await handler.Invoke(request.Data);
+
+            return new ServerResponse(request.Topic, result, request.RequestId);
         }
 
         private async Task<ServerRequest?> ReceiveRequest()
