@@ -24,7 +24,7 @@ namespace Orion.Server.Tests.Mocks.Users.Repositories
             return null;
         }
 
-        public async Task<ServerResult<User>?> AuthenticateUser(string username)
+        public async Task<ServerResult?> AuthenticateUser(string username)
         {
             methodCallStack.Push($"AuthenticateUser: {username}");
             return null;

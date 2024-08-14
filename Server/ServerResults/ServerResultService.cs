@@ -9,9 +9,9 @@ namespace Orion.Server.ServerResults
 {
     public static class ServerResultService
     {
-        public static ServerResult<T> NewServerResult<T>(OperationMessages operationMessage, T? data = null) where T : class
+        public static ServerResult NewServerResult(OperationMessages operationMessage, object? data = null)
         {
-            return new ServerResult<T>(new OperationResult(operationMessage), data);
+            return new ServerResult(new OperationResult(operationMessage), data);
         }
     }
 }

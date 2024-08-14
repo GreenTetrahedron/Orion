@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 
 namespace Orion.Models.ServerTransmissions.Results
 {
-    public class ServerResult<T> where T : class
+    public class ServerResult
     {
         public OperationResult OperationResult { get; set; }
 
-        public T? Data { get; set; }
+        public object? Data { get; set; }
 
-        public ServerResult(OperationResult operationResult, T? data)
+        public ServerResult(OperationResult operationResult, object? data)
         {
             OperationResult = operationResult;
             Data = data;

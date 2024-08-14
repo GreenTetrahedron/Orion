@@ -16,7 +16,7 @@ namespace Orion.Server.Users.Repositories
             _dataLayer = dataLayer;
         }
 
-        public async Task<ServerResult<User>?> AuthenticateUser(string username)
+        public async Task<ServerResult?> AuthenticateUser(string username)
         {
             var users = await _dataLayer.GetAllUsers();
 
@@ -26,8 +26,8 @@ namespace Orion.Server.Users.Repositories
                 .SingleOrDefault();
 
             return (user == null)
-                ? ServerResultService.NewServerResult<User>(OperationMessages.INVALID_CREDENTIALS)
-                : ServerResultService.NewServerResult<User>(OperationMessages.VALID_CREDENTIALS, user);
+                ? ServerResultService.NewServerResult(OperationMessages.INVALID_CREDENTIALS)
+                : ServerResultService.NewServerResult(OperationMessages.VALID_CREDENTIALS, user);
         }
 
         public async Task<User?> AddUser(string username)

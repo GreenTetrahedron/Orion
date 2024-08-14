@@ -9,6 +9,6 @@ namespace Orion.Server.Users.Controllers
 {
     public interface IUserController
     {
-        public Task<ServerResult<User>?> AuthenticateUser(string username);
+        public Task<ServerResult?> AuthenticateUser(string username);
     }
 }

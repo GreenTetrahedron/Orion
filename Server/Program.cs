@@ -1,9 +1,33 @@
-﻿using Orion.Server.DataLayer;
+﻿using Orion.Models.RouterTransmissions;
+using Orion.Models.ServerTransmissions.Results;
+using Orion.Server.Attributes;
+using Orion.Server.Configuration;
+using Orion.Server.DataLayer;
+using Orion.Server.Messages.Repositories;
+using Orion.Server.TopicHandlers;
 using Orion.Server.Users;
 using Orion.Server.Users.Repositories;
+using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Net.Sockets;
+using System.Reflection;
+using System.Reflection.Metadata.Ecma335;
 using System.Text;
+
+
+
+var configurationService = new ConfigurationService();
+
+configurationService.AddInstanceOfType<IDataLayer>(new DataLayer());
+configurationService.AddInstanceOfType<IUserRepository>(new UserRepository(configurationService.GetInstanceOfType<IDataLayer>()));
+configurationService.AddInstanceOfType<IMessageRepository>(new MessageRepository(configurationService.GetInstanceOfType<IDataLayer>()));
+
+var topicHandlerService = new TopicHandlerService(configurationService);
+
+var handler = topicHandlerService.GetTopicHandler("AuthenticateUser");
+var response = await handler.Invoke("User1");
+
+Console.WriteLine(((Task<ServerResult>)response).Result.OperationResult.OperationMessage.ToString());
 
 Console.WriteLine("SERVER");
 

@@ -1,4 +1,5 @@
 ﻿using Orion.Models.ServerTransmissions.Results;
+using Orion.Server.Attributes;
 using Orion.Server.Users.Repositories;
 using System;
 using System.Collections.Generic;
@@ -8,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace Orion.Server.Users.Controllers
 {
+    [Controller]
     public class UserController : IUserController
     {
         private readonly IUserRepository _userRepository;
@@ -17,7 +19,8 @@ namespace Orion.Server.Users.Controllers
             _userRepository = userRepository;
         }
 
-        public async Task<ServerResult<User>?> AuthenticateUser(string username)
+        [Handler("AuthenticateUser")]
+        public async Task<ServerResult?> AuthenticateUser(string username)
         {
             return await _userRepository.AuthenticateUser(username);
         }
