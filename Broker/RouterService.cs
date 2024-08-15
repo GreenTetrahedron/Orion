@@ -1,4 +1,10 @@
-﻿using Orion.Models.ServerTransmissions;
+﻿using Orion.JsonParser;
+using Orion.Models.ClientTransmissions;
+using Orion.Models.RouterTransmissions;
+using Orion.Models.ServerTransmissions;
+using Orion.Router.Connections;
+using Orion.Router.Requests;
+using Orion.Router.TopicInterceptors;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -14,18 +20,23 @@ namespace Orion.Router
     public class RouterService
     {
         private IPEndPoint _iPEndPoint;
-        private ConcurrentDictionary<Guid, Socket> _userIdToSocket;
         private Socket _server;
 
-        private ConcurrentDictionary<Guid, Action<ServerResponse>> _requestIdToHandler;
+        private IRequestService _requestService;
+        private IConnectionService _connectionService;
+        private ITopicInterceptorService _topicInterceptorService;
 
+        private readonly IJsonService _jsonService;
 
-        public RouterService(IPEndPoint iPEndPoint)
+        public RouterService(IPEndPoint iPEndPoint, ITopicInterceptorService topicInterceptorService, IConnectionService connectionService, IRequestService requestService, IJsonService jsonService)
         {
-            _userIdToSocket = new ConcurrentDictionary<Guid, Socket>();
-            _requestIdToHandler = new ConcurrentDictionary<Guid, Action<ServerResponse>>();
-
             _iPEndPoint = iPEndPoint;
+
+            _topicInterceptorService = topicInterceptorService;
+            _connectionService = connectionService;
+            _requestService = requestService;
+
+            _jsonService = jsonService;
         }
 
         public async Task Run()
@@ -83,14 +94,13 @@ namespace Orion.Router
                 return;
             }
 
-            string username = await ReceiveTransmission(handler);
+            var clientTransmission = await ReceiveClientTransmission(handler);
 
-            Console.WriteLine($"Username received: {username}");
+            var requestId = _requestService.AddRequest(handler);
 
-            TransmitData(_server, $"NEW CLIENT: {username}");
-            
+            SendServerRequest(_server, "AuthenticateUser", clientTransmission.Data, requestId);
         }
-
+        
         public async Task ServerConnection(Socket serverHandler)
         {
             _server = serverHandler;
@@ -98,26 +108,92 @@ namespace Orion.Router
 
             while (true)
             {
-                string message = await ReceiveTransmission(_server);
-                string[] processResult = message.Split(" ");
+                ServerResponse serverResponse = await ReceiveServerTransmission();
 
+                bool topicHasInterceptor = _topicInterceptorService.TryGetTopicInterceptor(serverResponse.Topic, out var topicInterceptor);
+
+                if (topicHasInterceptor)
+                {
+                    topicInterceptor.Invoke(serverResponse);
+                }
+
+                var broadcastList = serverResponse.ServerResult.AffectedUsers;
+
+                if (broadcastList == null || broadcastList.Length == 0)
+                {
+                    continue;
+                }
+             
+                foreach(var userId in broadcastList)
+                {
+                    bool isConnected = _connectionService.TryGetConnectionHandler(userId, out var client);
+
+                    if (isConnected)
+                    {
+                        await ForwardServerResponse(serverResponse, client);
+                    }
+                }
             }
         }
 
         public async Task<string> ReceiveTransmission(Socket handler)
         {
-            var buffer = new byte[1024];
+            var buffer = new byte[2048];
 
-            int transmissionBytesCount = await handler.ReceiveAsync(buffer, SocketFlags.None);
+            int transmissionBytesCount = await _server.ReceiveAsync(buffer, SocketFlags.None);
 
-            return Encoding.UTF8.GetString(buffer, 0, transmissionBytesCount);
+            string transmission = Encoding.UTF8.GetString(buffer, 0, transmissionBytesCount);
+
+            return transmission;
         }
 
-        public async Task<int> TransmitData(Socket handler, string message)
+        public async Task<ServerResponse?> ReceiveServerTransmission()
         {
-            byte[] messageBytes = Encoding.UTF8.GetBytes(message);
+            var buffer = new byte[2048];
 
-            return await handler.SendAsync(messageBytes);
+            int transmissionBytesCount = await _server.ReceiveAsync(buffer, SocketFlags.None);
+
+            string transmissionJson = Encoding.UTF8.GetString(buffer, 0, transmissionBytesCount);
+            var serverResponse = _jsonService.DeserialiseJson<ServerResponse>(transmissionJson);
+
+            return serverResponse;
+        }
+
+        public async Task<ClientTransmission?> ReceiveClientTransmission(Socket client)
+        {
+            var buffer = new byte[2048];
+
+            int transmissionBytesCount = await client.ReceiveAsync(buffer, SocketFlags.None);
+
+            string transmissionJson = Encoding.UTF8.GetString(buffer, 0, transmissionBytesCount);
+            var clientTransmission = _jsonService.DeserialiseJson<ClientTransmission>(transmissionJson);
+
+            return clientTransmission;
+        }
+
+        public async Task<int> ForwardServerResponse(ServerResponse serverResponse, Socket client)
+        {
+            string responseJson = _jsonService.SerialiseObject(serverResponse);
+
+            byte[] transmissionBytes = Encoding.UTF8.GetBytes(responseJson);
+
+            return await client.SendAsync(transmissionBytes);
+        }
+
+        public async Task<int> SendServerRequest(ServerRequest serverRequest)
+        {
+            byte[] transmissionBytes = Encoding.UTF8.GetBytes(_jsonService.SerialiseObject(serverRequest));
+
+            return await _server.SendAsync(transmissionBytes);
+        }
+
+        public async Task<int> SendServerRequest(Socket handler, string topic, object data, Guid? requestId = null)
+        {
+            var serverRequest = new ServerRequest(topic, data, requestId);
+
+            byte[] transmissionBytes = Encoding.UTF8.GetBytes(_jsonService.SerialiseObject(serverRequest));
+
+            return await handler.SendAsync(transmissionBytes);
         }
     }
 }
