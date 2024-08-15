@@ -1,6 +1,17 @@
-﻿using System.Net;
+﻿using Orion.Client;
+using Orion.Client.TopicHandlers;
+using Orion.Configuration;
+using Orion.JsonParser;
+using System.Net;
 using System.Net.Sockets;
 using System.Text;
+
+var configurationService = new ConfigurationService();
+
+configurationService.AddInstanceOfType<IJsonService>(new JsonService());
+
+configurationService.AddInstanceOfType<ITopicHandlerService>(new TopicHandlerService(configurationService));
+
 
 Console.WriteLine("CLIENT");
 
@@ -15,20 +26,10 @@ int routerPort = Convert.ToInt32(Console.ReadLine());
 
 var routerIPEndPoint = new IPEndPoint(routerIPAddress, routerPort);
 
-using (Socket client = new Socket(routerIPEndPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp))
-{
-    await client.ConnectAsync(routerIPEndPoint);
+var clientService = new ClientService(routerIPEndPoint,
+    configurationService.GetInstanceOfType<IJsonService>(),
+    configurationService.GetInstanceOfType<ITopicHandlerService>());
 
-    await client.SendAsync(Encoding.UTF8.GetBytes("CLIENT"), SocketFlags.None);
-
-    Console.WriteLine("Client connected");
-    Console.WriteLine("Username: ");
-
-    var username = Console.ReadLine();
-
-    var usernameBytes = Encoding.UTF8.GetBytes(username);
-
-    await client.SendAsync(usernameBytes);
-}
+clientService.Run();
 
 Console.ReadLine();

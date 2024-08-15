@@ -49,13 +49,17 @@ namespace Orion.Server
                         continue;
 
                     var response = HandleRequest(request.Result);
+
+                    TransmitData(response.Result);
+
+                    Console.WriteLine($"Transmitted response to request of topic: {request.Result.Topic}");
                 }
             });
 
             Console.ReadLine();
         }
 
-        private async Task<int> TransmitData<T>(T data)
+        private async Task<int> TransmitData(object data)
         {
             string transmissionJson = _jsonService.SerialiseObject(data);
 
@@ -73,7 +77,7 @@ namespace Orion.Server
 
             ServerResult result = await handler.Invoke(request.Data);
 
-            return new ServerResponse(request.Topic, result, request.RequestId);
+            return new ServerResponse(request.Topic + "Result", result, request.RequestId);
         }
 
         private async Task<ServerRequest?> ReceiveRequest()

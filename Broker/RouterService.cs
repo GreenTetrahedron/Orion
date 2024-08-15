@@ -115,6 +115,16 @@ namespace Orion.Router
 
                 if (broadcastList == null || broadcastList.Length == 0)
                 {
+                    if (serverResponse.RequestId == null)
+                        continue;
+
+                    bool wasRequested = _requestService.TryGetRequester(serverResponse.RequestId.Value, out var client);
+
+                    if (wasRequested)
+                    {
+                        await ForwardServerResponse(serverResponse, client);
+                    }
+
                     continue;
                 }
 

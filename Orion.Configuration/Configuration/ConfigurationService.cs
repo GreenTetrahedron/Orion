@@ -1,4 +1,4 @@
-﻿namespace Orion.Server.Configuration
+﻿namespace Orion.Configuration
 {
     public class ConfigurationService : IConfigurationService
     {

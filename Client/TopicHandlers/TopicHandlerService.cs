@@ -1,17 +1,17 @@
 ﻿using Orion.Models.ServerTransmissions.Results;
-using Orion.Server.Attributes;
+using Orion.Client.Attributes;
 using Orion.Configuration;
 using System.Reflection;
 
-namespace Orion.Server.TopicHandlers
+namespace Orion.Client.TopicHandlers
 {
     public class TopicHandlerService : ITopicHandlerService
     {
-        private readonly IDictionary<string, Func<object, Task<ServerResult>>> topicToHandler;
+        private readonly IDictionary<string, Action<object>> topicToHandler;
 
         public TopicHandlerService(IConfigurationService configurationService)
         {
-            topicToHandler = new Dictionary<string, Func<object, Task<ServerResult>>>();
+            topicToHandler = new Dictionary<string, Action<object>>();
 
 
             var controllers =
@@ -44,13 +44,13 @@ namespace Orion.Server.TopicHandlers
                 {
                     topicToHandler.Add(handler.GetCustomAttribute<HandlerAttribute>().Topic, async (x) =>
                     {
-                        return await ((Task<ServerResult>)handler.Invoke(controllerInstance, new object[1] { x }));
+                        await (Task)handler.Invoke(controllerInstance, new object[1] { x });
                     });
                 }
             }
         }
 
-        public Func<object, Task<ServerResult>>? GetTopicHandler(string topic)
+        public Action<object>? GetTopicHandler(string topic)
         {
             topicToHandler.TryGetValue(topic, out var handler);
 

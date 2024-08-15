@@ -1,6 +1,6 @@
 ﻿using Orion.Models.ServerTransmissions;
 using Orion.Router.Attributes;
-using Orion.Router.Configuration;
+using Orion.Configuration;
 using System.Reflection;
 
 namespace Orion.Router.TopicInterceptors

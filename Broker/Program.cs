@@ -1,6 +1,6 @@
 ﻿using Orion.JsonParser;
 using Orion.Router;
-using Orion.Router.Configuration;
+using Orion.Configuration;
 using Orion.Router.Connections;
 using Orion.Router.Requests;
 using Orion.Router.TopicInterceptors;
@@ -9,8 +9,10 @@ using System.Net;
 var configurationService = new ConfigurationService();
 
 configurationService.AddInstanceOfType<IJsonService>(new JsonService());
+
 configurationService.AddInstanceOfType<IConnectionService>(new ConnectionService());
 configurationService.AddInstanceOfType<IRequestService>(new RequestService());
+
 configurationService.AddInstanceOfType<ITopicInterceptorService>(new TopicInterceptorService(configurationService));
 
 Console.WriteLine("IP address: ");
