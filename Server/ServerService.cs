@@ -35,24 +35,25 @@ namespace Orion.Server
         {
             Console.WriteLine("Server running...");
 
-            _router.ConnectAsync(_routerIpEndpoint);
+            await _router.ConnectAsync(_routerIpEndpoint);
 
             await TransmitData(IDENTIFIER);
 
-            Task.Run(() =>
+            Task.Run(async () =>
             {
                 while (true)
                 {
-                    var request = ReceiveRequest();
+                    var request = await ReceiveRequest();
+                    Console.WriteLine($"New request of topic: {request.Topic}");
 
-                    if (request.Result == null)
+                    if (request == null)
                         continue;
 
-                    var response = HandleRequest(request.Result);
+                    var response = await HandleRequest(request);
 
-                    TransmitData(response.Result);
+                    await TransmitData(response);
 
-                    Console.WriteLine($"Transmitted response to request of topic: {request.Result.Topic}");
+                    Console.WriteLine($"Transmitted response to request of topic: {request.Topic}");
                 }
             });
 

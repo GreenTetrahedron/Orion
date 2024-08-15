@@ -6,7 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <BaseOutputPath>C:\__Kabushak\_Programming\_Applications\Orion\Orion\Client\bin</BaseOutputPath>
-    <AssemblyName>Client</AssemblyName>
+    <AssemblyName>Orion.Client</AssemblyName>
   </PropertyGroup>
 
 </Project>

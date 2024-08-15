@@ -15,12 +15,15 @@ configurationService.AddInstanceOfType<IRequestService>(new RequestService());
 
 configurationService.AddInstanceOfType<ITopicInterceptorService>(new TopicInterceptorService(configurationService));
 
-Console.WriteLine("IP address: ");
-IPAddress ipAddress = IPAddress.Parse(Console.ReadLine());
+Console.ReadLine();
 
-Console.WriteLine("Port: ");
-int port = Convert.ToInt32(Console.ReadLine());
+//Console.WriteLine("Router IP address: ");
+IPAddress ipAddress = IPAddress.Parse("192.168.0.26");
 
+//Console.WriteLine("Router port: ");
+int port = Convert.ToInt32(50000);
+
+Console.WriteLine($"On IP address: {ipAddress} and port: {port}");
 
 var routerService = new RouterService(new IPEndPoint(ipAddress, port),
     configurationService.GetInstanceOfType<ITopicInterceptorService>(),

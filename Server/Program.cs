@@ -19,16 +19,19 @@ configurationService.AddInstanceOfType<IMessageRepository>(new MessageRepository
 
 configurationService.AddInstanceOfType<ITopicHandlerService>(new TopicHandlerService(configurationService));
 
+Console.ReadLine();
 Console.WriteLine("SERVER");
 
 var hostName = Dns.GetHostName();
 Console.WriteLine($"On host: {hostName}");
 
-Console.WriteLine("Router IP address: ");
-IPAddress routerIPAddress = IPAddress.Parse(Console.ReadLine());
+//Console.WriteLine("Router IP address: ");
+IPAddress routerIPAddress = IPAddress.Parse("192.168.0.26");
 
-Console.WriteLine("Router port: ");
-int routerPort = Convert.ToInt32(Console.ReadLine());
+//Console.WriteLine("Router port: ");
+int routerPort = Convert.ToInt32(50000);
+
+Console.WriteLine($"On IP address: {routerIPAddress} and port: {routerPort}");
 
 var routerIPEndPoint = new IPEndPoint(routerIPAddress, routerPort);
 
@@ -37,3 +40,5 @@ var serverService = new ServerService(routerIPEndPoint,
     configurationService.GetInstanceOfType<ITopicHandlerService>());
 
 serverService.Run();
+
+Console.ReadLine();
