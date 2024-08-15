@@ -52,7 +52,7 @@ namespace Orion.Server.TopicHandlers
                 {
                     topicToHandler.Add(handler.GetCustomAttribute<HandlerAttribute>().Topic, async (x) =>
                     {
-                        return (ServerResult)handler.Invoke(controllerInstance, new object[1] { x });
+                        return await ((Task<ServerResult>)handler.Invoke(controllerInstance, new object[1] { x }));
                     });
                 }
             }
