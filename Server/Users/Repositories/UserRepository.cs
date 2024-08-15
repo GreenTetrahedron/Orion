@@ -27,7 +27,7 @@ namespace Orion.Server.Users.Repositories
 
             return (user == null)
                 ? ServerResultService.NewServerResult(OperationMessages.INVALID_CREDENTIALS)
-                : ServerResultService.NewServerResult(OperationMessages.VALID_CREDENTIALS, user);
+                : ServerResultService.NewServerResult(OperationMessages.VALID_CREDENTIALS, user.UserId, user);
         }
 
         public async Task<User?> AddUser(string username)
