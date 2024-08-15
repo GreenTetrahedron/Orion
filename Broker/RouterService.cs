@@ -66,7 +66,7 @@ namespace Orion.Router
         {
             Console.WriteLine("Handling new connection...");
 
-            string message = await ReceiveTransmission(handler);
+            string message = _jsonService.DeserialiseJson<string>(await ReceiveTransmission(handler));
 
             switch (message)
             {
@@ -134,7 +134,7 @@ namespace Orion.Router
         {
             var buffer = new byte[2048];
 
-            int transmissionBytesCount = await _server.ReceiveAsync(buffer, SocketFlags.None);
+            int transmissionBytesCount = await handler.ReceiveAsync(buffer, SocketFlags.None);
 
             string transmission = Encoding.UTF8.GetString(buffer, 0, transmissionBytesCount);
 

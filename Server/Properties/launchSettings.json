@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "WSL": {
+      "commandName": "WSL2",
+      "distributionName": ""
+    },
+    "Orion.Server": {
+      "commandName": "Project"
+    }
+  }
+}

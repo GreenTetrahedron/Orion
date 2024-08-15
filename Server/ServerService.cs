@@ -18,6 +18,8 @@ namespace Orion.Server
 
         private Socket _router;
 
+        private const string IDENTIFIER = "SERVER";
+
 
         public ServerService(IPEndPoint routerIpEndpoint, IJsonService jsonService, ITopicHandlerService topicHandlerService)
         {
@@ -29,27 +31,37 @@ namespace Orion.Server
             _jsonService = jsonService;
         }
 
-        public void Run()
+        public async Task Run()
         {
             Console.WriteLine("Server running...");
 
             _router.ConnectAsync(_routerIpEndpoint);
+
+            await TransmitData(IDENTIFIER);
 
             Task.Run(() =>
             {
                 while (true)
                 {
                     var request = ReceiveRequest();
-                    request.RunSynchronously();
 
                     if (request.Result == null)
                         continue;
 
-                    HandleRequest(request.Result);
+                    var response = HandleRequest(request.Result);
                 }
             });
 
             Console.ReadLine();
+        }
+
+        private async Task<int> TransmitData<T>(T data)
+        {
+            string transmissionJson = _jsonService.SerialiseObject(data);
+
+            var transmissionBytes = Encoding.UTF8.GetBytes(transmissionJson);
+
+            return await _router.SendAsync(transmissionBytes);
         }
 
         private async Task<ServerResponse?> HandleRequest(ServerRequest request)
