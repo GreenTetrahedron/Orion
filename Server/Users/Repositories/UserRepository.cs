@@ -1,9 +1,6 @@
 ﻿using Orion.Models.ServerTransmissions.Results;
 using Orion.Server.DataLayer;
-using Orion.Server.Messages;
 using Orion.Server.ServerResults;
-using Orion.Server.Users;
-using System.Linq;
 
 namespace Orion.Server.Users.Repositories
 {
@@ -32,7 +29,8 @@ namespace Orion.Server.Users.Repositories
 
         public async Task<User?> AddUser(string username)
         {
-            var user = new User() { 
+            var user = new User()
+            {
                 UserId = Guid.NewGuid(),
                 Username = username
             };

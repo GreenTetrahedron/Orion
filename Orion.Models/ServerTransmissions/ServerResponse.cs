@@ -1,6 +1,4 @@
 ﻿using Orion.Models.ServerTransmissions.Results;
-using System;
-using System.Collections.Generic;
 
 namespace Orion.Models.ServerTransmissions
 {

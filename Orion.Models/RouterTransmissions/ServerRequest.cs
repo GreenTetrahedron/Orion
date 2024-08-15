@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Orion.Models.RouterTransmissions
+﻿namespace Orion.Models.RouterTransmissions
 {
     public class ServerRequest
     {

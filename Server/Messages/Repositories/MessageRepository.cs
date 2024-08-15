@@ -1,5 +1,4 @@
 ﻿using Orion.Server.DataLayer;
-using Orion.Server.Messages.Repositories;
 
 namespace Orion.Server.Messages.Repositories
 {
@@ -14,7 +13,8 @@ namespace Orion.Server.Messages.Repositories
 
         public async Task<Message?> AddMessage(Guid senderId, string content)
         {
-            var message = new Message() { 
+            var message = new Message()
+            {
                 MessageId = Guid.NewGuid(),
                 Content = content,
                 SenderId = senderId

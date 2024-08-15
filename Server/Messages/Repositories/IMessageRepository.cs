@@ -1,6 +1,4 @@
-﻿using Orion.Server.Messages;
-
-namespace Orion.Server.Messages.Repositories
+﻿namespace Orion.Server.Messages.Repositories
 {
     public interface IMessageRepository
     {

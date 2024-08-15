@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Orion.Router.Configuration
+﻿namespace Orion.Router.Configuration
 {
     public class ConfigurationService : IConfigurationService
     {

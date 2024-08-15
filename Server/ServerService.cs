@@ -3,7 +3,6 @@ using Orion.Models.RouterTransmissions;
 using Orion.Models.ServerTransmissions;
 using Orion.Models.ServerTransmissions.Results;
 using Orion.Server.TopicHandlers;
-using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -14,7 +13,7 @@ namespace Orion.Server
     {
         private readonly IJsonService _jsonService;
         private readonly ITopicHandlerService _topicHandlerService;
-        
+
         private readonly IPEndPoint _routerIpEndpoint;
 
         private Socket _router;
@@ -38,7 +37,7 @@ namespace Orion.Server
 
             Task.Run(() =>
             {
-                while(true)
+                while (true)
                 {
                     var request = ReceiveRequest();
                     request.RunSynchronously();

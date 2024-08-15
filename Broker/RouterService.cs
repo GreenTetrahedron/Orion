@@ -5,15 +5,9 @@ using Orion.Models.ServerTransmissions;
 using Orion.Router.Connections;
 using Orion.Router.Requests;
 using Orion.Router.TopicInterceptors;
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Orion.Router
 {
@@ -100,7 +94,7 @@ namespace Orion.Router
 
             SendServerRequest(_server, "AuthenticateUser", clientTransmission.Data, requestId);
         }
-        
+
         public async Task ServerConnection(Socket serverHandler)
         {
             _server = serverHandler;
@@ -123,8 +117,8 @@ namespace Orion.Router
                 {
                     continue;
                 }
-             
-                foreach(var userId in broadcastList)
+
+                foreach (var userId in broadcastList)
                 {
                     bool isConnected = _connectionService.TryGetConnectionHandler(userId, out var client);
 

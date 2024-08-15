@@ -3,11 +3,6 @@ using Orion.Models.ServerTransmissions.Results;
 using Orion.Router.Attributes;
 using Orion.Router.Connections;
 using Orion.Router.Requests;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Orion.Router.User.Controllers
 {

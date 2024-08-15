@@ -1,5 +1,4 @@
 ﻿using Orion.Models.ServerTransmissions.Results;
-using Orion.Server.Users;
 
 namespace Orion.Server.Users.Repositories
 {
