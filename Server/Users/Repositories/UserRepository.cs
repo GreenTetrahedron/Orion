@@ -1,26 +1,25 @@
 ﻿using Orion.Models.ServerTransmissions.Results;
 using Orion.Server.DataLayer;
+using Orion.Server.DataLayer.Entities;
 using Orion.Server.ServerResults;
 
 namespace Orion.Server.Users.Repositories
 {
     public class UserRepository : IUserRepository
     {
-        private readonly IDataLayer _dataLayer;
+        private readonly Database _database;
 
-        public UserRepository(IDataLayer dataLayer)
+        public UserRepository(Database database)
         {
-            _dataLayer = dataLayer;
+            _database = database;
         }
 
         public async Task<ServerResult?> AuthenticateUser(string username)
         {
-            var users = await _dataLayer.GetAllUsers();
-
-            var user = users?
-                .Select(x => x)
-                .Where(x => x.Username == username)
-                .SingleOrDefault();
+            var user = (await _database.UserEntity.GetAllRecords())
+                        .Select(x => x)
+                        .Where(x => x.Username == username)
+                        .SingleOrDefault();
 
             return (user == null)
                 ? ServerResultService.NewServerResult(OperationMessages.INVALID_CREDENTIALS)
@@ -35,14 +34,14 @@ namespace Orion.Server.Users.Repositories
                 Username = username
             };
 
-            await _dataLayer.AddUser(user);
+            await _database.UserEntity.AddRecord(user.UserId, user);
 
             return user;
         }
 
         public async Task<User?> GetUser(Guid userId)
         {
-            return await _dataLayer.GetUser(userId);
+            return await _database.UserEntity.GetRecordById(userId);
         }
     }
 }

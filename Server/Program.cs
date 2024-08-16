@@ -13,9 +13,9 @@ var configurationService = new ConfigurationService();
 
 configurationService.AddInstanceOfType<IJsonService>(new JsonService());
 
-configurationService.AddInstanceOfType<IDataLayer>(new DataLayer());
-configurationService.AddInstanceOfType<IUserRepository>(new UserRepository(configurationService.GetInstanceOfType<IDataLayer>()));
-configurationService.AddInstanceOfType<IMessageRepository>(new MessageRepository(configurationService.GetInstanceOfType<IDataLayer>()));
+configurationService.AddInstanceOfType<Database>(new Database());
+configurationService.AddInstanceOfType<IUserRepository>(new UserRepository(configurationService.GetInstanceOfType<Database>()));
+configurationService.AddInstanceOfType<IMessageRepository>(new MessageRepository(configurationService.GetInstanceOfType<Database>()));
 
 configurationService.AddInstanceOfType<ITopicHandlerService>(new TopicHandlerService(configurationService));
 

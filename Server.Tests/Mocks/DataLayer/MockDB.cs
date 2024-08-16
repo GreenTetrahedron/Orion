@@ -1,48 +1,21 @@
 ﻿using Orion.Server.DataLayer;
+using Orion.Server.DataLayer.Entities;
 using Orion.Server.Messages;
 using Orion.Server.Users;
+using System.Diagnostics;
 
 namespace Orion.Server.Tests.Mocks.DataLayer
 {
-    public class MockDB : IDataLayer
+    class MockDB : Database
     {
-        private Dictionary<Guid, Message> messages;
-        private Dictionary<Guid, User> users;
+        public IEntity<User> UserEntity { get; set; }
+        public IEntity<Message> MessageEntity { get; set; }
 
         public MockDB()
         {
-            messages = new Dictionary<Guid, Message>();
-            users = new Dictionary<Guid, User>();
-        }
+            UserEntity = new MockEntity<User>();
 
-        public async Task<bool?> AddMessage(Message message)
-        {
-            messages.Add(message.MessageId, message);
-            return null;
-        }
-
-        public async Task<bool?> AddUser(User user)
-        {
-            users.Add(user.UserId, user);
-            return null;
-        }
-
-        public async Task<IList<User>?> GetAllUsers()
-        {
-            return users.Values.ToList();
-        }
-
-        public async Task<Message?> GetMessage(Guid messageId)
-        {
-            messages.TryGetValue(messageId, out var message);
-
-            return message;
-        }
-        public async Task<User?> GetUser(Guid userId)
-        {
-            users.TryGetValue(userId, out var user);
-
-            return user;
+            MessageEntity = new MockEntity<Message>();
         }
     }
 }

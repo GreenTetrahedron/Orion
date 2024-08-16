@@ -1,14 +1,15 @@
 ﻿using Orion.Server.DataLayer;
+using Orion.Server.DataLayer.Entities;
 
 namespace Orion.Server.Messages.Repositories
 {
     public class MessageRepository : IMessageRepository
     {
-        private readonly IDataLayer _dataLayer;
+        private readonly Database _database;
 
-        public MessageRepository(IDataLayer dataLayer)
+        public MessageRepository(Database database)
         {
-            _dataLayer = dataLayer;
+            _database = database;
         }
 
         public async Task<Message?> AddMessage(Guid senderId, string content)
@@ -20,14 +21,14 @@ namespace Orion.Server.Messages.Repositories
                 SenderId = senderId
             };
 
-            await _dataLayer.AddMessage(message);
+            bool wasSuccessful = await _database.MessageEntity.AddRecord(message.MessageId, message);
 
-            return message;
+            return wasSuccessful ? message : null;
         }
 
         public async Task<Message?> GetMessage(Guid messageId)
         {
-            return await _dataLayer.GetMessage(messageId);
+            return await _database.MessageEntity.GetRecordById(messageId);
         }
     }
 }
