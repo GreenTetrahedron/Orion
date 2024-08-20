@@ -13,6 +13,12 @@ namespace Orion.Server.Tests.Mocks.Users.Repositories
             methodCallStack = new Stack<string>();
         }
 
+        public async Task<ServerResult?> AddDirectCommunication(Guid senderId, Guid recipientId)
+        {
+            methodCallStack.Push($"AddDirectCommunication: {senderId}, {recipientId}");
+            return null;
+        }
+
         public async Task<User?> AddUser(string username)
         {
             methodCallStack.Push($"AddUser: {username}");

@@ -1,4 +1,5 @@
 ﻿using Orion.Server.DataLayer.Entities;
+using Orion.Server.DirectCommunications;
 using Orion.Server.Messages;
 using Orion.Server.Users;
 using System;
@@ -13,12 +14,18 @@ namespace Orion.Server.DataLayer
     {
         public IEntity<User> UserEntity { get; set; }
         public IEntity<Message> MessageEntity { get; set; }
+        public IEntity<DirectCommunication> DirectCommunicationEntity { get; set; }
+        public IEntity<DirectMessage> DirectMessageEntity { get; set; }
 
         public Database()
         {
             UserEntity = new Entity<User>();
 
             MessageEntity = new Entity<Message>();
+
+            DirectCommunicationEntity = new Entity<DirectCommunication>();
+
+            DirectMessageEntity = new Entity<DirectMessage>();
         }
     }
 }
