@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Orion.Client.User
+namespace Orion.Models.ServerTransmissions.Results
 {
-    public interface IUserController
+    public enum Statuses
     {
-
+        SUCCEEDED,
+        FAILED
     }
 }

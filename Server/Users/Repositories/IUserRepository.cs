@@ -1,11 +1,12 @@
-﻿using Orion.Models.ServerTransmissions.Results;
+﻿using Orion.Models.ClientTransmissions;
+using Orion.Models.ServerTransmissions.Results;
 using Orion.Server.DirectCommunications;
 
 namespace Orion.Server.Users.Repositories
 {
     public interface IUserRepository
     {
-        public Task<ServerResult?> AuthenticateUser(string username);
+        public Task<ServerResult<AuthenticationMessages>?> AuthenticateUser(Credentials credentials);
         
         public Task<User?> AddUser(string username);
         

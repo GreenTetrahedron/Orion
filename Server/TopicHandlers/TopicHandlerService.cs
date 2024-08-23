@@ -2,6 +2,7 @@
 using Orion.Server.Attributes;
 using Orion.Configuration;
 using System.Reflection;
+using Orion.Models.ClientTransmissions;
 
 namespace Orion.Server.TopicHandlers
 {
@@ -15,8 +16,7 @@ namespace Orion.Server.TopicHandlers
 
 
             var controllers =
-                from a in AppDomain.CurrentDomain.GetAssemblies()
-                from t in a.GetTypes()
+                from t in Assembly.GetCallingAssembly().GetTypes()
                 let attributes = t.GetCustomAttributes(typeof(ControllerAttribute), false)
                 where attributes != null && attributes.Length > 0
                 select t;
@@ -44,7 +44,9 @@ namespace Orion.Server.TopicHandlers
                 {
                     topicToHandler.Add(handler.GetCustomAttribute<HandlerAttribute>().Topic, async (x) =>
                     {
-                        return await ((Task<ServerResult>)handler.Invoke(controllerInstance, new object[1] { x }));
+                        Task handlerTask = (Task)handler.Invoke(controllerInstance, [Convert.ChangeType(x, handler.GetParameters()[0].ParameterType)]);
+                        await handlerTask.ConfigureAwait(false);
+                        return (ServerResult)((dynamic)handlerTask).Result;
                     });
                 }
             }
@@ -52,7 +54,10 @@ namespace Orion.Server.TopicHandlers
 
         public Func<object, Task<ServerResult>>? GetTopicHandler(string topic)
         {
-            topicToHandler.TryGetValue(topic, out var handler);
+            bool topicHadHandler = topicToHandler.TryGetValue(topic, out var handler);
+
+            if (!topicHadHandler)
+                throw new Exception($"No handler found for requested topic: {topic})");
 
             return handler;
         }

@@ -1,4 +1,5 @@
-﻿using Orion.Models.ServerTransmissions.Results;
+﻿using Orion.Models.ClientTransmissions;
+using Orion.Models.ServerTransmissions.Results;
 using Orion.Server.DataLayer;
 using Orion.Server.DataLayer.Entities;
 using Orion.Server.DirectCommunications;
@@ -15,16 +16,16 @@ namespace Orion.Server.Users.Repositories
             _database = database;
         }
 
-        public async Task<ServerResult?> AuthenticateUser(string username)
+        public async Task<ServerResult<AuthenticationMessages>?> AuthenticateUser(Credentials credentials)
         {
             var user = (await _database.UserEntity.GetAllRecords())
                         .Select(x => x)
-                        .Where(x => x.Username == username)
+                        .Where(x => x.Username == credentials.Username)
                         .SingleOrDefault();
 
             return (user == null)
-                ? ServerResultService.NewServerResult(OperationMessages.INVALID_CREDENTIALS)
-                : ServerResultService.NewServerResult(OperationMessages.VALID_CREDENTIALS, user.UserId, user);
+                ? ServerResultService.NewSuccessfulServerResult(AuthenticationMessages.INVALID_CREDENTIALS, "Invalid credentials given")
+                : ServerResultService.NewSuccessfulServerResult(AuthenticationMessages.VALID_CREDENTIALS, user.UserId, "Valid credentials", user);
         }
 
         public async Task<User?> AddUser(string username)
@@ -56,11 +57,11 @@ namespace Orion.Server.Users.Repositories
             bool wasSuccessful = await _database.DirectCommunicationEntity.AddRecord(directCommunication.DirectCommunicationId, directCommunication);
 
             return wasSuccessful
-                ? ServerResultService.NewServerResult(
-                    operationMessage: OperationMessages.DIRECT_COMMUNICATION_CREATION_SUCCEEDED,
+                ? ServerResultService.NewSuccessfulServerResult(
+                    operationMessageCode: OperationMessages.DIRECT_COMMUNICATION_CREATION_SUCCEEDED,
                     affectedUsers: [senderId, recipientId],
                     data: directCommunication)
-                : ServerResultService.NewServerResult(OperationMessages.DIRECT_COMMUNICATION_CREATION_FAILED, [senderId, recipientId]);
+                : ServerResultService.NewSuccessfulServerResult(OperationMessages.DIRECT_COMMUNICATION_CREATION_FAILED, "Creation of direct communication failed", [senderId, recipientId]);
         }
     }
 }

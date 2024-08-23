@@ -158,7 +158,7 @@ namespace Orion.Router
             int transmissionBytesCount = await _server.ReceiveAsync(buffer, SocketFlags.None);
 
             string transmissionJson = Encoding.UTF8.GetString(buffer, 0, transmissionBytesCount);
-            var serverResponse = _jsonService.DeserialiseJson<ServerResponse>(transmissionJson);
+            ServerResponse? serverResponse = (ServerResponse?)_jsonService.DeserialiseJson<object>(transmissionJson);
 
             return serverResponse;
         }
@@ -177,7 +177,7 @@ namespace Orion.Router
 
         public async Task<int> ForwardServerResponse(ServerResponse serverResponse, Socket client)
         {
-            string responseJson = _jsonService.SerialiseObject(serverResponse);
+            string responseJson = _jsonService.SerialiseObject(new ClientTransmission(serverResponse.Topic, serverResponse.ServerResult));
 
             byte[] transmissionBytes = Encoding.UTF8.GetBytes(responseJson);
 

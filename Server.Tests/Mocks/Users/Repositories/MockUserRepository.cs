@@ -1,4 +1,5 @@
-﻿using Orion.Models.ServerTransmissions.Results;
+﻿using Orion.Models.ClientTransmissions;
+using Orion.Models.ServerTransmissions.Results;
 using Orion.Server.Users;
 using Orion.Server.Users.Repositories;
 
@@ -25,9 +26,9 @@ namespace Orion.Server.Tests.Mocks.Users.Repositories
             return null;
         }
 
-        public async Task<ServerResult?> AuthenticateUser(string username)
+        public async Task<ServerResult<AuthenticationMessages>?> AuthenticateUser(Credentials credentials)
         {
-            methodCallStack.Push($"AuthenticateUser: {username}");
+            methodCallStack.Push($"AuthenticateUser: {credentials.Username}");
             return null;
         }
 

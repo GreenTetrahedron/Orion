@@ -1,3 +1,4 @@
+using Orion.Models.ClientTransmissions;
 using Orion.Models.ServerTransmissions.Results;
 using Orion.Server.DataLayer;
 using Orion.Server.DirectCommunications;
@@ -33,9 +34,11 @@ namespace Orion.Server.Tests.Users.Repositories
 
             await _mockDB.UserEntity.AddRecord(newUser.UserId, newUser);
 
-            ServerResult result = await _userRepository.AuthenticateUser(username);
+            var credentials = new Credentials() { Username = username };
 
-            Assert.That(result.OperationResult.OperationMessage == OperationMessages.VALID_CREDENTIALS);
+            ServerResult<AuthenticationMessages> result = await _userRepository.AuthenticateUser(credentials);
+
+            Assert.That(result.OperationInformation.OperationMessageCode == AuthenticationMessages.VALID_CREDENTIALS);
         }
 
         [Test]
@@ -45,10 +48,12 @@ namespace Orion.Server.Tests.Users.Repositories
         public async Task AuthenticateUser_ReturnsFalseForInvalidUsername(string username)
         {
             Assert.That((await _mockDB.UserEntity.GetAllRecords()).ToList().Count == 0, "Invalid test conditions");
+            
+            var credentials = new Credentials() { Username = username };
 
-            ServerResult result = await _userRepository.AuthenticateUser(username);
+            ServerResult<AuthenticationMessages> result = await _userRepository.AuthenticateUser(credentials);
 
-            Assert.That(result.OperationResult.OperationMessage == OperationMessages.INVALID_CREDENTIALS);
+            Assert.That(result.OperationInformation.OperationMessageCode == AuthenticationMessages.INVALID_CREDENTIALS);
         }
         [Test]
         public async Task AddUserAddsUserToDB()

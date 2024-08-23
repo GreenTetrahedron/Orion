@@ -44,7 +44,7 @@ namespace Orion.Client.TopicHandlers
                 {
                     topicToHandler.Add(handler.GetCustomAttribute<HandlerAttribute>().Topic, async (x) =>
                     {
-                        await (Task)handler.Invoke(controllerInstance, new object[1] { x });
+                        await (Task)handler.Invoke(controllerInstance, [x]);
                     });
                 }
             }

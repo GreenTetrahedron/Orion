@@ -21,7 +21,7 @@ namespace Orion.Router.User.Controllers
         [Interceptor("AuthenticateUserResult")]
         public async Task InitialiseClient(ServerResponse authenticationResponse)
         {
-            if (authenticationResponse.ServerResult.OperationResult.OperationMessage != OperationMessages.VALID_CREDENTIALS)
+            if (authenticationResponse.ServerResult.OperationInformation.OperationMessageCode != AuthenticationMessages.VALID_CREDENTIALS.ToString())
                 return;
 
             if (authenticationResponse.RequestId == null)

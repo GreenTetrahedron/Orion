@@ -1,10 +1,12 @@
 ﻿using Orion.JsonParser;
+using Orion.Models.ClientTransmissions;
 using Orion.Models.RouterTransmissions;
 using Orion.Models.ServerTransmissions;
 using Orion.Models.ServerTransmissions.Results;
 using Orion.Server.TopicHandlers;
 using System.Net;
 using System.Net.Sockets;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace Orion.Server
@@ -64,6 +66,12 @@ namespace Orion.Server
         {
             string transmissionJson = _jsonService.SerialiseObject(data);
 
+            try
+            {
+                object tryDeserialise = _jsonService.DeserialiseJson<ServerResponse>(transmissionJson).ServerResult.OperationInformation.OperationMessageCode;
+            }
+            catch { }
+
             var transmissionBytes = Encoding.UTF8.GetBytes(transmissionJson);
 
             return await _router.SendAsync(transmissionBytes);
@@ -77,7 +85,6 @@ namespace Orion.Server
                 throw new ApplicationException($"No handler found for topic: {request.Topic}");
 
             ServerResult result = await handler.Invoke(request.Data);
-
             return new ServerResponse(request.Topic + "Result", result, request.RequestId);
         }
 

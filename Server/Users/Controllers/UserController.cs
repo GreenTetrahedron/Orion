@@ -1,4 +1,5 @@
-﻿using Orion.Models.ServerTransmissions.Results;
+﻿using Orion.Models.ClientTransmissions;
+using Orion.Models.ServerTransmissions.Results;
 using Orion.Server.Attributes;
 using Orion.Server.Users.Repositories;
 
@@ -15,9 +16,9 @@ namespace Orion.Server.Users.Controllers
         }
 
         [Handler("AuthenticateUser")]
-        public async Task<ServerResult?> AuthenticateUser(string username)
+        public async Task<ServerResult<AuthenticationMessages>?> AuthenticateUser(Credentials credentials)
         {
-            return await _userRepository.AuthenticateUser(username);
+            return await _userRepository.AuthenticateUser(credentials);
         }
 
         [Handler("NewDirectMessage")]

@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Orion.Client.User
+namespace Orion.Models.ClientTransmissions
 {
-    
-    public class UserController
+    public class Credentials
     {
+        public string Username { get; set; }
     }
 }

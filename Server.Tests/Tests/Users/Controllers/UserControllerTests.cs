@@ -1,4 +1,5 @@
-﻿using Orion.Server.Tests.Mocks.Users.Repositories;
+﻿using Orion.Models.ClientTransmissions;
+using Orion.Server.Tests.Mocks.Users.Repositories;
 using Orion.Server.Users.Controllers;
 
 namespace Orion.Server.Tests.Users.Controllers
@@ -21,7 +22,9 @@ namespace Orion.Server.Tests.Users.Controllers
         [TestCase("Tim OB. Simon")]
         public async Task AuthenticateUser_CallsAuthenticateUserWithCorrectUsername(string username)
         {
-            await _userController.AuthenticateUser(username);
+            var credentials = new Credentials() { Username = username };
+
+            await _userController.AuthenticateUser(credentials);
 
             _userRepository.methodCallStack.TryPeek(out string lastMethodCall);
 
@@ -30,7 +33,7 @@ namespace Orion.Server.Tests.Users.Controllers
             var lastMethodCallSplit = lastMethodCall.Split(": ");
 
             Assert.That(lastMethodCallSplit[0] == "AuthenticateUser", "Wrong method called");
-            Assert.That(lastMethodCallSplit[1] == username, "Wrong parameter given");
+            Assert.That(lastMethodCallSplit[1] == credentials.Username, "Wrong parameter given");
         }
 
         [Test]

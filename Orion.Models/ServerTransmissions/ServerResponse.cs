@@ -6,11 +6,11 @@ namespace Orion.Models.ServerTransmissions
     {
         public Guid? RequestId { get; set; }
 
-        public ServerResult ServerResult { get; set; }
+        public ServerResult? ServerResult { get; set; }
 
         public string Topic { get; set; }
 
-        public ServerResponse(string topic, ServerResult serverResult = null, Guid? requestId = null)
+        public ServerResponse(string topic, ServerResult? serverResult = null, Guid? requestId = null)
         {
             Topic = topic;
             ServerResult = serverResult;
