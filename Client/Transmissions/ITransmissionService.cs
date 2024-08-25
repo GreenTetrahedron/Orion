@@ -1,4 +1,4 @@
-﻿using Orion.Client.Subscriptables;
+﻿using Orion.Client.Subscriptions;
 
 namespace Orion.Client.Transmissions
 {

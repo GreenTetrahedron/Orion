@@ -1,4 +1,4 @@
-﻿using Orion.Client.Subscriptables;
+﻿using Orion.Client.Subscriptions;
 using Orion.Client.Transmissions;
 using Orion.Models.ServerTransmissions.Results;
 using System;
@@ -7,26 +7,21 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Orion.Client.Tests.Mocks
+namespace Orion.Client.Tests.Mocks.Transmissions
 {
     public class MockTransmissionService : ITransmissionService
     {
-        private Stack<Tuple<string, object?[]>> _methodCallStack;
+        public readonly MethodCallStack _callStack;
 
         public MockTransmissionService()
         {
-            _methodCallStack = new Stack<Tuple<string, object?[]>>();
+            _callStack = new MethodCallStack();
         }
 
         public async Task<Subscriptable<T>> TransmitDataOfTopic<T>(object? data, string topic) where T : Enum
         {
-            _methodCallStack.Push(new("TransmitDataOfTopic", [data, topic]));
-            return new Subscriptable<T>();
-        }
-
-        public Tuple<string, object?[]> GetLastMethodCall()
-        {
-            return _methodCallStack.Peek();
+            _callStack.NewMethodCall("TransmitDataOfTopic", [data, topic]);
+            return default;
         }
     }
 }

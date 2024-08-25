@@ -15,11 +15,12 @@ namespace Orion.Server.Tests.TopicHandlers
 {
     public class TopicHandlerServiceTests
     {
-        private readonly ITopicHandlerService _topicHandlerService;
-        private readonly MockMethodCallStackService _mockMethodCallStackService;
-        private readonly IConfigurationService _configurationService;
+        private ITopicHandlerService _topicHandlerService;
+        private MockMethodCallStackService _mockMethodCallStackService;
+        private IConfigurationService _configurationService;
 
-        public TopicHandlerServiceTests()
+        [SetUp]
+        public void Setup()
         {
             _configurationService = new ConfigurationService();
             _configurationService.AddInstanceOfType<MockMethodCallStackService>(new MockMethodCallStackService());

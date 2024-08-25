@@ -1,4 +1,4 @@
-﻿using Orion.Client.Subscriptables;
+﻿using Orion.Client.Subscriptions;
 using Orion.Models.ClientTransmissions;
 using Orion.Models.ServerTransmissions.Results;
 

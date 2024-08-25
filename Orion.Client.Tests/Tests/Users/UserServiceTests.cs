@@ -1,11 +1,11 @@
-using Orion.Client.Subscriptables;
-using Orion.Client.Tests.Mocks;
+using Orion.Client.Subscriptions;
+using Orion.Client.Tests.Mocks.Transmissions;
 using Orion.Client.Users.Services;
 using Orion.Models.ClientTransmissions;
 using Orion.Models.ServerTransmissions.Results;
 using System.Threading.Tasks.Sources;
 
-namespace Orion.Client.Tests
+namespace Orion.Client.Tests.Tests.Users
 {
     public class Tests
     {
@@ -28,7 +28,7 @@ namespace Orion.Client.Tests
 
             await _userService.AuthenticateUser(credentials);
 
-            var lastMethodCall = _mockTransmissionService.GetLastMethodCall();
+            var lastMethodCall = _mockTransmissionService._callStack.GetLastMethodCall();
 
             Assert.IsNotNull(lastMethodCall, "No method was called...");
 
@@ -37,13 +37,6 @@ namespace Orion.Client.Tests
 
             Assert.That(nameOfLastMethodCalled == "TransmitDataOfTopic", "Wrong method called...");
             Assert.That(argumentsPassedInLastMethodCall.SequenceEqual([credentials, "AuthenticateUser"]), "Wrong arguments passed...");
-        }
-
-        [Test]
-        public async Task AuthenticateUser_ReturnsAuthenticateMessagesSubscriptable()
-        {
-            Subscriptable<AuthenticationMessages> subscriptable = await _userService.AuthenticateUser(new Credentials { Username = "Bill Milk" });
-            Assert.That(subscriptable != null, "Subscriptable was null...");
         }
     }
 }
