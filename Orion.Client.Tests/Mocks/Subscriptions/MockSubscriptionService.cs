@@ -20,5 +20,12 @@ namespace Orion.Client.Tests.Mocks.Subscriptions
 
             return default;
         }
+
+        public bool TryPublishDataForTopic(string topic, object? data)
+        {
+            callStack.NewMethodCall(nameof(this.TryPublishDataForTopic), [topic, data]);
+
+            return default;
+        }
     }
 }

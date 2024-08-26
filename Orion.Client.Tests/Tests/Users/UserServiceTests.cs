@@ -36,7 +36,7 @@ namespace Orion.Client.Tests.Tests.Users
             object?[] argumentsPassedInLastMethodCall = lastMethodCall.Item2;
 
             Assert.That(nameOfLastMethodCalled == "TransmitDataOfTopic", "Wrong method called...");
-            Assert.That(argumentsPassedInLastMethodCall.SequenceEqual([credentials, "AuthenticateUser"]), "Wrong arguments passed...");
+            Assert.That(argumentsPassedInLastMethodCall.SequenceEqual([credentials, "AuthenticateUserResult"]), "Wrong arguments passed...");
         }
     }
 }
