@@ -17,6 +17,9 @@
 
         public static implicit operator ServerResult(ServerResult<T> value) =>
             new ServerResult(value.OperationInformation, value.Data, value.AffectedUsers);
+
+        public static implicit operator ServerResult<T>(ServerResult value) =>
+            new ServerResult<T>(value.OperationInformation, value.Data, value.AffectedUsers);
     }
 
     public class ServerResult

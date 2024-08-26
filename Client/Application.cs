@@ -34,7 +34,7 @@ namespace Orion.Client
                 subscriptable.Subscribe(result =>
                 {
                     if (result.OperationInformation.OperationMessageCode == AuthenticationMessages.VALID_CREDENTIALS)
-                        Console.WriteLine(AuthenticationMessages.VALID_CREDENTIALS);
+                        Console.WriteLine(AuthenticationMessages.VALID_CREDENTIALS.ToString());
                     else
                         Console.WriteLine("Invalid credentials entered...");
                 });

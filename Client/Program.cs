@@ -41,7 +41,7 @@ var connectionService = new ConnectionService
     (
         routerIPEndPoint,
         configurationService.GetInstanceOfType<IJsonService>(),
-        configurationService.GetInstanceOfType<ITopicHandlerService>()
+        configurationService.GetInstanceOfType<ISubscriptionService>()
     );
 
 configurationService.AddInstanceOfType<IConnectionService>(connectionService);

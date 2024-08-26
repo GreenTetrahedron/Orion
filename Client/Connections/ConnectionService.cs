@@ -9,15 +9,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using System.Transactions;
 
 namespace Orion.Client.Connections
 {
     public class ConnectionService : IConnectionService
     {
         private readonly IJsonService _jsonService;
-        private readonly ITopicHandlerService _topicHandlerService;
+        private readonly ISubscriptionService _subscriptionService;
 
         private readonly IPEndPoint _routerIpEndpoint;
 
@@ -26,13 +28,13 @@ namespace Orion.Client.Connections
         private const string IDENTIFIER = "CLIENT";
 
 
-        public ConnectionService(IPEndPoint routerIpEndpoint, IJsonService jsonService, ITopicHandlerService topicHandlerService)
+        public ConnectionService(IPEndPoint routerIpEndpoint, IJsonService jsonService, ISubscriptionService subscriptionService)
         {
             _router = new Socket(routerIpEndpoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
 
             _routerIpEndpoint = routerIpEndpoint;
             _jsonService = jsonService;
-            _topicHandlerService = topicHandlerService;
+            _subscriptionService = subscriptionService;
         }
 
         public async Task Run()
@@ -68,12 +70,10 @@ namespace Orion.Client.Connections
 
         private async Task HandleTransmission(ClientTransmission transmission)
         {
-            var handler = _topicHandlerService.GetTopicHandler(transmission.Topic);
+            var topicHasSubscription = _subscriptionService.TryPublishDataForTopic(transmission.Topic, transmission.Data);
 
-            if (handler == null)
+            if (!topicHasSubscription)
                 throw new ApplicationException($"No handler found for topic: {transmission.Topic}");
-
-            handler.Invoke(transmission);
         }
 
         private async Task<ClientTransmission?> ReceiveTransmission()

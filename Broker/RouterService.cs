@@ -46,7 +46,7 @@ namespace Orion.Router
                 while (true)
                 {
                     var handler = listener.Accept();
-
+                    
                     if (!handler.Connected)
                     {
                         Console.WriteLine("Connection attempt failed...");

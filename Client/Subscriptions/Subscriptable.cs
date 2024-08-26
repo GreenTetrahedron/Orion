@@ -21,6 +21,14 @@ namespace Orion.Client.Subscriptions
             _subscriptions.Add(subscription);
         }
 
+        public void Publish(ServerResult<T> serverResult)
+        {
+            foreach(var subscription in _subscriptions)
+            {
+                subscription.Invoke(serverResult);
+            }
+        }
+
         public static implicit operator Subscriptable<T>(Subscriptable<Enum> value) =>
             new Subscriptable<T>(value._subscriptions.Select(x => (Action<ServerResult<T>>)x).ToList());
 
