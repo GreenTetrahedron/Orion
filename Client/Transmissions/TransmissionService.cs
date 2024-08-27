@@ -21,12 +21,25 @@ namespace Orion.Client.Transmissions
             _subscriptionService = subscriptionService;
         }
 
+        public async Task<ClientTransmission?> ReceiveData()
+        {
+            var messageBytes = await _connectionService.ReceiveMessage();
+
+            string transmissionJson = Encoding.UTF8.GetString(messageBytes.Data, 0, messageBytes.ReceivedBytes);
+            var transmission = _jsonService.DeserialiseJson<ClientTransmission?>(transmissionJson);
+
+            if (transmission == null)
+                return transmission;
+
+            _subscriptionService.TryPublishDataForTopic(transmission.Topic, transmission.Data);
+
+            return transmission;
+        }
+
         public async Task<Subscriptable<T>> TransmitDataOfTopic<T>(object? data, string topic) where T : Enum
         {
             var transmission = new ClientTransmission(topic, data);
-
             var transmissionJson = _jsonService.SerialiseObject(transmission);
-
             var transmissionBytes = Encoding.UTF8.GetBytes(transmissionJson);
 
             var subscriptable = _subscriptionService.GetOrCreateSubscriptableForTopic<T>(topic + "Result");
@@ -34,6 +47,14 @@ namespace Orion.Client.Transmissions
             _connectionService.SendMessage(transmissionBytes);
 
             return subscriptable;
+        }
+
+        public async Task InitialiseRouterConnection()
+        {
+            var initialiseMessage = _jsonService.SerialiseObject("CLIENT");
+            var initialiseMessageBytes = Encoding.UTF8.GetBytes(initialiseMessage);
+
+            await _connectionService.SendMessage(initialiseMessageBytes);
         }
     }
 }

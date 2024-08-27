@@ -11,8 +11,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 
-Console.WriteLine("Hello World!");
-
+Console.Write("Client ready...");
 Console.ReadLine();
 
 Console.WriteLine("CLIENT");
@@ -40,9 +39,7 @@ configurationService.AddInstanceOfType<ITopicHandlerService>(new TopicHandlerSer
 
 var connectionService = new ConnectionService
     (
-        routerIPEndPoint,
-        configurationService.GetInstanceOfType<IJsonService>(),
-        configurationService.GetInstanceOfType<ISubscriptionService>()
+        routerIPEndPoint
     );
 
 configurationService.AddInstanceOfType<IConnectionService>(connectionService);
@@ -61,12 +58,12 @@ configurationService.AddInstanceOfType<IDirectCommunicationService>(new DirectCo
         configurationService.GetInstanceOfType<ITransmissionService>()
     ));
 
-connectionService.Run();
-
 var application = new Application(
     configurationService.GetInstanceOfType<IUserService>(),
-    configurationService.GetInstanceOfType<IDirectCommunicationService>()
+    configurationService.GetInstanceOfType<IDirectCommunicationService>(),
+    configurationService.GetInstanceOfType<ITransmissionService>()
     );
+
 application.Run();
 
 Console.ReadLine();

@@ -1,4 +1,5 @@
 ﻿using Orion.Client.DirectCommunications.Services;
+using Orion.Client.Transmissions;
 using Orion.Client.Users.Services;
 using Orion.Models;
 using Orion.Models.ClientTransmissions;
@@ -20,17 +21,31 @@ namespace Orion.Client
         private readonly IUserService _userService;
         private readonly IDirectCommunicationService _directCommunicationService;
 
+        private readonly ITransmissionService _transmissionService;
+
         private User sender;
 
-        public Application(IUserService userService, IDirectCommunicationService directCommunicationService)
+        public Application(IUserService userService, IDirectCommunicationService directCommunicationService, ITransmissionService transmissionService)
         {
             _availableOptions = new Dictionary<int, Tuple<string, Action>>();
             _userService = userService;
             _directCommunicationService = directCommunicationService;
+
+            _transmissionService = transmissionService;
         }
 
         public async Task Run()
         {
+            _transmissionService.InitialiseRouterConnection();
+
+            Console.WriteLine("Connection initialised...");
+
+            Task.Run(async () =>
+            {
+                var transmission = await _transmissionService.ReceiveData();
+                Console.WriteLine($"New transmission of topic: {transmission.Topic}");
+            });
+
             _availableOptions[0] = new Tuple<string, Action>("Login", async () =>
             {
                 Console.WriteLine("Enter username: ");

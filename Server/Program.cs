@@ -21,6 +21,7 @@ configurationService.AddInstanceOfType<IMessageRepository>(new MessageRepository
 
 configurationService.AddInstanceOfType<ITopicHandlerService>(new TopicHandlerService(configurationService));
 
+Console.Write("Server ready...");
 Console.ReadLine();
 Console.WriteLine("SERVER");
 

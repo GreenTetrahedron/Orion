@@ -15,6 +15,7 @@ configurationService.AddInstanceOfType<IRequestService>(new RequestService());
 
 configurationService.AddInstanceOfType<ITopicInterceptorService>(new TopicInterceptorService(configurationService));
 
+Console.Write("Router ready...");
 Console.ReadLine();
 
 //Console.WriteLine("Router IP address: ");

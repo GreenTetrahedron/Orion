@@ -24,9 +24,9 @@ namespace Orion.Client.Tests.Tests.DirectCommunications
         public async Task NewDirectCommunication_CallsTransmitDataOfTopicWithCorrectGuidsAndTopic()
         {
             var senderId = Guid.NewGuid();
-            var receiverId = Guid.NewGuid();
+            var receiverName = "Receiver";
 
-            var directCommunication = new NewDirectCommunication { SenderId = senderId, ReceiverId = receiverId };
+            var directCommunication = new NewDirectCommunication { SenderId = senderId, ReceiverName = receiverName };
 
             await _directCommunicationService.NewDirectCommunication(directCommunication);
 

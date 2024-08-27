@@ -142,8 +142,8 @@ namespace Orion.Server.Tests.DirectCommunications.Repositories
         [Test]
         public async Task AddDirectCommunication_AddsDirectCommunicationToDBWithCorrectAttributes()
         {
-            var sender = new User() { UserId = Guid.NewGuid() };
-            var receiver = new User() { UserId = Guid.NewGuid() };
+            var sender = new User() { UserId = Guid.NewGuid(), Username = "User1" };
+            var receiver = new User() { UserId = Guid.NewGuid(), Username = "User2" };
 
             await _mockDB.UserEntity.AddRecord(sender.UserId, sender);
             await _mockDB.UserEntity.AddRecord(receiver.UserId, receiver);
@@ -163,8 +163,8 @@ namespace Orion.Server.Tests.DirectCommunications.Repositories
         [Test]
         public async Task AddDirectCommunication_UpdatesUserEntities()
         {
-            var sender = new User() { UserId = Guid.NewGuid() };
-            var receiver = new User() { UserId = Guid.NewGuid() };
+            var sender = new User() { UserId = Guid.NewGuid(), Username = "User1" };
+            var receiver = new User() { UserId = Guid.NewGuid(), Username = "User2" };
 
             await _mockDB.UserEntity.AddRecord(sender.UserId, sender);
             await _mockDB.UserEntity.AddRecord(receiver.UserId, receiver);
