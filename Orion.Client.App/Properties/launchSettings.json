@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Orion.Client.App (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "Orion.Client.App (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
