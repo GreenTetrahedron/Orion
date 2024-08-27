@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.10.35013.160
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orion.Client", "Client\Orion.Client.csproj", "{012867EC-FA97-4D47-9876-B86CECD6C016}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orion.Client.Console", "Client\Orion.Client.Console.csproj", "{012867EC-FA97-4D47-9876-B86CECD6C016}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orion.Server", "Server\Orion.Server.csproj", "{2C51C522-F5B0-4F16-966F-1485DA35A989}"
 EndProject
@@ -23,7 +23,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orion.Client.Tests", "Orion
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orion.JsonParser.Tests", "Orion.JsonParser.Tests\Orion.JsonParser.Tests.csproj", "{EBAE45D8-A301-42DA-90E7-557A867C30BE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orion.Client.App", "Orion.Client.App\Orion.Client.App.csproj", "{71726518-E2F1-4CFC-9D40-60A199D39877}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orion.Client.App", "Orion.Client.App\Orion.Client.App.csproj", "{71726518-E2F1-4CFC-9D40-60A199D39877}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orion.Client", "Orion.Client\Orion.Client.csproj", "{47C1B869-D2BF-4629-81ED-00435C5C9BBC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -220,6 +222,22 @@ Global
 		{71726518-E2F1-4CFC-9D40-60A199D39877}.Release|x86.ActiveCfg = Release|x86
 		{71726518-E2F1-4CFC-9D40-60A199D39877}.Release|x86.Build.0 = Release|x86
 		{71726518-E2F1-4CFC-9D40-60A199D39877}.Release|x86.Deploy.0 = Release|x86
+		{47C1B869-D2BF-4629-81ED-00435C5C9BBC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{47C1B869-D2BF-4629-81ED-00435C5C9BBC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{47C1B869-D2BF-4629-81ED-00435C5C9BBC}.Debug|ARM64.ActiveCfg = Debug|Any CPU
+		{47C1B869-D2BF-4629-81ED-00435C5C9BBC}.Debug|ARM64.Build.0 = Debug|Any CPU
+		{47C1B869-D2BF-4629-81ED-00435C5C9BBC}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{47C1B869-D2BF-4629-81ED-00435C5C9BBC}.Debug|x64.Build.0 = Debug|Any CPU
+		{47C1B869-D2BF-4629-81ED-00435C5C9BBC}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{47C1B869-D2BF-4629-81ED-00435C5C9BBC}.Debug|x86.Build.0 = Debug|Any CPU
+		{47C1B869-D2BF-4629-81ED-00435C5C9BBC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{47C1B869-D2BF-4629-81ED-00435C5C9BBC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{47C1B869-D2BF-4629-81ED-00435C5C9BBC}.Release|ARM64.ActiveCfg = Release|Any CPU
+		{47C1B869-D2BF-4629-81ED-00435C5C9BBC}.Release|ARM64.Build.0 = Release|Any CPU
+		{47C1B869-D2BF-4629-81ED-00435C5C9BBC}.Release|x64.ActiveCfg = Release|Any CPU
+		{47C1B869-D2BF-4629-81ED-00435C5C9BBC}.Release|x64.Build.0 = Release|Any CPU
+		{47C1B869-D2BF-4629-81ED-00435C5C9BBC}.Release|x86.ActiveCfg = Release|Any CPU
+		{47C1B869-D2BF-4629-81ED-00435C5C9BBC}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

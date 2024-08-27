@@ -58,7 +58,7 @@ configurationService.AddInstanceOfType<IDirectCommunicationService>(new DirectCo
         configurationService.GetInstanceOfType<ITransmissionService>()
     ));
 
-var application = new Application(
+var application = new TestApplication(
     configurationService.GetInstanceOfType<IUserService>(),
     configurationService.GetInstanceOfType<IDirectCommunicationService>(),
     configurationService.GetInstanceOfType<ITransmissionService>()

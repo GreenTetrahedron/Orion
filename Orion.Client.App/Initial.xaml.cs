@@ -6,8 +6,6 @@ using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using Orion.Client.Transmissions;
-using Orion.Client.Users.Services;
-using Orion.Configuration;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -23,13 +21,28 @@ using Windows.Foundation.Collections;
 namespace Orion.Client.App
 {
     /// <summary>
-    /// An empty window that can be used on its own or navigated to within a Frame.
+    /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
-    public sealed partial class MainWindow : Window
+    public sealed partial class Initial : Page
     {
-        public MainWindow()
+        public Initial()
         {
             this.InitializeComponent();
+        }
+
+        private void Work(object sender, RoutedEventArgs e)
+        {
+            App.Current.ConfigurationService.GetInstanceOfType<ITransmissionService>().InitialiseRouterConnection();
+
+            Task.Run(async () =>
+            {
+                while (true)
+                {
+                    App.Current.ConfigurationService.GetInstanceOfType<ITransmissionService>().ReceiveData();
+                }
+            });
+
+            Frame.Navigate(typeof(Login));
         }
     }
 }

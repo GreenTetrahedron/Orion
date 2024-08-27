@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace Orion.Client
 {
-    public class Application
+    public class TestApplication
     {
 
         private Dictionary<int, Tuple<string, Action>> _availableOptions;
@@ -25,7 +25,7 @@ namespace Orion.Client
 
         private User sender;
 
-        public Application(IUserService userService, IDirectCommunicationService directCommunicationService, ITransmissionService transmissionService)
+        public TestApplication(IUserService userService, IDirectCommunicationService directCommunicationService, ITransmissionService transmissionService)
         {
             _availableOptions = new Dictionary<int, Tuple<string, Action>>();
             _userService = userService;
