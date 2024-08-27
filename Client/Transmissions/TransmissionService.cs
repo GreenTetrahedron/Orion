@@ -3,6 +3,7 @@ using Orion.Client.Subscriptions;
 using Orion.Client.Subscriptions.Services;
 using Orion.JsonParser;
 using Orion.Models.ClientTransmissions;
+using System.ComponentModel.DataAnnotations;
 using System.Text;
 
 namespace Orion.Client.Transmissions
@@ -28,9 +29,11 @@ namespace Orion.Client.Transmissions
 
             var transmissionBytes = Encoding.UTF8.GetBytes(transmissionJson);
 
+            var subscriptable = _subscriptionService.GetOrCreateSubscriptableForTopic<T>(topic + "Result");
+
             _connectionService.SendMessage(transmissionBytes);
 
-            return _subscriptionService.GetOrCreateSubscriptableForTopic<T>(topic);
+            return subscriptable;
         }
     }
 }

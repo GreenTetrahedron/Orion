@@ -10,7 +10,7 @@ namespace Orion.Server.Tests.Mocks.DataLayer
 {
     public class MockEntity<T> : IEntity<T> where T : class
     {
-        private IDictionary<Guid, T> _idToRecord;
+        public IDictionary<Guid, T> _idToRecord;
 
         public MockEntity()
         {

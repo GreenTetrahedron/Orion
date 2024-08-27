@@ -20,11 +20,5 @@ namespace Orion.Server.Users.Controllers
         {
             return await _userRepository.AuthenticateUser(credentials);
         }
-
-        [Handler("NewDirectMessage")]
-        public async Task<ServerResult?> AddDirectCommunication(Guid senderId, Guid recipientId)
-        {
-            return await _userRepository.AddDirectCommunication(senderId, recipientId);
-        }
     }
 }

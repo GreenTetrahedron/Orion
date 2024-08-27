@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Orion.Server.DirectCommunications
+namespace Orion.Models
 {
     public class DirectCommunication
     {

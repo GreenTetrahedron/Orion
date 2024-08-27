@@ -68,7 +68,7 @@ namespace Orion.Server
 
             try
             {
-                object tryDeserialise = _jsonService.DeserialiseJson<ServerResponse>(transmissionJson).ServerResult.OperationInformation.OperationMessageCode;
+                var deserialiseAttemps = _jsonService.DeserialiseJson<ServerResponse?>(transmissionJson);
             }
             catch { }
 

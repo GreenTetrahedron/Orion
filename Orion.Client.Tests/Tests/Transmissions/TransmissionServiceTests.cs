@@ -82,7 +82,7 @@ namespace Orion.Client.Tests.Tests.Transmissions
             Assert.IsNotNull(methodName, "No method called...");
 
             Assert.That(methodName == "GetOrCreateSubscriptableForTopic", "Wrong method called");
-            Assert.That(arguments.SequenceEqual([topic]), "Wrong topic passed...");
+            Assert.That(arguments.SequenceEqual([topic + "Result"]), "Wrong topic passed...");
         }
     }
 }

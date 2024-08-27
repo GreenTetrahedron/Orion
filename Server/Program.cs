@@ -6,6 +6,7 @@ using Orion.Server.Messages.Repositories;
 using Orion.Server.TopicHandlers;
 using Orion.Server.Users.Repositories;
 using System.Net;
+using Orion.Server.DirectCommunications.Repositories;
 
 
 
@@ -15,6 +16,7 @@ configurationService.AddInstanceOfType<IJsonService>(new JsonService());
 
 configurationService.AddInstanceOfType<Database>(new Database());
 configurationService.AddInstanceOfType<IUserRepository>(new UserRepository(configurationService.GetInstanceOfType<Database>()));
+configurationService.AddInstanceOfType<IDirectCommunicationRepository>(new DirectCommunicationRepository(configurationService.GetInstanceOfType<Database>()));
 configurationService.AddInstanceOfType<IMessageRepository>(new MessageRepository(configurationService.GetInstanceOfType<Database>()));
 
 configurationService.AddInstanceOfType<ITopicHandlerService>(new TopicHandlerService(configurationService));

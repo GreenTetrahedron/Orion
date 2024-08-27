@@ -1,4 +1,4 @@
-﻿namespace Orion.Server.Users
+﻿namespace Orion.Models
 {
     public class User
     {

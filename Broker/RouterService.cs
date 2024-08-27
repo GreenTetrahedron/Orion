@@ -88,11 +88,14 @@ namespace Orion.Router
                 return;
             }
 
-            var clientTransmission = await ReceiveClientTransmission(handler);
+            while (true)
+            {
+                var clientTransmission = await ReceiveClientTransmission(handler);
 
-            var requestId = _requestService.AddRequest(handler);
+                var requestId = _requestService.AddRequest(handler);
 
-            SendServerRequest(_server, "AuthenticateUser", clientTransmission.Data, requestId);
+                SendServerRequest(_server, clientTransmission.Topic, clientTransmission.Data, requestId);
+            }
         }
 
         public async Task ServerConnection(Socket serverHandler)
@@ -158,7 +161,7 @@ namespace Orion.Router
             int transmissionBytesCount = await _server.ReceiveAsync(buffer, SocketFlags.None);
 
             string transmissionJson = Encoding.UTF8.GetString(buffer, 0, transmissionBytesCount);
-            ServerResponse? serverResponse = (ServerResponse?)_jsonService.DeserialiseJson<object>(transmissionJson);
+            ServerResponse? serverResponse = (ServerResponse?)_jsonService.DeserialiseJson<ServerResponse?>(transmissionJson);
 
             return serverResponse;
         }
@@ -171,6 +174,8 @@ namespace Orion.Router
 
             string transmissionJson = Encoding.UTF8.GetString(buffer, 0, transmissionBytesCount);
             var clientTransmission = _jsonService.DeserialiseJson<ClientTransmission>(transmissionJson);
+
+            Console.WriteLine($"New client transmission of topic: {clientTransmission.Topic}");
 
             return clientTransmission;
         }

@@ -1,6 +1,6 @@
-﻿using Orion.Models.ClientTransmissions;
+﻿using Orion.Models;
+using Orion.Models.ClientTransmissions;
 using Orion.Models.ServerTransmissions.Results;
-using Orion.Server.Users;
 using Orion.Server.Users.Repositories;
 
 namespace Orion.Server.Tests.Mocks.Users.Repositories

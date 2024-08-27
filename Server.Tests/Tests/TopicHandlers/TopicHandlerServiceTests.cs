@@ -16,16 +16,16 @@ namespace Orion.Server.Tests.TopicHandlers
     public class TopicHandlerServiceTests
     {
         private ITopicHandlerService _topicHandlerService;
-        private MockMethodCallStackService _mockMethodCallStackService;
+        private MethodCallStack callStack;
         private IConfigurationService _configurationService;
 
         [SetUp]
         public void Setup()
         {
             _configurationService = new ConfigurationService();
-            _configurationService.AddInstanceOfType<MockMethodCallStackService>(new MockMethodCallStackService());
+            _configurationService.AddInstanceOfType<MethodCallStack>(new MethodCallStack());
 
-            _mockMethodCallStackService = _configurationService.GetInstanceOfType<MockMethodCallStackService>();
+            callStack = _configurationService.GetInstanceOfType<MethodCallStack>();
 
             _topicHandlerService = new TopicHandlerService(_configurationService);
         }
@@ -38,16 +38,10 @@ namespace Orion.Server.Tests.TopicHandlers
         {
             ServerResult? result = await _topicHandlerService.GetTopicHandler("AuthenticateUser").Invoke(new Credentials() { Username = username });
 
-            bool aMethodWasCalled = _mockMethodCallStackService.MethodCallStack.TryPeek(out string lastMethodCall);
-
-            Assert.That(aMethodWasCalled, "No method called... ");
-
-            string[] lastMethodCallSplit = lastMethodCall.Split(": ");
-            string nameOfLastMethodCalled = lastMethodCallSplit[0];
-            string lastMethodCallArguments = lastMethodCallSplit[1];
+            callStack.GetLastMethodCall(out var nameOfLastMethodCalled, out var lastMethodCallArguments);
 
             Assert.That(nameOfLastMethodCalled == "AuthenticateUser", "Wrong method called... ");
-            Assert.That(lastMethodCallArguments == username, "Wrong arguments passed... ");
+            Assert.That(lastMethodCallArguments.Length == 1 && (lastMethodCallArguments[0] as Credentials).Username == username, "Wrong arguments passed... ");
         }
     }
 }

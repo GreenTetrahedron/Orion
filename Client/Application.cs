@@ -1,4 +1,6 @@
-﻿using Orion.Client.Users.Services;
+﻿using Orion.Client.DirectCommunications.Services;
+using Orion.Client.Users.Services;
+using Orion.Models;
 using Orion.Models.ClientTransmissions;
 using Orion.Models.ServerTransmissions.Results;
 using System;
@@ -16,11 +18,15 @@ namespace Orion.Client
         private Dictionary<int, Tuple<string, Action>> _availableOptions;
 
         private readonly IUserService _userService;
+        private readonly IDirectCommunicationService _directCommunicationService;
 
-        public Application(IUserService userService)
+        private User sender;
+
+        public Application(IUserService userService, IDirectCommunicationService directCommunicationService)
         {
             _availableOptions = new Dictionary<int, Tuple<string, Action>>();
             _userService = userService;
+            _directCommunicationService = directCommunicationService;
         }
 
         public async Task Run()
@@ -33,10 +39,32 @@ namespace Orion.Client
                 var subscriptable = await _userService.AuthenticateUser(new Credentials() { Username = username });
                 subscriptable.Subscribe(result =>
                 {
-                    if (result.OperationInformation.OperationMessageCode == AuthenticationMessages.VALID_CREDENTIALS)
-                        Console.WriteLine(AuthenticationMessages.VALID_CREDENTIALS.ToString());
-                    else
-                        Console.WriteLine("Invalid credentials entered...");
+                    Console.WriteLine(result.OperationInformation.OperationMessage);
+                    if (result.OperationInformation.OperationMessageCode != AuthenticationMessages.VALID_CREDENTIALS)
+                        return;
+
+                    sender = result.Data as User;
+
+                    _availableOptions.Add(2, new Tuple<string, Action>("NewDirectCommunication", async () =>
+                    {
+                        Console.WriteLine("Receiver Name: ");
+                        string name = Console.ReadLine();
+
+                        var directCommunication = new NewDirectCommunication()
+                        {
+                            SenderId = sender.UserId,
+                            ReceiverName = name
+                        };
+
+                        var subscriptable = await _directCommunicationService.NewDirectCommunication(directCommunication);
+                        subscriptable.Subscribe(result =>
+                        {
+                            if (result.OperationInformation.OperationMessageCode != DirectCommunicationMessages.DIRECT_COMMUNICATION_CREATION_SUCCEEDED)
+                                return;
+
+
+                        });
+                    }));
                 });
             });
 

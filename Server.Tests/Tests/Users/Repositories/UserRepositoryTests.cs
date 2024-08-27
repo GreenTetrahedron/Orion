@@ -1,9 +1,9 @@
+using Orion.Models;
 using Orion.Models.ClientTransmissions;
 using Orion.Models.ServerTransmissions.Results;
 using Orion.Server.DataLayer;
 using Orion.Server.DirectCommunications;
 using Orion.Server.Tests.Mocks.DataLayer;
-using Orion.Server.Users;
 using Orion.Server.Users.Repositories;
 
 namespace Orion.Server.Tests.Users.Repositories
@@ -47,6 +47,7 @@ namespace Orion.Server.Tests.Users.Repositories
         [TestCase("User212343441")]
         public async Task AuthenticateUser_ReturnsFalseForInvalidUsername(string username)
         {
+            (_mockDB.UserEntity as MockEntity<User>)._idToRecord = new Dictionary<Guid, User>();
             Assert.That((await _mockDB.UserEntity.GetAllRecords()).ToList().Count == 0, "Invalid test conditions");
             
             var credentials = new Credentials() { Username = username };
@@ -78,27 +79,6 @@ namespace Orion.Server.Tests.Users.Repositories
 
             User result = await _userRepository.GetUser(user.UserId);
             Assert.That(result?.Username == "User1", $"Username was: {result?.Username}");
-        }
-
-        [Test]
-        public async Task AddDirectCommunication_ReturnsValidDirectCommunication()
-        {
-            var senderId = Guid.NewGuid();
-            var receiverId = Guid.NewGuid();
-
-            ServerResult? result = await _userRepository.AddDirectCommunication(senderId, receiverId);
-
-            Assert.IsNotNull(result, "Result was null");
-
-            DirectCommunication? directCommunication = (DirectCommunication?)result.Data;
-
-            Assert.IsNotNull(directCommunication, "DirectCommunication was null");
-
-            DirectCommunication? storedDirectCommunication = await _mockDB.DirectCommunicationEntity.GetRecordById(directCommunication.DirectCommunicationId);
-
-            Assert.That(directCommunication.DirectCommunicationId == storedDirectCommunication.DirectCommunicationId
-                        && directCommunication.UserIds == storedDirectCommunication.UserIds,
-                        "Wrong DirectCommunication stored...");
         }
     }
 }

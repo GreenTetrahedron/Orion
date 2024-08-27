@@ -16,7 +16,7 @@ namespace Orion.Client.Users.Services
 
         public async Task<Subscriptable<AuthenticationMessages>> AuthenticateUser(Credentials credentials)
         {
-            return await _transmissionService.TransmitDataOfTopic<AuthenticationMessages>(credentials, "AuthenticateUserResult");
+            return await _transmissionService.TransmitDataOfTopic<AuthenticationMessages>(credentials, "AuthenticateUser");
         }
     }
 }

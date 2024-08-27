@@ -19,7 +19,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orion.JsonParser", "Orion.U
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orion.Configuration", "Orion.Configuration\Orion.Configuration.csproj", "{5D5CB08C-96FF-4310-A587-1B4F9E51B0CA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orion.Client.Tests", "Orion.Client.Tests\Orion.Client.Tests.csproj", "{467D6CCF-3596-4D8D-9A22-1F81F9626311}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orion.Client.Tests", "Orion.Client.Tests\Orion.Client.Tests.csproj", "{467D6CCF-3596-4D8D-9A22-1F81F9626311}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orion.JsonParser.Tests", "Orion.JsonParser.Tests\Orion.JsonParser.Tests.csproj", "{EBAE45D8-A301-42DA-90E7-557A867C30BE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -62,6 +64,10 @@ Global
 		{467D6CCF-3596-4D8D-9A22-1F81F9626311}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{467D6CCF-3596-4D8D-9A22-1F81F9626311}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{467D6CCF-3596-4D8D-9A22-1F81F9626311}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EBAE45D8-A301-42DA-90E7-557A867C30BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EBAE45D8-A301-42DA-90E7-557A867C30BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EBAE45D8-A301-42DA-90E7-557A867C30BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EBAE45D8-A301-42DA-90E7-557A867C30BE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

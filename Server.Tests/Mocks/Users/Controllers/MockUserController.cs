@@ -14,26 +14,18 @@ namespace Orion.Server.Tests.Mocks.Users.Controllers
     [Controller]
     public class MockUserController : IUserController
     {
-        private readonly MockMethodCallStackService _mockMethodCallStackService;
+        public MethodCallStack callStack;
 
-        public MockUserController(MockMethodCallStackService mockMethodCallStackService)
+        public MockUserController(MethodCallStack methodCallStack)
         {
-            _mockMethodCallStackService = mockMethodCallStackService;
+            callStack = methodCallStack;
         }
 
         [Handler("AuthenticateUser")]
         public async Task<ServerResult<AuthenticationMessages>?> AuthenticateUser(Credentials credentials)
         {
-            _mockMethodCallStackService.MethodCallStack.Push($"AuthenticateUser: {credentials.Username}");
-            return null;
+            callStack.NewMethodCall(nameof(this.AuthenticateUser), [credentials]);
+            return default;
         }
-
-        [Handler("NewDirectCommunication")]
-        public async Task<ServerResult?> AddDirectCommunication(Guid senderId, Guid recipientId)
-        {
-            _mockMethodCallStackService.MethodCallStack.Push($"AddDirectCommunication: {senderId}, {recipientId}");
-            return null;
-        }
-
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Orion.Client;
 using Orion.Client.Connections;
+using Orion.Client.DirectCommunications.Services;
 using Orion.Client.Subscriptions.Services;
 using Orion.Client.TopicHandlers;
 using Orion.Client.Transmissions;
@@ -56,10 +57,16 @@ configurationService.AddInstanceOfType<IUserService>(new UserService(
         configurationService.GetInstanceOfType<ITransmissionService>()
     ));
 
+configurationService.AddInstanceOfType<IDirectCommunicationService>(new DirectCommunicationService(
+        configurationService.GetInstanceOfType<ITransmissionService>()
+    ));
 
 connectionService.Run();
 
-var application = new Application(configurationService.GetInstanceOfType<IUserService>());
+var application = new Application(
+    configurationService.GetInstanceOfType<IUserService>(),
+    configurationService.GetInstanceOfType<IDirectCommunicationService>()
+    );
 application.Run();
 
 Console.ReadLine();
