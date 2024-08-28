@@ -6,6 +6,6 @@ namespace Orion.Client.DirectCommunications.Services
 {
     public interface IDirectCommunicationService
     {
-        public Task<Subscriptable<DirectCommunicationMessages>> NewDirectCommunication(NewDirectCommunication newDirectCommunication);
+        public Task<Subscriptable<DirectCommunicationMessages>> NewDirectCommunication(NewDirectCommunicationDTO newDirectCommunication);
     }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.UI.Xaml;
+﻿using Microsoft.UI.Dispatching;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Data;
@@ -6,6 +7,7 @@ using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using Microsoft.UI.Xaml.Shapes;
+using Orion.Client.App.Users.Login;
 using Orion.Client.Connections;
 using Orion.Client.DirectCommunications.Services;
 using Orion.Client.Subscriptions.Services;
@@ -14,6 +16,7 @@ using Orion.Client.Transmissions;
 using Orion.Client.Users.Services;
 using Orion.Configuration;
 using Orion.JsonParser;
+using Orion.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -39,6 +42,11 @@ namespace Orion.Client.App
         public new static App Current => (App)Application.Current;
 
         public IConfigurationService ConfigurationService;
+
+        public Frame ContentFrame;
+        public Frame NavbarFrame;
+
+        public User User;
 
         /// <summary>
         /// Initializes the singleton application object.  This is the first line of authored code
@@ -96,11 +104,26 @@ namespace Orion.Client.App
 
             ConfigurationService = configurationService;
 
+            var transmissionService = ConfigurationService.GetInstanceOfType<ITransmissionService>();
+
+            transmissionService.InitialiseRouterConnection();
+
+            DispatcherQueueTimer d = DispatcherQueue.GetForCurrentThread().CreateTimer();
+
+            d.Interval = TimeSpan.Zero;
+
+            d.Tick += (s, e) =>
+            {
+                transmissionService.ReceiveData();
+            };
+
+            d.Start();
+
             m_window = new MainWindow();
             var rootFrame = new Frame();
             rootFrame.NavigationFailed += OnNavigationFailed;
 
-            rootFrame.Navigate(typeof(Initial), args.Arguments);
+            rootFrame.Navigate(typeof(Login), args.Arguments);
 
             m_window.Content = rootFrame;
             m_window.Activate();

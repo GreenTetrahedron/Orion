@@ -21,7 +21,7 @@ namespace Orion.Server.DirectCommuncations.Controllers
         }
 
         [Handler("NewDirectCommunication")]
-        public async Task<ServerResult<DirectCommunicationMessages>?> AddDirectCommunication(NewDirectCommunication newDirectCommunication)
+        public async Task<ServerResult<DirectCommunicationMessages>?> AddDirectCommunication(NewDirectCommunicationDTO newDirectCommunication)
         {
             return await _directCommunicationRepository.AddDirectCommunication(newDirectCommunication);
         }

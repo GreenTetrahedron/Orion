@@ -121,7 +121,7 @@ namespace Orion.Server.Tests.DirectCommunications.Repositories
             await _mockDB.UserEntity.AddRecord(sender.UserId, sender);
             await _mockDB.UserEntity.AddRecord(receiver.UserId, receiver);
 
-            var newDirectCommunication = new NewDirectCommunication() {SenderId = sender.UserId, ReceiverName = receiver.Username};
+            var newDirectCommunication = new NewDirectCommunicationDTO() {SenderId = sender.UserId, ReceiverName = receiver.Username};
 
             ServerResult? result = await _directCommunicationRepository.AddDirectCommunication(newDirectCommunication);
 
@@ -148,7 +148,7 @@ namespace Orion.Server.Tests.DirectCommunications.Repositories
             await _mockDB.UserEntity.AddRecord(sender.UserId, sender);
             await _mockDB.UserEntity.AddRecord(receiver.UserId, receiver);
 
-            var newDirectCommunication = new NewDirectCommunication() {SenderId = sender.UserId, ReceiverName = receiver.Username };
+            var newDirectCommunication = new NewDirectCommunicationDTO() {SenderId = sender.UserId, ReceiverName = receiver.Username };
 
             ServerResult? result = await _directCommunicationRepository.AddDirectCommunication(newDirectCommunication);
 
@@ -169,7 +169,7 @@ namespace Orion.Server.Tests.DirectCommunications.Repositories
             await _mockDB.UserEntity.AddRecord(sender.UserId, sender);
             await _mockDB.UserEntity.AddRecord(receiver.UserId, receiver);
 
-            var newDirectCommunication = new NewDirectCommunication() { SenderId = sender.UserId, ReceiverName = receiver.Username };
+            var newDirectCommunication = new NewDirectCommunicationDTO() { SenderId = sender.UserId, ReceiverName = receiver.Username };
 
             ServerResult? result = await _directCommunicationRepository.AddDirectCommunication(newDirectCommunication);
 

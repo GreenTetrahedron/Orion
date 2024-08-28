@@ -6,6 +6,7 @@ using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using Orion.Client.Users.Services;
+using Orion.Models;
 using Orion.Models.ClientTransmissions;
 using Orion.Models.ServerTransmissions.Results;
 using System;
@@ -20,7 +21,7 @@ using System.Threading.Tasks;
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
 
-namespace Orion.Client.App
+namespace Orion.Client.App.Users.Login
 {
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
@@ -64,7 +65,11 @@ namespace Orion.Client.App
             subscriptable.Subscribe(result =>
             {
                 if (result.OperationInformation.OperationMessageCode == AuthenticationMessages.VALID_CREDENTIALS)
+                {
                     SetInvisible();
+                    App.Current.User = result.Data as User;
+                    Frame.Navigate(typeof(ApplicationPage));
+                }
                 else
                     SetVisible();
             });

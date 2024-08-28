@@ -65,7 +65,7 @@ namespace Orion.Client
                         Console.WriteLine("Receiver Name: ");
                         string name = Console.ReadLine();
 
-                        var directCommunication = new NewDirectCommunication()
+                        var directCommunication = new NewDirectCommunicationDTO()
                         {
                             SenderId = sender.UserId,
                             ReceiverName = name

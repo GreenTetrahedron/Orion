@@ -12,7 +12,7 @@ namespace Orion.Server.DirectCommunications.Repositories
 {
     public interface IDirectCommunicationRepository
     {
-        public Task<ServerResult<DirectCommunicationMessages>?> AddDirectCommunication(NewDirectCommunication newDirectCommunication);
+        public Task<ServerResult<DirectCommunicationMessages>?> AddDirectCommunication(NewDirectCommunicationDTO newDirectCommunication);
 
         public Task<DirectCommunication?> GetDirectCommunicationById(Guid id);
 

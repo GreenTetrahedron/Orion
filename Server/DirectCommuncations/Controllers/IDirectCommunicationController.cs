@@ -10,6 +10,6 @@ namespace Orion.Server.DirectCommuncations.Controllers
 {
     public interface IDirectCommunicationController
     {
-        public Task<ServerResult<DirectCommunicationMessages>?> AddDirectCommunication(NewDirectCommunication newDirectCommunication);
+        public Task<ServerResult<DirectCommunicationMessages>?> AddDirectCommunication(NewDirectCommunicationDTO newDirectCommunication);
     }
 }

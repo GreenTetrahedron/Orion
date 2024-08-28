@@ -14,7 +14,7 @@ namespace Orion.Client.DirectCommunications.Services
             _transmissionService = transmissionService;
         }
 
-        public async Task<Subscriptable<DirectCommunicationMessages>> NewDirectCommunication(NewDirectCommunication newDirectCommunication)
+        public async Task<Subscriptable<DirectCommunicationMessages>> NewDirectCommunication(NewDirectCommunicationDTO newDirectCommunication)
         {
             return await _transmissionService.TransmitDataOfTopic<DirectCommunicationMessages>(newDirectCommunication, "NewDirectCommunication");
         }

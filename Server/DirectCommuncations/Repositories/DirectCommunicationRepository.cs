@@ -23,7 +23,7 @@ namespace Orion.Server.DirectCommunications.Repositories
             _database = database;
         }
 
-        public async Task<ServerResult<DirectCommunicationMessages>?> AddDirectCommunication(NewDirectCommunication newDirectCommunication)
+        public async Task<ServerResult<DirectCommunicationMessages>?> AddDirectCommunication(NewDirectCommunicationDTO newDirectCommunication)
         {
             var receiverId = (await _database.UserEntity.GetAllRecords())
                 .Where(x => x.Username == newDirectCommunication.ReceiverName)

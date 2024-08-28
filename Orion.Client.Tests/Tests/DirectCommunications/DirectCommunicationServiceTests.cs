@@ -26,7 +26,7 @@ namespace Orion.Client.Tests.Tests.DirectCommunications
             var senderId = Guid.NewGuid();
             var receiverName = "Receiver";
 
-            var directCommunication = new NewDirectCommunication { SenderId = senderId, ReceiverName = receiverName };
+            var directCommunication = new NewDirectCommunicationDTO { SenderId = senderId, ReceiverName = receiverName };
 
             await _directCommunicationService.NewDirectCommunication(directCommunication);
 

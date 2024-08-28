@@ -19,7 +19,7 @@ namespace Orion.Server.Tests.Mocks.Users.Repositories
             callStack = new MethodCallStack();
         }
 
-        public async Task<ServerResult<DirectCommunicationMessages>?> AddDirectCommunication(NewDirectCommunication newDirectCommunication)
+        public async Task<ServerResult<DirectCommunicationMessages>?> AddDirectCommunication(NewDirectCommunicationDTO newDirectCommunication)
         {
             callStack.NewMethodCall(nameof(this.AddDirectCommunication), [newDirectCommunication]);
 
