@@ -29,14 +29,18 @@ namespace Orion.Client.App
     {
         private readonly IUserService _userService;
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler PropertyChanged = delegate { };
 
         private Visibility invalidMessageVisibility;
 
         public Visibility InvalidMessageVisibility
         {
             get { return invalidMessageVisibility; }
-            set { invalidMessageVisibility = value; OnPropertyChanged(); }
+            set
+            {
+                invalidMessageVisibility = value;
+                OnPropertyChanged();
+            }
         }
 
 
@@ -60,12 +64,15 @@ namespace Orion.Client.App
             subscriptable.Subscribe(result =>
             {
                 if (result.OperationInformation.OperationMessageCode == AuthenticationMessages.VALID_CREDENTIALS)
-                    return;
+                    SetInvisible();
                 else
-                {
                     SetVisible();
-                }
             });
+        }
+
+        public void SetInvisible()
+        {
+            InvalidMessageVisibility = Visibility.Collapsed;
         }
 
         public void SetVisible()

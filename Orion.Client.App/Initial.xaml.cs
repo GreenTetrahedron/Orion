@@ -1,3 +1,4 @@
+using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
@@ -34,13 +35,16 @@ namespace Orion.Client.App
         {
             App.Current.ConfigurationService.GetInstanceOfType<ITransmissionService>().InitialiseRouterConnection();
 
-            Task.Run(async () =>
+            DispatcherQueueTimer d = DispatcherQueue.GetForCurrentThread().CreateTimer();
+
+            d.Interval = TimeSpan.Zero;
+
+            d.Tick += (s, e) =>
             {
-                while (true)
-                {
-                    App.Current.ConfigurationService.GetInstanceOfType<ITransmissionService>().ReceiveData();
-                }
-            });
+                App.Current.ConfigurationService.GetInstanceOfType<ITransmissionService>().ReceiveData();
+            };
+
+            d.Start();
 
             Frame.Navigate(typeof(Login));
         }
