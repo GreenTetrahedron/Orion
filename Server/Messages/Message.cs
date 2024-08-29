@@ -1,4 +1,8 @@
-﻿namespace Orion.Server.Messages
+﻿using Orion.Models.MessageModels;
+using Orion.Server.Users;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace Orion.Server.Messages
 {
     public class Message
     {
@@ -6,6 +10,17 @@
 
         public string Content { get; set; }
 
+        [ForeignKey("Sender")]
         public Guid SenderId { get; set; }
+
+        public User Sender { get; set; }
+
+        public static explicit operator MessageDTO(Message message) =>
+            new MessageDTO()
+            {
+                MessageId = message.MessageId,
+                Content = message.Content,
+                SenderProfile = message.Sender
+            };
     }
 }

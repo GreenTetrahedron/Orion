@@ -1,4 +1,5 @@
 ﻿using Orion.Models.ClientTransmissions;
+using Orion.Models.DirectCommunicationModels;
 using Orion.Models.ServerTransmissions;
 using Orion.Models.ServerTransmissions.Results;
 using System;
@@ -11,6 +12,6 @@ namespace Orion.Server.DirectCommuncations.Controllers
 {
     public interface IDirectCommunicationController
     {
-        public Task<ServerTransmission> AddDirectCommunication(NewDirectCommunicationDTO newDirectCommunication);
+        public Task<ServerTransmission> AddDirectCommunication(NewDirectCommunication newDirectCommunication);
     }
 }

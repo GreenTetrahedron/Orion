@@ -1,9 +1,9 @@
 ﻿using Orion.Models.ServerTransmissions;
 using Orion.Models.ServerTransmissions.Results;
 
-namespace Orion.Server.ServerResults
+namespace Orion.Server.ServerTransmissionServices
 {
-    public static class ServerResultService
+    public static class ServerTransmissionService
     {
         public static ServerTransmission NewSuccessfulResponseServerTransmission<T>(string topic, T operationMessageCode, object? data = null) where T : Enum
         {

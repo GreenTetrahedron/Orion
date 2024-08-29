@@ -1,4 +1,6 @@
-﻿using Orion.JsonParser;
+﻿using System.Configuration;
+using System.Collections.Specialized;
+using Orion.JsonParser;
 using Orion.Server;
 using Orion.Configuration;
 using Orion.Server.DataLayer;
@@ -7,6 +9,7 @@ using Orion.Server.TopicHandlers;
 using Orion.Server.Users.Repositories;
 using System.Net;
 using Orion.Server.DirectCommunications.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 
 
@@ -14,10 +17,13 @@ var configurationService = new ConfigurationService();
 
 configurationService.AddInstanceOfType<IJsonService>(new JsonService());
 
-configurationService.AddInstanceOfType<Database>(new Database());
-configurationService.AddInstanceOfType<IUserRepository>(new UserRepository(configurationService.GetInstanceOfType<Database>()));
-configurationService.AddInstanceOfType<IDirectCommunicationRepository>(new DirectCommunicationRepository(configurationService.GetInstanceOfType<Database>()));
-configurationService.AddInstanceOfType<IMessageRepository>(new MessageRepository(configurationService.GetInstanceOfType<Database>()));
+Console.WriteLine(ConfigurationManager.ConnectionStrings["OrionDatabase"].ToString());
+Console.ReadLine();
+
+configurationService.AddInstanceOfType(new OrionDbContext());
+configurationService.AddInstanceOfType<IUserRepository>(new UserRepository(configurationService.GetInstanceOfType<OrionDbContext>()));
+configurationService.AddInstanceOfType<IDirectCommunicationRepository>(new DirectCommunicationRepository(configurationService.GetInstanceOfType<OrionDbContext>()));
+configurationService.AddInstanceOfType<IMessageRepository>(new MessageRepository(configurationService.GetInstanceOfType<OrionDbContext>()));
 
 configurationService.AddInstanceOfType<ITopicHandlerService>(new TopicHandlerService(configurationService));
 

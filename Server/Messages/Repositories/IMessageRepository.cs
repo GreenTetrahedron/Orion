@@ -1,8 +1,10 @@
-﻿namespace Orion.Server.Messages.Repositories
+﻿using Orion.Models.MessageModels;
+
+namespace Orion.Server.Messages.Repositories
 {
     public interface IMessageRepository
     {
-        public Task<Message?> AddMessage(Guid senderId, string content);
-        public Task<Message?> GetMessage(Guid messageId);
+        public Task<MessageDTO?> AddMessage(NewMessage newMessage);
+        public Task<MessageDTO?> GetMessage(Guid messageId);
     }
 }

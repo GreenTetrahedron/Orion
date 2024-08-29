@@ -1,41 +1,50 @@
-﻿using Orion.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using Orion.Models;
 using Orion.Models.ClientTransmissions;
+using Orion.Models.DirectCommunicationModels;
+using Orion.Models.MessageModels;
 using Orion.Models.ServerTransmissions;
 using Orion.Models.ServerTransmissions.Results;
+using Orion.Models.UserModels;
 using Orion.Server.DataLayer;
-using Orion.Server.DataLayer.Entities;
 using Orion.Server.DirectCommunications;
-using Orion.Server.ServerResults;
+using Orion.Server.Messages;
+using Orion.Server.ServerTransmissionServices;
 
 namespace Orion.Server.Users.Repositories
 {
     public class UserRepository : IUserRepository
     {
-        private readonly Database _database;
+        private readonly OrionDbContext _database;
 
-        public UserRepository(Database database)
+        public UserRepository(OrionDbContext database)
         {
             _database = database;
         }
 
         public async Task<ServerTransmission> AuthenticateUser(Credentials credentials)
         {
-            var user = (await _database.UserEntity.GetAllRecords())
-                        .Where(x => x.Username == credentials.Username)
-                        .Select(x => new User { UserId = x.UserId, Username = x.Username })
-                        .SingleOrDefault();
-
-            user.DirectCommunicationIds 
+            var user = await _database.Users
+                .Where(user => user.Username == credentials.Username)
+                .Select(user => new UserDTO
+                {
+                    UserId = user.UserId,
+                    Username = user.Username,
+                    DirectCommunicationProfiles = user.DirectCommunications
+                        .Select(directCommunication => (DirectCommunicationProfile)directCommunication)
+                        .ToList()
+                })
+                .SingleOrDefaultAsync();
 
             return (user == null)
-                ? ServerResultService.NewSuccessfulResponseServerTransmission("AuthenticateUserResult", AuthenticationMessages.INVALID_CREDENTIALS)
+                ? ServerTransmissionService.NewSuccessfulResponseServerTransmission("AuthenticateUserResult", AuthenticationMessages.INVALID_CREDENTIALS)
                     .AddResponseOperationMessage("Invalid credentials entered")
-                : ServerResultService.NewSuccessfulResponseServerTransmission("AuthenticateUserResult", AuthenticationMessages.VALID_CREDENTIALS, user)
+                : ServerTransmissionService.NewSuccessfulResponseServerTransmission("AuthenticateUserResult", AuthenticationMessages.VALID_CREDENTIALS, user)
                     .AddResponseAffectedUser(user.UserId)
                     .AddResponseOperationMessage("Valid credentials entered");
         }
 
-        public async Task<User?> AddUser(string username)
+        public async Task<UserDTO?> AddUser(string username)
         {
             var user = new User()
             {
@@ -43,14 +52,28 @@ namespace Orion.Server.Users.Repositories
                 Username = username
             };
 
-            await _database.UserEntity.AddRecord(user.UserId, user);
+            await _database.Users.AddAsync(user);
 
-            return user;
+            int appliedChanges = await _database.SaveChangesAsync();
+
+            bool wasSuccessful = appliedChanges > 0;
+
+            return wasSuccessful ? (UserDTO)user : null;
         }
 
-        public async Task<User?> GetUser(Guid userId)
+        public async Task<UserDTO?> GetUser(Guid userId)
         {
-            return await _database.UserEntity.GetRecordById(userId);
+            return await _database.Users
+                .Where(user => user.UserId == userId)
+                .Select(user => new UserDTO
+                {
+                    UserId = user.UserId,
+                    Username = user.Username,
+                    DirectCommunicationProfiles = user.DirectCommunications
+                        .Select(directCommunication => (DirectCommunicationProfile)directCommunication)
+                        .ToList()
+                })
+                .SingleOrDefaultAsync();
         }
     }
 }

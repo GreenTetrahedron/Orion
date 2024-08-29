@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Orion.Models.ClientTransmissions
+namespace Orion.Models.UserModels
 {
     public class Credentials
     {

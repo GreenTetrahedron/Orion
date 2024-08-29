@@ -1,10 +1,15 @@
-﻿using Orion.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using Orion.Models;
 using Orion.Models.ClientTransmissions;
+using Orion.Models.DirectCommunicationModels;
+using Orion.Models.MessageModels;
 using Orion.Models.ServerTransmissions;
 using Orion.Models.ServerTransmissions.Results;
 using Orion.Server.DataLayer;
+using Orion.Server.DirectCommuncations;
+using Orion.Server.Exceptions;
 using Orion.Server.Messages;
-using Orion.Server.ServerResults;
+using Orion.Server.ServerTransmissionServices;
 using Orion.Server.Users;
 using System;
 using System.Collections.Generic;
@@ -17,78 +22,73 @@ namespace Orion.Server.DirectCommunications.Repositories
 {
     public class DirectCommunicationRepository : IDirectCommunicationRepository
     {
-        private readonly Database _database;
+        private readonly OrionDbContext _database;
 
-        public DirectCommunicationRepository(Database database)
+        public DirectCommunicationRepository(OrionDbContext database)
         {
             _database = database;
         }
 
-        public async Task<ServerTransmission> AddDirectCommunication(NewDirectCommunicationDTO newDirectCommunication)
+        public async Task<ServerTransmission> AddDirectCommunication(NewDirectCommunication newDirectCommunication)
         {
-            var receiverId = (await _database.UserEntity.GetAllRecords())
-                .Where(x => x.Username == newDirectCommunication.ReceiverName)
-                .Single()
-                .UserId;
+            var sender = await _database.Users.FindAsync(newDirectCommunication.SenderId);
+            var receiver = await _database.Users.FindAsync(newDirectCommunication.ReceiverId);
 
-            bool wasSuccessful = receiverId != null;
+            if (sender == null)
+                throw new UserNotFoundException("Sender was null");
+
+            if (receiver == null)
+                throw new UserNotFoundException("Receiver was null");
 
             var directCommunication = new DirectCommunication()
             {
                 DirectCommunicationId = Guid.NewGuid(),
-                UserIds = new Tuple<Guid, Guid>(newDirectCommunication.SenderId, receiverId)
+                Members = new List<User>() { sender, receiver }
             };
 
-            wasSuccessful &= await _database.DirectCommunicationEntity.AddRecord(directCommunication.DirectCommunicationId, directCommunication);
+            await _database.DirectCommunications.AddAsync(directCommunication);
 
-            var sender = await _database.UserEntity.GetRecordById(newDirectCommunication.SenderId);
+            int appliedChanges = await _database.SaveChangesAsync();
 
-            wasSuccessful &= sender != null;
+            bool wasSuccessful = appliedChanges > 0;
 
-            sender.DirectCommunicationIds = sender.DirectCommunicationIds == null
-                ? new List<Guid> { directCommunication.DirectCommunicationId }
-                : sender.DirectCommunicationIds.Append(directCommunication.DirectCommunicationId).ToList();
-
-            wasSuccessful &= await _database.UserEntity.UpdateRecord(sender.UserId, sender);
-
-            var receiver = await _database.UserEntity.GetRecordById(receiverId);
-
-            wasSuccessful &= receiver != null;
-
-            receiver.DirectCommunicationIds = receiver.DirectCommunicationIds == null
-                ? new List<Guid> { directCommunication.DirectCommunicationId }
-                : receiver.DirectCommunicationIds.Append(directCommunication.DirectCommunicationId).ToList();
-
-            wasSuccessful &= await _database.UserEntity.UpdateRecord(receiver.UserId, receiver);
-
-            return wasSuccessful
-                ? ServerResultService.NewSuccessfulResponseServerTransmission("NewDirectCommunicationResult", DirectCommunicationMessages.DIRECT_COMMUNICATION_CREATION_FAILED)
+            if (!wasSuccessful)
+                return ServerTransmissionService
+                    .NewSuccessfulResponseServerTransmission("NewDirectCommunicationResult", DirectCommunicationMessages.DIRECT_COMMUNICATION_CREATION_FAILED)
                     .AddResponseOperationMessage("Creation of new direct communication failed...")
-                    .AddResponseAffectedUser(newDirectCommunication.SenderId)
-                : ServerResultService.NewSuccessfulResponseServerTransmission("NewDirectCommunicationResult", DirectCommunicationMessages.DIRECT_COMMUNICATION_CREATION_SUCCEEDED)
-                    .AddResponseOperationMessage("New direct communication created...")
-                    .AddResponseAffectedUser(newDirectCommunication.SenderId)
-                    .AddPublish("NewDirectCommunication", directCommunication, receiverId);
+                    .AddResponseAffectedUser(newDirectCommunication.SenderId);
+
+
+            return ServerTransmissionService
+                .NewSuccessfulResponseServerTransmission("NewDirectCommunicationResult", DirectCommunicationMessages.DIRECT_COMMUNICATION_CREATION_SUCCEEDED)
+                .AddResponseOperationMessage("New direct communication created...")
+                .AddResponseAffectedUser(newDirectCommunication.SenderId)
+                .AddPublish("NewDirectCommunication", (DirectCommunicationDTO)directCommunication, newDirectCommunication.ReceiverId);
         }
 
-        public async Task<DirectCommunication?> GetDirectCommunicationById(Guid id)
+        public async Task<DirectCommunicationDTO?> GetDirectCommunicationById(Guid id)
         {
-            return await _database.DirectCommunicationEntity.GetRecordById(id);
+            var directCommunication = await _database.DirectCommunications.FindAsync(id);
+
+            if (directCommunication == null)
+                return null;
+
+            return (DirectCommunicationDTO)directCommunication;
         }
 
-        public async Task<List<DirectCommunication>?> GetDirectCommunicationsByUserId(Guid id)
+        public async Task<List<MessageDTO>?> GetDirectMessagesByDirectCommunicationId(Guid id)
         {
-            return (await _database.DirectCommunicationEntity.GetAllRecords())
-                .Where(x => x.UserIds.Item1 == id || x.UserIds.Item2 == id)
-                .ToList();
-        }
-
-        public async Task<List<Message>?> GetDirectMessagesByDirectCommunicationId(Guid id)
-        {
-            return (await _database.DirectMessageEntity.GetAllRecords())
-                .Where(x => x.DirectCommunicationId == id)
-                .Select(x => _database.MessageEntity.GetRecordById(x.MessageId).Result)
-                .ToList();
+            return await _database.DirectCommunications
+                .Where(directCommunication => directCommunication.DirectCommunicationId == id)
+                .Select(directCommunication => 
+                    directCommunication.Messages
+                        .Select(x => new MessageDTO
+                        {
+                            MessageId = x.MessageId,
+                            SenderProfile = x.Sender,
+                            Content = x.Content
+                        }).ToList()
+                ).SingleOrDefaultAsync();
         }
     }
 }

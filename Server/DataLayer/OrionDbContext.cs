@@ -1,0 +1,40 @@
+﻿using Microsoft.EntityFrameworkCore;
+using Orion.Configuration;
+using Orion.Server.DirectCommuncations;
+using Orion.Server.Messages;
+using Orion.Server.Users;
+using System;
+using System.Collections.Generic;
+using System.Configuration;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Orion.Server.DataLayer
+{
+    public class OrionDbContext : DbContext
+    {
+        public DbSet<User> Users { get; set; }
+        public DbSet<DirectCommunication> DirectCommunications { get; set; }
+        public DbSet<Message> Messages { get; set; }
+
+        private readonly string _connectionString;
+
+        public OrionDbContext() : base()
+        {
+            _connectionString = ConfigurationManager.ConnectionStrings["OrionDatabase"].ToString();
+        }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.UseSqlServer(_connectionString);
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<User>()
+                .HasIndex(e => e.Username)
+                .IsUnique();
+        }
+    }
+}

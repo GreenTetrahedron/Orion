@@ -1,6 +1,7 @@
 ﻿using Orion.Models.ClientTransmissions;
 using Orion.Models.ServerTransmissions;
 using Orion.Models.ServerTransmissions.Results;
+using Orion.Models.UserModels;
 
 namespace Orion.Server.Users.Controllers
 {
