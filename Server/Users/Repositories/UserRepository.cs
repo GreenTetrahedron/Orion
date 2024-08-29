@@ -1,5 +1,6 @@
 ﻿using Orion.Models;
 using Orion.Models.ClientTransmissions;
+using Orion.Models.ServerTransmissions;
 using Orion.Models.ServerTransmissions.Results;
 using Orion.Server.DataLayer;
 using Orion.Server.DataLayer.Entities;
@@ -17,16 +18,21 @@ namespace Orion.Server.Users.Repositories
             _database = database;
         }
 
-        public async Task<ServerResult<AuthenticationMessages>?> AuthenticateUser(Credentials credentials)
+        public async Task<ServerTransmission> AuthenticateUser(Credentials credentials)
         {
             var user = (await _database.UserEntity.GetAllRecords())
-                        .Select(x => x)
                         .Where(x => x.Username == credentials.Username)
+                        .Select(x => new User { UserId = x.UserId, Username = x.Username })
                         .SingleOrDefault();
 
+            user.DirectCommunicationIds 
+
             return (user == null)
-                ? ServerResultService.NewSuccessfulServerResult(AuthenticationMessages.INVALID_CREDENTIALS, "Invalid credentials given")
-                : ServerResultService.NewSuccessfulServerResult(AuthenticationMessages.VALID_CREDENTIALS, user.UserId, "Valid credentials", user);
+                ? ServerResultService.NewSuccessfulResponseServerTransmission("AuthenticateUserResult", AuthenticationMessages.INVALID_CREDENTIALS)
+                    .AddResponseOperationMessage("Invalid credentials entered")
+                : ServerResultService.NewSuccessfulResponseServerTransmission("AuthenticateUserResult", AuthenticationMessages.VALID_CREDENTIALS, user)
+                    .AddResponseAffectedUser(user.UserId)
+                    .AddResponseOperationMessage("Valid credentials entered");
         }
 
         public async Task<User?> AddUser(string username)

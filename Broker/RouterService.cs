@@ -105,39 +105,49 @@ namespace Orion.Router
 
             while (true)
             {
-                ServerResponse serverResponse = await ReceiveServerTransmission();
+                ServerTransmission serverTransmission = await ReceiveServerTransmission();
 
-                bool topicHasInterceptor = _topicInterceptorService.TryGetTopicInterceptor(serverResponse.Topic, out var topicInterceptor);
+                bool topicHasInterceptor = _topicInterceptorService.TryGetTopicInterceptor(serverTransmission.Response.Topic, out var topicInterceptor);
 
                 if (topicHasInterceptor)
                 {
-                    topicInterceptor.Invoke(serverResponse);
+                    topicInterceptor.Invoke(serverTransmission.Response);
                 }
 
-                var broadcastList = serverResponse.ServerResult.AffectedUsers;
+                var broadcastList = serverTransmission.Response.AffectedUsers;
 
                 if (broadcastList == null || broadcastList.Length == 0)
                 {
-                    if (serverResponse.RequestId == null)
+                    if (serverTransmission.Response.RequestId == null)
                         continue;
 
-                    bool wasRequested = _requestService.TryGetRequester(serverResponse.RequestId.Value, out var client);
+                    bool wasRequested = _requestService.TryGetRequester(serverTransmission.Response.RequestId.Value, out var requester);
 
                     if (wasRequested)
                     {
-                        await ForwardServerResponse(serverResponse, client);
+                        await ForwardServerResponse(serverTransmission.Response, requester);
                     }
 
                     continue;
                 }
 
-                foreach (var userId in broadcastList)
+                bool isConnected = _connectionService.TryGetConnectionHandler(broadcastList[0], out var client);
+
+                if (isConnected)
                 {
-                    bool isConnected = _connectionService.TryGetConnectionHandler(userId, out var client);
+                    await ForwardServerResponse(serverTransmission.Response, client);
+                }
+
+                if (serverTransmission.Publish == null || serverTransmission.Publish.AffectedUsers == null || serverTransmission.Publish.AffectedUsers.Length == 0)
+                    continue;
+
+                foreach(var userId in serverTransmission.Response.AffectedUsers)
+                {
+                    isConnected = _connectionService.TryGetConnectionHandler(userId, out client);
 
                     if (isConnected)
                     {
-                        await ForwardServerResponse(serverResponse, client);
+                        await ForwardServerResponse(serverTransmission.Publish, client);
                     }
                 }
             }
@@ -154,16 +164,16 @@ namespace Orion.Router
             return transmission;
         }
 
-        public async Task<ServerResponse?> ReceiveServerTransmission()
+        public async Task<ServerTransmission?> ReceiveServerTransmission()
         {
             var buffer = new byte[2048];
 
             int transmissionBytesCount = await _server.ReceiveAsync(buffer, SocketFlags.None);
 
             string transmissionJson = Encoding.UTF8.GetString(buffer, 0, transmissionBytesCount);
-            ServerResponse? serverResponse = (ServerResponse?)_jsonService.DeserialiseJson<ServerResponse?>(transmissionJson);
+            ServerTransmission? serverTransmission = _jsonService.DeserialiseJson<ServerTransmission?>(transmissionJson);
 
-            return serverResponse;
+            return serverTransmission;
         }
 
         public async Task<ClientTransmission?> ReceiveClientTransmission(Socket client)

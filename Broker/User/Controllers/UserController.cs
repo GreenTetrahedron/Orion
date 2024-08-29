@@ -32,10 +32,10 @@ namespace Orion.Router.User.Controllers
             if (!requestIsValid)
                 throw new Exception($"Request, {authenticationResponse.RequestId}, not found");
 
-            if (authenticationResponse.ServerResult.AffectedUsers == null || authenticationResponse.ServerResult.AffectedUsers.Length == 0)
+            if (authenticationResponse.AffectedUsers == null || authenticationResponse.AffectedUsers.Length == 0)
                 throw new Exception("AffectedUsers was null");
 
-            var userId = authenticationResponse.ServerResult.AffectedUsers[0];
+            var userId = authenticationResponse.AffectedUsers[0];
 
             _connectionService.TryAddConnection(client, userId);
         }

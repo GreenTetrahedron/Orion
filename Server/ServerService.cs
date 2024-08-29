@@ -66,26 +66,21 @@ namespace Orion.Server
         {
             string transmissionJson = _jsonService.SerialiseObject(data);
 
-            try
-            {
-                var deserialiseAttemps = _jsonService.DeserialiseJson<ServerResponse?>(transmissionJson);
-            }
-            catch { }
-
             var transmissionBytes = Encoding.UTF8.GetBytes(transmissionJson);
 
             return await _router.SendAsync(transmissionBytes);
         }
 
-        private async Task<ServerResponse?> HandleRequest(ServerRequest request)
+        private async Task<ServerTransmission?> HandleRequest(ServerRequest request)
         {
             var handler = _topicHandlerService.GetTopicHandler(request.Topic);
 
             if (handler == null)
                 throw new ApplicationException($"No handler found for topic: {request.Topic}");
 
-            ServerResult result = await handler.Invoke(request.Data);
-            return new ServerResponse(request.Topic + "Result", result, request.RequestId);
+            ServerTransmission result = await handler.Invoke(request.Data);
+            result.Response.RequestId = request.RequestId;
+            return result;
         }
 
         private async Task<ServerRequest?> ReceiveRequest()

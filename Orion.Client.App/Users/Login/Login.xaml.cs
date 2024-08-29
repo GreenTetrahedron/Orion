@@ -67,7 +67,7 @@ namespace Orion.Client.App.Users.Login
                 if (result.OperationInformation.OperationMessageCode == AuthenticationMessages.VALID_CREDENTIALS)
                 {
                     SetInvisible();
-                    App.Current.User = result.Data as User;
+                    App.Current.UserViewModel = result.Data as User;
                     Frame.Navigate(typeof(ApplicationPage));
                 }
                 else

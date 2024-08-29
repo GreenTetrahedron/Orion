@@ -9,10 +9,16 @@
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <StackPanel>
-        <Grid>
-            <TextBlock>Other user's name</TextBlock>
-            <TextBox x:Name="RecipientNameTextBox"></TextBox>
+    <StackPanel Padding="30" Spacing="15">
+        <TextBlock Style="{StaticResource InvalidMessage}" HorizontalAlignment="Center" Visibility="{Binding InvalidMessageVisibility}">Other user not found!</TextBlock>
+        <Grid HorizontalAlignment="Center" MinWidth="300" MaxWidth="400" ColumnSpacing="15">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            
+            <TextBlock Grid.Column="0">Other user's name</TextBlock>
+            <TextBox Grid.Column="1" x:Name="RecipientNameTextBox"></TextBox>
         </Grid>
         <Button HorizontalAlignment="Stretch" Click="CreateNewDirectCommunication">Create</Button>
     </StackPanel>

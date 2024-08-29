@@ -6,35 +6,29 @@
 
         public object? Data { get; set; }
 
-        public Guid[]? AffectedUsers { get; set; }
-
-        public ServerResult(OperationInformation<T> operationInformation, object? data = null, Guid[]? affectedUsers = null)
+        public ServerResult(OperationInformation<T> operationInformation, object? data = null)
         {
             OperationInformation = operationInformation;
             Data = data;
-            AffectedUsers = affectedUsers;
         }
 
         public static implicit operator ServerResult(ServerResult<T> value) =>
-            new ServerResult(value.OperationInformation, value.Data, value.AffectedUsers);
+            new ServerResult(value.OperationInformation, value.Data);
 
         public static implicit operator ServerResult<T>(ServerResult value) =>
-            new ServerResult<T>(value.OperationInformation, value.Data, value.AffectedUsers);
+            new ServerResult<T>(value.OperationInformation, value.Data);
     }
 
     public class ServerResult
     {
-        public OperationInformation OperationInformation { get; set; }
+        public OperationInformation? OperationInformation { get; set; }
 
         public object? Data { get; set; }
 
-        public Guid[]? AffectedUsers { get; set; }
-
-        public ServerResult(OperationInformation operationInformation, object? data = null, Guid[]? affectedUsers = null)
+        public ServerResult(OperationInformation? operationInformation = null, object? data = null)
         {
             OperationInformation = operationInformation;
             Data = data;
-            AffectedUsers = affectedUsers;
         }
     }
 }

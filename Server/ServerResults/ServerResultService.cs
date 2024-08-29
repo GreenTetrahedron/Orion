@@ -1,35 +1,36 @@
-﻿using Orion.Models.ServerTransmissions.Results;
+﻿using Orion.Models.ServerTransmissions;
+using Orion.Models.ServerTransmissions.Results;
 
 namespace Orion.Server.ServerResults
 {
     public static class ServerResultService
     {
-        public static ServerResult<T> NewServerResult<T>(Statuses status, T operationMessageCode, string? operationMessage = null, Guid[]? affectedUsers = null, object? data = null) where T : Enum
+        public static ServerTransmission NewSuccessfulResponseServerTransmission<T>(string topic, T operationMessageCode, object? data = null) where T : Enum
         {
-            return new ServerResult<T>(new OperationInformation<T>(status, operationMessageCode, operationMessage), data, affectedUsers);
+            return new ServerTransmission(new ServerResponse(topic, new ServerResult<T>(new OperationInformation<T>(Statuses.SUCCEEDED, operationMessageCode), data)));
         }
 
-        public static ServerResult<T> NewServerResult<T>(Statuses status, T operationMessageCode, Guid affectedUser, string? operationMessage = null, object? data = null) where T : Enum =>
-            NewServerResult(status, operationMessageCode, operationMessage, [ affectedUser ], data);
-        
-
-        public static ServerResult NewServerResult(Statuses status, Enum operationMessageCode, string? operationMessage = null, Guid[]? affectedUsers = null, object? data = null)
+        public static ServerTransmission AddResponseOperationMessage(this ServerTransmission serverTransmission, string? operationMessage = null)
         {
-            return new ServerResult(new OperationInformation(status, operationMessageCode.ToString(), operationMessage), data, affectedUsers);
+            serverTransmission.Response.ServerResult.OperationInformation.OperationMessage = operationMessage;
+
+            return serverTransmission;
         }
 
-        public static ServerResult NewServerResult(Statuses status, Enum operationMessageCode, Guid affectedUser, string? operationMessage = null, object? data = null) =>
-            NewServerResult(status, operationMessageCode, operationMessage, [ affectedUser ], data);
+        public static ServerTransmission AddResponseAffectedUser(this ServerTransmission serverTransmission, Guid affectedUser)
+        {
+            serverTransmission.Response.AffectedUsers = [affectedUser];
 
-        public static ServerResult<T> NewSuccessfulServerResult<T>(T operationMessageCode, string? operationMessage = null, Guid[]? affectedUsers = null, object? data = null) where T : Enum =>
-            NewServerResult(Statuses.SUCCEEDED, operationMessageCode, operationMessage, affectedUsers, data);
-        public static ServerResult<T> NewSuccessfulServerResult<T>(T operationMessageCode, Guid affectedUser, string? operationMessage = null, object? data = null) where T : Enum =>
-            NewServerResult(Statuses.SUCCEEDED, operationMessageCode, affectedUser, operationMessage, data);
+            return serverTransmission;
+        }
 
-        public static ServerResult NewSuccessfulServerResult(Enum operationMessageCode, string? operationMessage = null, Guid[]? affectedUsers = null, object? data = null) =>
-            NewServerResult(Statuses.SUCCEEDED, operationMessageCode, operationMessage, affectedUsers, data);
-        public static ServerResult NewSuccessfulServerResult(Enum operationMessageCode, Guid affectedUser, string? operationMessage = null, object? data = null)=>
-            NewServerResult(Statuses.SUCCEEDED, operationMessageCode, affectedUser, operationMessage, data);
+        public static ServerTransmission AddPublish(this ServerTransmission serverTransmission, string topic, object? data, Guid[]? affectedUsers)
+        {
+            serverTransmission.Publish = new ServerResponse(topic, new ServerResult(null, data), null, affectedUsers);
 
+            return serverTransmission;
+        }
+        public static ServerTransmission AddPublish(this ServerTransmission serverTransmission, string topic, object? data, Guid affectedUser) =>
+            serverTransmission.AddPublish(topic, data, [affectedUser]);
     }
 }

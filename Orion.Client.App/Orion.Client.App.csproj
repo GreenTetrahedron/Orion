@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
@@ -14,11 +14,12 @@
   </PropertyGroup>
   <ItemGroup>
     <None Remove="ApplicationPage.xaml" />
+    <None Remove="Defaults.xaml" />
     <None Remove="DirectCommunications\DirectCommunicationsPage.xaml" />
     <None Remove="DirectCommunications\NewDirectCommunciation.xaml" />
     <None Remove="Login.xaml" />
     <None Remove="Navbar.xaml" />
-    <None Remove="ResourceDictionary.xaml" />
+    <None Remove="Resources\AppStyles.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -57,7 +58,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Page Update="ResourceDictionary.xaml">
+    <Page Update="Defaults.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
@@ -67,7 +68,13 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="DirectCommunications\Pages\" />
     <Folder Include="Users\Login\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Resources\AppStyles.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Page Update="DirectCommunications\NewDirectCommunciation.xaml">

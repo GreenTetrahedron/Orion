@@ -1,5 +1,6 @@
 ﻿using Orion.Models;
 using Orion.Models.ClientTransmissions;
+using Orion.Models.ServerTransmissions;
 using Orion.Models.ServerTransmissions.Results;
 using Orion.Server.DataLayer;
 using Orion.Server.Messages;
@@ -23,7 +24,7 @@ namespace Orion.Server.DirectCommunications.Repositories
             _database = database;
         }
 
-        public async Task<ServerResult<DirectCommunicationMessages>?> AddDirectCommunication(NewDirectCommunicationDTO newDirectCommunication)
+        public async Task<ServerTransmission> AddDirectCommunication(NewDirectCommunicationDTO newDirectCommunication)
         {
             var receiverId = (await _database.UserEntity.GetAllRecords())
                 .Where(x => x.Username == newDirectCommunication.ReceiverName)
@@ -61,11 +62,13 @@ namespace Orion.Server.DirectCommunications.Repositories
             wasSuccessful &= await _database.UserEntity.UpdateRecord(receiver.UserId, receiver);
 
             return wasSuccessful
-                ? ServerResultService.NewSuccessfulServerResult(
-                    operationMessageCode: DirectCommunicationMessages.DIRECT_COMMUNICATION_CREATION_SUCCEEDED,
-                    affectedUsers: [newDirectCommunication.SenderId, receiver.UserId],
-                    data: directCommunication)
-                : ServerResultService.NewSuccessfulServerResult(DirectCommunicationMessages.DIRECT_COMMUNICATION_CREATION_FAILED, "Creation of direct communication failed", [newDirectCommunication.SenderId, receiver.UserId]);
+                ? ServerResultService.NewSuccessfulResponseServerTransmission("NewDirectCommunicationResult", DirectCommunicationMessages.DIRECT_COMMUNICATION_CREATION_FAILED)
+                    .AddResponseOperationMessage("Creation of new direct communication failed...")
+                    .AddResponseAffectedUser(newDirectCommunication.SenderId)
+                : ServerResultService.NewSuccessfulResponseServerTransmission("NewDirectCommunicationResult", DirectCommunicationMessages.DIRECT_COMMUNICATION_CREATION_SUCCEEDED)
+                    .AddResponseOperationMessage("New direct communication created...")
+                    .AddResponseAffectedUser(newDirectCommunication.SenderId)
+                    .AddPublish("NewDirectCommunication", directCommunication, receiverId);
         }
 
         public async Task<DirectCommunication?> GetDirectCommunicationById(Guid id)

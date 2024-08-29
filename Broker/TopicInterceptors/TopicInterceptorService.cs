@@ -44,7 +44,7 @@ namespace Orion.Router.TopicInterceptors
                 {
                     topicToInterceptor.Add(interceptor.GetCustomAttribute<InterceptorAttribute>().Topic, async (x) =>
                     {
-                        await (Task)interceptor.Invoke(controllerInstance, new object[1] { x });
+                        await (Task)interceptor.Invoke(controllerInstance, [ x ]);
                     });
                 }
             }

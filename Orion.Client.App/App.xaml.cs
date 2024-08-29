@@ -7,6 +7,7 @@ using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using Microsoft.UI.Xaml.Shapes;
+using Orion.Client.App.Users;
 using Orion.Client.App.Users.Login;
 using Orion.Client.Connections;
 using Orion.Client.DirectCommunications.Services;
@@ -19,9 +20,11 @@ using Orion.JsonParser;
 using Orion.Models;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
@@ -37,7 +40,7 @@ namespace Orion.Client.App
     /// <summary>
     /// Provides application-specific behavior to supplement the default Application class.
     /// </summary>
-    public partial class App : Application
+    public partial class App : Application, INotifyPropertyChanged
     {
         public new static App Current => (App)Application.Current;
 
@@ -46,7 +49,18 @@ namespace Orion.Client.App
         public Frame ContentFrame;
         public Frame NavbarFrame;
 
-        public User User;
+        private UserViewModel _userViewModel;
+
+        public UserViewModel UserViewModel
+        {
+            get { return _userViewModel; }
+            set
+            {
+                _userViewModel = value;
+                OnPropertyChanged();
+            }
+        }
+
 
         /// <summary>
         /// Initializes the singleton application object.  This is the first line of authored code
@@ -91,7 +105,8 @@ namespace Orion.Client.App
             configurationService.AddInstanceOfType<ITransmissionService>(new TransmissionService(
                     configurationService.GetInstanceOfType<IConnectionService>(),
                     configurationService.GetInstanceOfType<IJsonService>(),
-                    configurationService.GetInstanceOfType<ISubscriptionService>()
+                    configurationService.GetInstanceOfType<ISubscriptionService>(),
+                    configurationService.GetInstanceOfType<ITopicHandlerService>()
                 ));
 
             configurationService.AddInstanceOfType<IUserService>(new UserService(
@@ -135,5 +150,12 @@ namespace Orion.Client.App
         }
 
         private Window m_window;
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
     }
 }

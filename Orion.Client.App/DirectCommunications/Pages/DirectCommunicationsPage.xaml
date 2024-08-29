@@ -19,9 +19,7 @@
             <Button Click="LoadNewDirectCommunicationPage">
                 New direct communication
             </Button>
-            <ListBoxItem x:Name="DirectCommunicationsListBox">
-
-            </ListBoxItem>
+            <ListView ItemsSource="{x:Bind UserViewModel.DirectCommunications}" />
         </StackPanel>
         <Frame x:Name="DirectCommunicationsContent" Grid.Column="1">
             

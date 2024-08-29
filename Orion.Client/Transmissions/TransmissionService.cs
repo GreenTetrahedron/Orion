@@ -1,6 +1,7 @@
 ﻿using Orion.Client.Connections;
 using Orion.Client.Subscriptions;
 using Orion.Client.Subscriptions.Services;
+using Orion.Client.TopicHandlers;
 using Orion.JsonParser;
 using Orion.Models.ClientTransmissions;
 using System.ComponentModel.DataAnnotations;
@@ -13,12 +14,14 @@ namespace Orion.Client.Transmissions
         private readonly IConnectionService _connectionService;
         private readonly IJsonService _jsonService;
         private readonly ISubscriptionService _subscriptionService;
+        private readonly ITopicHandlerService _topicHandlerService;
 
-        public TransmissionService(IConnectionService connectionService, IJsonService jsonService, ISubscriptionService subscriptionService)
+        public TransmissionService(IConnectionService connectionService, IJsonService jsonService, ISubscriptionService subscriptionService, ITopicHandlerService topicHandlerService)
         {
             _connectionService = connectionService;
             _jsonService = jsonService;
             _subscriptionService = subscriptionService;
+            _topicHandlerService = topicHandlerService;
         }
 
         public async Task<ClientTransmission?> ReceiveData()
@@ -32,6 +35,10 @@ namespace Orion.Client.Transmissions
                 return transmission;
 
             _subscriptionService.TryPublishDataForTopic(transmission.Topic, transmission.Data);
+            var handler = _topicHandlerService.GetTopicHandler(transmission.Topic);
+
+            if (handler != null)
+                handler.Invoke(transmission.Data);
 
             return transmission;
         }

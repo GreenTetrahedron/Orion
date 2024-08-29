@@ -23,5 +23,10 @@
     <Style TargetType="TextBlock" BasedOn="{StaticResource DefaultTextBlock}">
         
     </Style>
-    
+
+    <Style TargetType="TextBlock" x:Key="InvalidMessage" BasedOn="{StaticResource DefaultTextBlock}">
+        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="Foreground" Value="{StaticResource Red}"/>
+    </Style>
+
 </ResourceDictionary>

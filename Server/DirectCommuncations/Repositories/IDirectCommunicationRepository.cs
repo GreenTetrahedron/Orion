@@ -1,5 +1,6 @@
 ﻿using Orion.Models;
 using Orion.Models.ClientTransmissions;
+using Orion.Models.ServerTransmissions;
 using Orion.Models.ServerTransmissions.Results;
 using Orion.Server.Messages;
 using System;
@@ -12,7 +13,7 @@ namespace Orion.Server.DirectCommunications.Repositories
 {
     public interface IDirectCommunicationRepository
     {
-        public Task<ServerResult<DirectCommunicationMessages>?> AddDirectCommunication(NewDirectCommunicationDTO newDirectCommunication);
+        public Task<ServerTransmission> AddDirectCommunication(NewDirectCommunicationDTO newDirectCommunication);
 
         public Task<DirectCommunication?> GetDirectCommunicationById(Guid id);
 
