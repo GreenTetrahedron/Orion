@@ -1,4 +1,5 @@
 ﻿using Orion.Models.ClientTransmissions;
+using Orion.Models.UserModels;
 using Orion.Server.Tests.Mocks.Users.Repositories;
 using Orion.Server.Users.Controllers;
 

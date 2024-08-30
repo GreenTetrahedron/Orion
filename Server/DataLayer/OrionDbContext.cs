@@ -18,15 +18,17 @@ namespace Orion.Server.DataLayer
         public DbSet<DirectCommunication> DirectCommunications { get; set; }
         public DbSet<Message> Messages { get; set; }
 
-        private readonly string _connectionString;
+        private string _connectionString;
 
         public OrionDbContext() : base()
-        {
-            _connectionString = ConfigurationManager.ConnectionStrings["OrionDatabase"].ToString();
-        }
+        { }
+
+        public OrionDbContext(DbContextOptions options) : base(options)
+        { }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
+            _connectionString = ConfigurationManager.ConnectionStrings["OrionDatabase"].ToString();
             optionsBuilder.UseSqlServer(_connectionString);
         }
 

@@ -1,6 +1,8 @@
 ﻿using Orion.Models;
 using Orion.Models.ClientTransmissions;
+using Orion.Models.ServerTransmissions;
 using Orion.Models.ServerTransmissions.Results;
+using Orion.Models.UserModels;
 using Orion.Server.Users.Repositories;
 
 namespace Orion.Server.Tests.Mocks.Users.Repositories
@@ -14,25 +16,19 @@ namespace Orion.Server.Tests.Mocks.Users.Repositories
             methodCallStack = new Stack<string>();
         }
 
-        public async Task<ServerResult?> AddDirectCommunication(Guid senderId, Guid recipientId)
-        {
-            methodCallStack.Push($"AddDirectCommunication: {senderId}, {recipientId}");
-            return null;
-        }
-
-        public async Task<User?> AddUser(string username)
+        public async Task<UserDTO?> AddUser(string username)
         {
             methodCallStack.Push($"AddUser: {username}");
             return null;
         }
 
-        public async Task<ServerResult<AuthenticationMessages>?> AuthenticateUser(Credentials credentials)
+        public async Task<ServerTransmission?> AuthenticateUser(Credentials credentials)
         {
             methodCallStack.Push($"AuthenticateUser: {credentials.Username}");
             return null;
         }
 
-        public async Task<User?> GetUser(Guid userId)
+        public async Task<UserDTO?> GetUser(Guid userId)
         {
             methodCallStack.Push($"GetUser: {userId}");
             return null;

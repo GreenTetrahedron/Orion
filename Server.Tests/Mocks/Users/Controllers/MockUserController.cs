@@ -1,5 +1,7 @@
 ﻿using Orion.Models.ClientTransmissions;
+using Orion.Models.ServerTransmissions;
 using Orion.Models.ServerTransmissions.Results;
+using Orion.Models.UserModels;
 using Orion.Server.Attributes;
 using Orion.Server.Users.Controllers;
 using System;
@@ -22,7 +24,7 @@ namespace Orion.Server.Tests.Mocks.Users.Controllers
         }
 
         [Handler("AuthenticateUser")]
-        public async Task<ServerResult<AuthenticationMessages>?> AuthenticateUser(Credentials credentials)
+        public async Task<ServerTransmission?> AuthenticateUser(Credentials credentials)
         {
             callStack.NewMethodCall(nameof(this.AuthenticateUser), [credentials]);
             return default;

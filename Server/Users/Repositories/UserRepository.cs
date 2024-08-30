@@ -49,7 +49,8 @@ namespace Orion.Server.Users.Repositories
             var user = new User()
             {
                 UserId = Guid.NewGuid(),
-                Username = username
+                Username = username,
+                DirectCommunications = new List<DirectCommuncations.DirectCommunication>()
             };
 
             await _database.Users.AddAsync(user);

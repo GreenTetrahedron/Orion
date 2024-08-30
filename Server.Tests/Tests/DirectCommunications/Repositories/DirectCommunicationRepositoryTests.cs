@@ -1,191 +1,245 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using Orion.Models;
 using Orion.Models.ClientTransmissions;
+using Orion.Models.DirectCommunicationModels;
+using Orion.Models.MessageModels;
+using Orion.Models.ServerTransmissions;
 using Orion.Models.ServerTransmissions.Results;
+using Orion.Models.UserModels;
 using Orion.Server.DataLayer;
+using Orion.Server.DirectCommuncations;
 using Orion.Server.DirectCommunications;
 using Orion.Server.DirectCommunications.Repositories;
 using Orion.Server.Messages;
 using Orion.Server.Messages.Repositories;
 using Orion.Server.Tests.Mocks.DataLayer;
+using Orion.Server.Users;
+using Orion.Server.Users.Repositories;
+using System.ComponentModel.DataAnnotations;
 
 namespace Orion.Server.Tests.DirectCommunications.Repositories
 {
     public class DirectCommunicationRepositoryTests
     {
-        private Database _mockDB;
         private IDirectCommunicationRepository _directCommunicationRepository;
+
+        private static readonly InMemoryDatabaseRoot InMemoryDatabaseRoot = new InMemoryDatabaseRoot();
+        private DbContextOptions _options;
 
         [SetUp]
         public void Setup()
         {
-            _mockDB = new MockDB();
-            _directCommunicationRepository = new DirectCommunicationRepository(_mockDB);
+            _options = new DbContextOptionsBuilder<MockOrionDbContext>()
+                .UseInMemoryDatabase("OrionDatabase", InMemoryDatabaseRoot)
+                .Options;
+
+            var context = new MockOrionDbContext(_options);
+            context.Database.EnsureDeleted();
+            _directCommunicationRepository = new DirectCommunicationRepository(context);
         }
 
-        [Test]
-        public async Task GetDirectCommunicationById_ReturnsCorrectDirectCommunication()
+        private User CreateUser(string username = "")
         {
-            var directCommunication = new DirectCommunication()
+            var user = new User()
             {
-                DirectCommunicationId = Guid.NewGuid(),
-                UserIds = new Tuple<Guid, Guid>(Guid.NewGuid(), Guid.NewGuid())
+                UserId = Guid.NewGuid(),
+                Username = username
             };
 
-            await _mockDB.DirectCommunicationEntity.AddRecord(directCommunication.DirectCommunicationId, directCommunication);
+            using (var context = new MockOrionDbContext(_options))
+            {
+                context.Users.Add(user);
+                context.SaveChanges();
+            }
+
+            return user;
+        }
+
+        private Message CreateMessage(string content = "") =>
+            new Message()
+            {
+                MessageId = Guid.NewGuid(),
+                SenderId = Guid.NewGuid(),
+                Content = content
+            };
+        private Message CreateMessage(Guid senderId, string content = "") =>
+            new Message()
+            {
+                MessageId = Guid.NewGuid(),
+                SenderId = senderId,
+                Content = content
+            };
+        private Message CreateMessage(User sender, string content = "")
+        {
+            var message = new Message()
+            {
+                MessageId = Guid.NewGuid(),
+                Sender = sender,
+                Content = content
+            };
+
+            using(var context = new MockOrionDbContext(_options))
+            {
+                context.Attach(sender);
+                context.Add(message);
+                context.SaveChanges();
+            }
+
+            return message;
+        }
+
+        private DirectCommunication CreateDirectCommunication(string senderName = "", string receiverName = "", string messageContent = "")
+        {
+            var sender = CreateUser(senderName);
+            return new DirectCommunication()
+            {
+                DirectCommunicationId = Guid.NewGuid(),
+                Members = new List<User> { sender, CreateUser(receiverName) },
+                Messages = new List<Message> { CreateMessage(sender, messageContent) }
+            };
+        }
+
+            [Test]
+        public async Task GetDirectCommunicationById_ReturnsCorrectDirectCommunication()
+        {
+            var directCommunication = CreateDirectCommunication();
+
+            using (var context = new MockOrionDbContext(_options))
+            {
+                directCommunication.Members.ForEach(member => context.Attach(member));
+                directCommunication.Messages.ForEach(message => context.Attach(message));
+                await context.DirectCommunications.AddAsync(directCommunication);
+                await context.SaveChangesAsync();
+            }
 
             var result = await _directCommunicationRepository.GetDirectCommunicationById(directCommunication.DirectCommunicationId);
 
             Assert.That(result, Is.Not.Null, "Result was null...");
+            Assert.That(result.DirectCommunicationId, Is.EqualTo(directCommunication.DirectCommunicationId), "Wrong direct communication id");
 
-            Assert.That(directCommunication.UserIds == result.UserIds
-                && directCommunication.DirectMessageIds == result.DirectMessageIds,
-                "Wrong directCommuniction returned...");
+
+            Assert.That(result.MemberProfiles.Count == directCommunication.Members.Count
+                && result.MemberProfiles.Exists(user => user.UserId == directCommunication.Members[0].UserId)
+                && result.MemberProfiles.Exists(user => user.UserId == directCommunication.Members[1].UserId),
+                "Wrong members");
         }
 
         [Test]
         [TestCase("Message1")]
         public async Task GetDirectMessagesByDirectCommunicationId_ReturnsCorrectDirectMessages(string content)
         {
-            var directCommunicationId = Guid.NewGuid();
-            
-            var message = new Message()
+            var directCommunication = CreateDirectCommunication(messageContent: content);
+
+            using (var context = new MockOrionDbContext(_options))
             {
-                MessageId = Guid.NewGuid(),
-                Content = content,
-                SenderId = Guid.NewGuid()
-            };
+                directCommunication.Members.ForEach(member => context.Attach(member));
+                directCommunication.Messages.ForEach(message => context.Attach(message));
+                await context.DirectCommunications.AddAsync(directCommunication);
+                await context.SaveChangesAsync();
+            }
 
-            var directMessage = new DirectMessage()
-            {
-                DirectCommunicationId = directCommunicationId,
-                DirectMessageId = Guid.NewGuid(),
-                MessageId = message.MessageId
-            };
-
-            await _mockDB.MessageEntity.AddRecord(message.MessageId, message);
-
-            await _mockDB.DirectMessageEntity.AddRecord(directMessage.DirectMessageId, directMessage);
-
-            var result = await _directCommunicationRepository.GetDirectMessagesByDirectCommunicationId(directCommunicationId);
+            var result = await _directCommunicationRepository.GetDirectMessagesByDirectCommunicationId(directCommunication.DirectCommunicationId);
 
             Assert.That(result, Is.Not.Null, "Result was null...");
-
-            Assert.That(result.Count == 1
-                && result[0].Content == message.Content,
-                "Wrong messages returned...");
+            Assert.That(result.Count == directCommunication.Messages.Count
+                && result.Exists(message => message.MessageId == directCommunication.Messages[0].MessageId
+                                    && message.Content == directCommunication.Messages[0].Content),
+                "Wrong messages returned");
         }
 
         [Test]
-        public async Task GetDirectCommunicationsByUserId_ReturnsCorrectDirectCommunications()
+        public async Task AddDirectCommunication_ReturnsCorrectDirectCommunication()
         {
-            var sender = new User() { UserId = Guid.NewGuid() };
-            var receiver = new User() { UserId = Guid.NewGuid() };
+            var sender = CreateUser("Sender");
+            var receiver = CreateUser("Receiver");
 
-            await _mockDB.UserEntity.AddRecord(sender.UserId, sender);
-            await _mockDB.UserEntity.AddRecord(receiver.UserId, receiver);
+            var newDirectCommunication = new NewDirectCommunication() {SenderId = sender.UserId, ReceiverId = receiver.UserId };
 
-            var directCommunication = new DirectCommunication()
+            ServerTransmission? result = await _directCommunicationRepository.AddDirectCommunication(newDirectCommunication);
+
+            Assert.That(result, Is.Not.Null, "Result was null");
+
+            DirectCommunicationDTO? directCommunication = (DirectCommunicationDTO?)result.Publish.ServerResult.Data;
+
+            Assert.That(directCommunication, Is.Not.Null, "DirectCommunication was null");
+
+            Assert.That(directCommunication.MemberProfiles.Count == 2
+                && directCommunication.MemberProfiles.Exists(user => user.UserId == sender.UserId)
+                && directCommunication.MemberProfiles.Exists(user => user.UserId == receiver.UserId),
+                "Wrong members");
+        }
+
+        [Test]
+        public async Task AddDirectCommunication_AddsCorrectDirectCommunication()
+        {
+            var sender = CreateUser("Sender");
+            var receiver = CreateUser("Receiver");
+
+            var newDirectCommunication = new NewDirectCommunication() { SenderId = sender.UserId, ReceiverId = receiver.UserId };
+
+            ServerTransmission? result = await _directCommunicationRepository.AddDirectCommunication(newDirectCommunication);
+
+            Assert.That(result, Is.Not.Null, "Result was null");
+
+            DirectCommunicationDTO returnedDirectCommunication = (DirectCommunicationDTO)result.Publish.ServerResult.Data;
+
+            DirectCommunicationDTO? directCommunication;
+
+            using (var context = new MockOrionDbContext(_options))
             {
-                DirectCommunicationId = Guid.NewGuid(),
-                UserIds = new Tuple<Guid, Guid>(sender.UserId, receiver.UserId)
-            };
+                directCommunication = await context.DirectCommunications
+                    .Where(directCommunication => directCommunication.DirectCommunicationId == returnedDirectCommunication.DirectCommunicationId)
+                    .Select(directCommunication => new DirectCommunicationDTO()
+                    {
+                        DirectCommunicationId = directCommunication.DirectCommunicationId,
+                        MemberProfiles = directCommunication.Members.Select(user => (UserProfile)user).ToList()
+                    })
+                    .SingleOrDefaultAsync();
+            }
+            Assert.That(directCommunication, Is.Not.Null, "DirectCommunication was null");
 
-            await _mockDB.DirectCommunicationEntity.AddRecord(directCommunication.DirectCommunicationId, directCommunication);
-
-            var result = await _directCommunicationRepository.GetDirectCommunicationsByUserId(sender.UserId);
-
-            Assert.That(result, Is.Not.Null, "Result was null for user 1...");
-
-            Assert.That(result.Count == 1
-                && directCommunication.UserIds == result[0].UserIds
-                && directCommunication.DirectMessageIds == result[0].DirectMessageIds,
-                "Wrong messages returned for user 1...");
-
-
-            result = await _directCommunicationRepository.GetDirectCommunicationsByUserId(receiver.UserId);
-
-            Assert.That(result, Is.Not.Null, "Result was null for user 2...");
-
-            Assert.That(result.Count == 1
-                && directCommunication.UserIds == result[0].UserIds
-                && directCommunication.DirectMessageIds == result[0].DirectMessageIds,
-                "Wrong messages returned for user 2...");
-        }
-
-        [Test]
-        public async Task AddDirectCommunication_ReturnsValidDirectCommunication()
-        {
-            var sender = new User() { UserId = Guid.NewGuid() };
-            var receiver = new User() { UserId = Guid.NewGuid(), Username = "User" };
-
-            await _mockDB.UserEntity.AddRecord(sender.UserId, sender);
-            await _mockDB.UserEntity.AddRecord(receiver.UserId, receiver);
-
-            var newDirectCommunication = new NewDirectCommunicationDTO() {SenderId = sender.UserId, ReceiverName = receiver.Username};
-
-            ServerResult? result = await _directCommunicationRepository.AddDirectCommunication(newDirectCommunication);
-
-            Assert.IsNotNull(result, "Result was null");
-
-            DirectCommunication? directCommunication = (DirectCommunication?)result.Data;
-
-            Assert.IsNotNull(directCommunication, "DirectCommunication was null");
-
-            DirectCommunication? storedDirectCommunication = await _mockDB.DirectCommunicationEntity.GetRecordById(directCommunication.DirectCommunicationId);
-
-            Assert.That(directCommunication.DirectCommunicationId == storedDirectCommunication.DirectCommunicationId
-                        && directCommunication.UserIds.Item1 == sender.UserId
-                        && directCommunication.UserIds.Item2 == receiver.UserId,
-                        "Wrong DirectCommunication returned...");
-        }
-
-        [Test]
-        public async Task AddDirectCommunication_AddsDirectCommunicationToDBWithCorrectAttributes()
-        {
-            var sender = new User() { UserId = Guid.NewGuid(), Username = "User1" };
-            var receiver = new User() { UserId = Guid.NewGuid(), Username = "User2" };
-
-            await _mockDB.UserEntity.AddRecord(sender.UserId, sender);
-            await _mockDB.UserEntity.AddRecord(receiver.UserId, receiver);
-
-            var newDirectCommunication = new NewDirectCommunicationDTO() {SenderId = sender.UserId, ReceiverName = receiver.Username };
-
-            ServerResult? result = await _directCommunicationRepository.AddDirectCommunication(newDirectCommunication);
-
-            DirectCommunication directCommunication = result.Data as DirectCommunication;
-
-            DirectCommunication? storedDirectCommunication = await _mockDB.DirectCommunicationEntity.GetRecordById(directCommunication.DirectCommunicationId);
-
-            Assert.That(storedDirectCommunication.UserIds.Item1 == sender.UserId && storedDirectCommunication.UserIds.Item2 == receiver.UserId,
-                        "Wrong DirectCommunication stored...");
+            Assert.That(directCommunication.MemberProfiles.Count == 2
+                && directCommunication.MemberProfiles.Exists(user => user.UserId == sender.UserId)
+                && directCommunication.MemberProfiles.Exists(user => user.UserId == receiver.UserId),
+                "Wrong members");
         }
 
         [Test]
         public async Task AddDirectCommunication_UpdatesUserEntities()
         {
-            var sender = new User() { UserId = Guid.NewGuid(), Username = "User1" };
-            var receiver = new User() { UserId = Guid.NewGuid(), Username = "User2" };
+            var sender = CreateUser("Sender");
+            var receiver = CreateUser("Receiver");
 
-            await _mockDB.UserEntity.AddRecord(sender.UserId, sender);
-            await _mockDB.UserEntity.AddRecord(receiver.UserId, receiver);
+            var newDirectCommunication = new NewDirectCommunication() { SenderId = sender.UserId, ReceiverId = receiver.UserId };
 
-            var newDirectCommunication = new NewDirectCommunicationDTO() { SenderId = sender.UserId, ReceiverName = receiver.Username };
+            ServerTransmission? result = await _directCommunicationRepository.AddDirectCommunication(newDirectCommunication);
 
-            ServerResult? result = await _directCommunicationRepository.AddDirectCommunication(newDirectCommunication);
+            using (var context = new MockOrionDbContext(_options))
+            {
+                sender = await context.Users
+                    .Where(user => user.UserId == sender.UserId)
+                    .Select(user => new User
+                    {
+                        UserId = user.UserId,
+                        Username = user.Username,
+                        DirectCommunications = user.DirectCommunications
+                    })
+                    .SingleAsync();
 
-            DirectCommunication directCommunication = result.Data as DirectCommunication;
+                receiver = await context.Users
+                    .Where(user => user.UserId == receiver.UserId)
+                    .Select(user => new User
+                    {
+                        UserId = user.UserId,
+                        Username = user.Username,
+                        DirectCommunications = user.DirectCommunications
+                    })
+                    .SingleAsync();
+            }
 
-            User? storedSender = await _mockDB.UserEntity.GetRecordById(sender.UserId);
-
-            Assert.IsNotNull(storedSender, "Stored sender was null");
-
-            Assert.That(storedSender.DirectCommunicationIds.Contains(directCommunication.DirectCommunicationId), "Sender did not contain directCommunication");
-
-            User? storedReceiver = await _mockDB.UserEntity.GetRecordById(receiver.UserId);
-
-            Assert.IsNotNull(storedReceiver, "Stored receiver was null");
-
-            Assert.That(storedReceiver.DirectCommunicationIds.Contains(directCommunication.DirectCommunicationId), "Receiver did not contain directCommunication");
+            Assert.That(sender.DirectCommunications.Count > 0, "No direct communication added to sender");
+            Assert.That(receiver.DirectCommunications.Count > 0, "No direct communication added to receiver");
         }
     }
 }

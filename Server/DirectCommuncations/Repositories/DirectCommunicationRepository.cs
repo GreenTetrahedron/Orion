@@ -5,6 +5,7 @@ using Orion.Models.DirectCommunicationModels;
 using Orion.Models.MessageModels;
 using Orion.Models.ServerTransmissions;
 using Orion.Models.ServerTransmissions.Results;
+using Orion.Models.UserModels;
 using Orion.Server.DataLayer;
 using Orion.Server.DirectCommuncations;
 using Orion.Server.Exceptions;
@@ -68,12 +69,25 @@ namespace Orion.Server.DirectCommunications.Repositories
 
         public async Task<DirectCommunicationDTO?> GetDirectCommunicationById(Guid id)
         {
-            var directCommunication = await _database.DirectCommunications.FindAsync(id);
+            var directCommunication = await _database.DirectCommunications
+                .Where(directCommunication => directCommunication.DirectCommunicationId == id)
+                .Select(directCommunication => new DirectCommunicationDTO()
+                {
+                    DirectCommunicationId = directCommunication.DirectCommunicationId,
+                    Messages = directCommunication.Messages.Select(message => new MessageDTO()
+                    { 
+                        MessageId = message.MessageId,
+                        SenderProfile = message.Sender
+                    }).ToList(),
+                    MemberProfiles = directCommunication.Members.Select(member => (UserProfile)member).ToList()
+                })
+                .SingleOrDefaultAsync();
+
 
             if (directCommunication == null)
                 return null;
 
-            return (DirectCommunicationDTO)directCommunication;
+            return directCommunication;
         }
 
         public async Task<List<MessageDTO>?> GetDirectMessagesByDirectCommunicationId(Guid id)

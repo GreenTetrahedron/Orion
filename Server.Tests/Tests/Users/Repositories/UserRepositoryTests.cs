@@ -1,23 +1,50 @@
+using Microsoft.EntityFrameworkCore;
 using Orion.Models;
 using Orion.Models.ClientTransmissions;
+using Orion.Models.ServerTransmissions;
 using Orion.Models.ServerTransmissions.Results;
+using Orion.Models.UserModels;
 using Orion.Server.DataLayer;
 using Orion.Server.DirectCommunications;
 using Orion.Server.Tests.Mocks.DataLayer;
+using Orion.Server.Users;
 using Orion.Server.Users.Repositories;
+using System.ComponentModel.DataAnnotations;
 
 namespace Orion.Server.Tests.Users.Repositories
 {
     public class UserRepositoryTests
     {
-        private Database _mockDB;
         private IUserRepository _userRepository;
+        private DbContextOptions _options;
 
         [SetUp]
         public void Setup()
         {
-            _mockDB = new MockDB();
-            _userRepository = new UserRepository(_mockDB);
+            _options = new DbContextOptionsBuilder<MockOrionDbContext>().Options;
+
+            var context = new MockOrionDbContext(_options);
+            context.Database.EnsureDeleted();
+            _userRepository = new UserRepository(context);
+        }
+
+        [Test]
+        [TestCase("User1")]
+        [TestCase("American bald eagle")]
+        [TestCase("User212343441")]
+        public async Task AuthenticateUser_ReturnsAuthenticationsMessagesServerResult(string username)
+        {
+            var credentials = new Credentials() { Username = username };
+
+            ServerTransmission tranmission = await _userRepository.AuthenticateUser(credentials);
+
+            Assert.That(tranmission.Response, Is.Not.Null, "Response was null");
+            Assert.That(tranmission.Response.ServerResult, Is.Not.Null, "Result was null");
+            Assert.That(tranmission.Response.ServerResult.OperationInformation, Is.Not.Null, "Operation information was null");
+
+            ServerResult<AuthenticationMessages> result;
+
+            Assert.DoesNotThrow(() => result = tranmission.Response.ServerResult, "Wrong type returned...");
         }
 
         [Test]
@@ -32,14 +59,68 @@ namespace Orion.Server.Tests.Users.Repositories
                 Username = username
             };
 
-            await _mockDB.UserEntity.AddRecord(newUser.UserId, newUser);
+            using (var context = new MockOrionDbContext(_options))
+            {
+                await context.Users.AddAsync(newUser);
+                await context.SaveChangesAsync();
+            }
+
 
             var credentials = new Credentials() { Username = username };
 
-            ServerResult<AuthenticationMessages> result = await _userRepository.AuthenticateUser(credentials);
+            ServerTransmission transmission = await _userRepository.AuthenticateUser(credentials);
 
-            Assert.That(result.OperationInformation.OperationMessageCode == AuthenticationMessages.VALID_CREDENTIALS);
+            Assert.That(((ServerResult<AuthenticationMessages>)transmission.Response.ServerResult).OperationInformation.OperationMessageCode, Is.EqualTo(AuthenticationMessages.VALID_CREDENTIALS));
         }
+
+        [Test]
+        [TestCase("User1")]
+        [TestCase("American bald eagle")]
+        [TestCase("User212343441")]
+        public async Task AuthenticateUser_ReturnsCorrectServerTransmissionForValidUsername(string username)
+        {
+            var newUser = new User()
+            {
+                UserId = Guid.NewGuid(),
+                Username = username
+            };
+
+            using (var context = new MockOrionDbContext(_options))
+            {
+                await context.Users.AddAsync(newUser);
+                await context.SaveChangesAsync();
+            }
+
+            var credentials = new Credentials() { Username = username };
+
+            ServerTransmission transmission = await _userRepository.AuthenticateUser(credentials);
+
+            Assert.That(transmission.Response, Is.Not.Null, "Response was null");
+            Assert.That(transmission.Response.ServerResult, Is.Not.Null, "Result was null");
+            Assert.That(transmission.Response.AffectedUsers.SequenceEqual([newUser.UserId]), "Wrong affected users");
+            Assert.That(((UserDTO)transmission.Response.ServerResult.Data).UserId == newUser.UserId
+                && ((UserDTO)transmission.Response.ServerResult.Data).Username == newUser.Username, "Wrong user returned");
+            Assert.That(transmission.Publish, Is.Null, "Publish was not null");
+        }
+
+        [Test]
+        [TestCase("User1")]
+        [TestCase("American bald eagle")]
+        [TestCase("User212343441")]
+        public async Task AuthenticateUser_ReturnsCorrectServerTransmissionForInvalidUsername(string username)
+        {
+            var credentials = new Credentials() { Username = username };
+
+            ServerTransmission transmission = await _userRepository.AuthenticateUser(credentials);
+
+            Assert.That(transmission.Response, Is.Not.Null, "Response was null");
+            Assert.That(transmission.Response.ServerResult, Is.Not.Null, "Result was null");
+            Assert.That(transmission.Response.AffectedUsers, Is.Null, "Affected user was returned");
+            Assert.That(transmission.Response.ServerResult.Data, Is.Null, "User returned");
+            Assert.That(transmission.Publish, Is.Null, "Publish was not null");
+        }
+
+
 
         [Test]
         [TestCase("User1")]
@@ -47,38 +128,59 @@ namespace Orion.Server.Tests.Users.Repositories
         [TestCase("User212343441")]
         public async Task AuthenticateUser_ReturnsFalseForInvalidUsername(string username)
         {
-            (_mockDB.UserEntity as MockEntity<User>)._idToRecord = new Dictionary<Guid, User>();
-            Assert.That((await _mockDB.UserEntity.GetAllRecords()).ToList().Count == 0, "Invalid test conditions");
-            
             var credentials = new Credentials() { Username = username };
 
-            ServerResult<AuthenticationMessages> result = await _userRepository.AuthenticateUser(credentials);
+            ServerTransmission transmission = await _userRepository.AuthenticateUser(credentials);
 
-            Assert.That(result.OperationInformation.OperationMessageCode == AuthenticationMessages.INVALID_CREDENTIALS);
+            Assert.That(((ServerResult<AuthenticationMessages>)transmission.Response.ServerResult).OperationInformation.OperationMessageCode, Is.EqualTo(AuthenticationMessages.INVALID_CREDENTIALS), "Invalid credentials message was not returned");
         }
         [Test]
-        public async Task AddUserAddsUserToDB()
+        [TestCase("User1")]
+        [TestCase("American bald eagle")]
+        [TestCase("User212343441")]
+        public async Task AddUser_AddsUserToDB(string username)
         {
-            User user = await _userRepository.AddUser("User1");
+            var newUser = await _userRepository.AddUser(username);
 
-            User result = await _mockDB.UserEntity.GetRecordById(user.UserId);
-            Assert.That(result?.Username == "User1", $"Username was: {result?.Username}");
-        }
+            User result;
 
-
-        [Test]
-        public async Task GetUserGetsUserFromDB()
-        {
-            var user = new User()
+            using (var context = new MockOrionDbContext(_options))
             {
-                UserId = new Guid(),
-                Username = "User1"
+                result = await context.Users
+                    .Where(user => user.UserId == newUser.UserId)
+                    .SingleOrDefaultAsync();
+            }
+
+            Assert.That(result, Is.Not.Null, "No user added");
+            Assert.That(result.UserId, Is.EqualTo(newUser.UserId), "Wrong userId returned");
+            Assert.That(result.Username, Is.EqualTo(newUser.Username), "Wrong username added");
+        }
+
+
+        [Test]
+        [TestCase("User1")]
+        [TestCase("American bald eagle")]
+        [TestCase("User212343441")]
+        public async Task GetUserById_GetsCorrectUserFromDB(string username)
+        {
+            var newUser = new User()
+            {
+                UserId = Guid.NewGuid(),
+                Username = username
             };
 
-            await _mockDB.UserEntity.AddRecord(user.UserId, user);
+            using (var context = new MockOrionDbContext(_options))
+            {
+                await context.Users.AddAsync(newUser);
+                await context.SaveChangesAsync();
+            }
 
-            User result = await _userRepository.GetUser(user.UserId);
-            Assert.That(result?.Username == "User1", $"Username was: {result?.Username}");
+            UserDTO result = await _userRepository.GetUser(newUser.UserId);
+
+            Assert.That(result, Is.Not.Null, "No user added");
+            Assert.That(result.UserId, Is.EqualTo(newUser.UserId), "Wrong userId returned");
+            Assert.That(result.Username, Is.EqualTo(newUser.Username), "Wrong username returned");
+
         }
     }
 }

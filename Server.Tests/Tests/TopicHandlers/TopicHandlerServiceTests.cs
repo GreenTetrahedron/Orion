@@ -1,6 +1,8 @@
 ﻿using Orion.Configuration;
 using Orion.Models.ClientTransmissions;
+using Orion.Models.ServerTransmissions;
 using Orion.Models.ServerTransmissions.Results;
+using Orion.Models.UserModels;
 using Orion.Server.Tests.Mocks;
 using Orion.Server.Tests.Mocks.Users.Controllers;
 using Orion.Server.TopicHandlers;
@@ -36,7 +38,7 @@ namespace Orion.Server.Tests.TopicHandlers
         [TestCase("User3")]
         public async Task AuthenticateUserIsCalledProperly(string username)
         {
-            ServerResult? result = await _topicHandlerService.GetTopicHandler("AuthenticateUser").Invoke(new Credentials() { Username = username });
+            ServerTransmission? result = await _topicHandlerService.GetTopicHandler("AuthenticateUser").Invoke(new Credentials() { Username = username });
 
             callStack.GetLastMethodCall(out var nameOfLastMethodCalled, out var lastMethodCallArguments);
 

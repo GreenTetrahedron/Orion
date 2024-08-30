@@ -1,5 +1,6 @@
 ﻿using Orion.Models;
 using Orion.Models.ClientTransmissions;
+using Orion.Models.DirectCommunicationModels;
 using Orion.Server.DirectCommuncations.Controllers;
 using Orion.Server.Tests.Mocks.DataLayer;
 using Orion.Server.Tests.Mocks.Users.Repositories;
@@ -26,7 +27,7 @@ namespace Orion.Server.Tests.DirectCommunications.Controllers
             var sender = new User() { UserId = Guid.NewGuid() };
             var receiver = new User() { UserId = Guid.NewGuid(), Username = "User" };
 
-            var newDirectCommunication = new NewDirectCommunicationDTO() { SenderId = sender.UserId, ReceiverName = receiver.Username };
+            var newDirectCommunication = new NewDirectCommunication() { SenderId = sender.UserId, ReceiverId = receiver.UserId };
 
             await _directCommunicationController.AddDirectCommunication(newDirectCommunication);
 

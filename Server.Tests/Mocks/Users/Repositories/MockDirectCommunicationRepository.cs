@@ -1,6 +1,9 @@
 ﻿using Microsoft.VisualStudio.TestPlatform.ObjectModel;
 using Orion.Models;
 using Orion.Models.ClientTransmissions;
+using Orion.Models.DirectCommunicationModels;
+using Orion.Models.MessageModels;
+using Orion.Models.ServerTransmissions;
 using Orion.Models.ServerTransmissions.Results;
 using Orion.Server.DirectCommuncations.Controllers;
 using Orion.Server.DirectCommunications.Repositories;
@@ -19,28 +22,21 @@ namespace Orion.Server.Tests.Mocks.Users.Repositories
             callStack = new MethodCallStack();
         }
 
-        public async Task<ServerResult<DirectCommunicationMessages>?> AddDirectCommunication(NewDirectCommunicationDTO newDirectCommunication)
+        public async Task<ServerTransmission?> AddDirectCommunication(NewDirectCommunication newDirectCommunication)
         {
             callStack.NewMethodCall(nameof(this.AddDirectCommunication), [newDirectCommunication]);
 
             return default;
         }
 
-        public async Task<DirectCommunication?> GetDirectCommunicationById(Guid id)
+        public async Task<DirectCommunicationDTO?> GetDirectCommunicationById(Guid id)
         {
             callStack.NewMethodCall(nameof(this.GetDirectCommunicationById), [id]);
 
             return default;
         }
 
-        public async Task<List<DirectCommunication>?> GetDirectCommunicationsByUserId(Guid id)
-        {
-            callStack.NewMethodCall(nameof(this.GetDirectCommunicationsByUserId), [id]);
-
-            return default;
-        }
-
-        public async Task<List<Message>?> GetDirectMessagesByDirectCommunicationId(Guid id)
+        public async Task<List<MessageDTO>?> GetDirectMessagesByDirectCommunicationId(Guid id)
         {
             callStack.NewMethodCall(nameof(this.GetDirectMessagesByDirectCommunicationId), [id]);
 
