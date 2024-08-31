@@ -3,7 +3,9 @@ using Orion.Client.Transmissions;
 using Orion.Client.Users.Services;
 using Orion.Models;
 using Orion.Models.ClientTransmissions;
+using Orion.Models.DirectCommunicationModels;
 using Orion.Models.ServerTransmissions.Results;
+using Orion.Models.UserModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,7 +25,7 @@ namespace Orion.Client
 
         private readonly ITransmissionService _transmissionService;
 
-        private User sender;
+        private UserDTO sender;
 
         public TestApplication(IUserService userService, IDirectCommunicationService directCommunicationService, ITransmissionService transmissionService)
         {
@@ -58,17 +60,17 @@ namespace Orion.Client
                     if (result.OperationInformation.OperationMessageCode != AuthenticationMessages.VALID_CREDENTIALS)
                         return;
 
-                    sender = result.Data as User;
+                    sender = result.Data as UserDTO;
 
                     _availableOptions.Add(2, new Tuple<string, Action>("NewDirectCommunication", async () =>
                     {
                         Console.WriteLine("Receiver Name: ");
                         string name = Console.ReadLine();
 
-                        var directCommunication = new NewDirectCommunicationDTO()
+                        var directCommunication = new NewDirectCommunication()
                         {
                             SenderId = sender.UserId,
-                            ReceiverName = name
+                            ReceiverId = 
                         };
 
                         var subscriptable = await _directCommunicationService.NewDirectCommunication(directCommunication);

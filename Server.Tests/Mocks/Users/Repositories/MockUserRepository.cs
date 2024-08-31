@@ -33,5 +33,11 @@ namespace Orion.Server.Tests.Mocks.Users.Repositories
             methodCallStack.Push($"GetUser: {userId}");
             return null;
         }
+
+        public async Task<ServerTransmission?> GetUserProfileByUsername(string username)
+        {
+            methodCallStack.Push($"{nameof(GetUserProfileByUsername)}: {username}");
+            return null;
+        }
     }
 }

@@ -22,5 +22,11 @@ namespace Orion.Server.Users.Controllers
         {
             return await _userRepository.AuthenticateUser(credentials);
         }
+
+        [Handler("GetUserByUsername")]
+        public async Task<ServerTransmission> GetUserByUsername(string username)
+        {
+            return await _userRepository.GetUserProfileByUsername(username);
+        }
     }
 }

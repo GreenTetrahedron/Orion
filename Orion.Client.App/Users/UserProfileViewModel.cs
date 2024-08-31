@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Orion.Client.App.Users
 {
-    public class UserProfile : INotifyPropertyChanged
+    public class UserProfileViewModel : INotifyPropertyChanged
     {
         private Guid _userId;
 

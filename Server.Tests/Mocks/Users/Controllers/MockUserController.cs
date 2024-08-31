@@ -1,4 +1,5 @@
-﻿using Orion.Models.ClientTransmissions;
+﻿using Microsoft.Identity.Client.Platforms.Features.DesktopOs.Kerberos;
+using Orion.Models.ClientTransmissions;
 using Orion.Models.ServerTransmissions;
 using Orion.Models.ServerTransmissions.Results;
 using Orion.Models.UserModels;
@@ -27,6 +28,13 @@ namespace Orion.Server.Tests.Mocks.Users.Controllers
         public async Task<ServerTransmission?> AuthenticateUser(Credentials credentials)
         {
             callStack.NewMethodCall(nameof(this.AuthenticateUser), [credentials]);
+            return default;
+        }
+
+        [Handler("GetUserByUsername")]
+        public Task<ServerTransmission?> GetUserByUsername(string username)
+        {
+            callStack.NewMethodCall(nameof(this.AuthenticateUser), [username]);
             return default;
         }
     }

@@ -1,5 +1,6 @@
 ﻿using Orion.Client.Attributes;
 using Orion.Models;
+using Orion.Models.DirectCommunicationModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +13,7 @@ namespace Orion.Client.DirectCommunications.Controllers
     public class DirectCommunicationController : IDirectCommunicationController
     {
         [Handler("NewDirectCommunication")]
-        public void NewDirectCommunication(DirectCommunication directCommunication)
+        public void NewDirectCommunication(DirectCommunicationDTO directCommunication)
         {
             throw new NotImplementedException();
         }

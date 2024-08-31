@@ -36,5 +36,23 @@ namespace Orion.Server.Tests.Users.Controllers
             Assert.That(lastMethodCallSplit[0] == "AuthenticateUser", "Wrong method called");
             Assert.That(lastMethodCallSplit[1] == credentials.Username, "Wrong parameter given");
         }
+
+        [Test]
+        [TestCase("Jhonny Felon")]
+        [TestCase("User1")]
+        [TestCase("Tim OB. Simon")]
+        public async Task GetUserByUsername_CallsGetUserProfileByUsernameWithCorrectUsername(string username)
+        {
+            await _userController.GetUserByUsername(username);
+
+            _userRepository.methodCallStack.TryPeek(out string lastMethodCall);
+
+            Assert.That(!string.IsNullOrEmpty(lastMethodCall), "Method not called");
+
+            var lastMethodCallSplit = lastMethodCall.Split(": ");
+
+            Assert.That(lastMethodCallSplit[0] == nameof(MockUserRepository.GetUserProfileByUsername), "Wrong method called");
+            Assert.That(lastMethodCallSplit[1] == username, "Wrong parameter given");
+        }
     }
 }

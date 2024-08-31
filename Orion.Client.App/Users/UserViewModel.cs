@@ -1,4 +1,6 @@
 ﻿using Orion.Models;
+using Orion.Models.DirectCommunicationModels;
+using Orion.Models.UserModels;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -10,16 +12,16 @@ using System.Threading.Tasks;
 
 namespace Orion.Client.App.Users
 {
-    public class UserViewModel : User, INotifyPropertyChanged
+    public class UserViewModel : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged = delegate { };
 
         private Guid _userId;
 
-        public new Guid UserId
+        public Guid UserId
         {
             get { return _userId; }
-            private set
+            set
             {
                 _userId = value;
                 OnPropertyChanged();
@@ -28,34 +30,41 @@ namespace Orion.Client.App.Users
 
         private string _username;
 
-        public new string Username
+        public string Username
         {
             get { return _username; }
-            private set
+            set
             {
                 _username = value;
                 OnPropertyChanged();
             }
         }
 
-        private ObservableCollection<DirectCommunication> _directCommunications;
+        private ObservableCollection<DirectCommunicationProfile> _directCommunicationProfiles;
 
-        public ObservableCollection<DirectCommunication> DirectCommunications
+        public ObservableCollection<DirectCommunicationProfile> DirectCommunicationProfiles
         {
-            get { return _directCommunications; }
-            private set
+            get { return _directCommunicationProfiles; }
+            set
             {
-                _directCommunications = value;
+                _directCommunicationProfiles = value;
                 OnPropertyChanged();
             }
         }
 
 
-
         public UserViewModel(Guid userId, string username)
         {
             UserId = userId;
-            username = username;
+            Username = username;
+            DirectCommunicationProfiles = new ObservableCollection<DirectCommunicationProfile>();
+        }
+
+        public UserViewModel(Guid userId, string username, ObservableCollection<DirectCommunicationProfile> directCommunicationProfiles)
+        {
+            UserId = userId;
+            Username = username;
+            DirectCommunicationProfiles = directCommunicationProfiles;
         }
 
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)

@@ -7,6 +7,7 @@ using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using Orion.Client.DirectCommunications.Services;
 using Orion.Models.ClientTransmissions;
+using Orion.Models.DirectCommunicationModels;
 using Orion.Models.ServerTransmissions.Results;
 using System;
 using System.Collections.Generic;
@@ -60,7 +61,7 @@ namespace Orion.Client.App.DirectCommunications
         public async void CreateNewDirectCommunication(object sender, RoutedEventArgs e)
         {
             var receiverName = RecipientNameTextBox.Text;
-            var newDirectCommunication = new NewDirectCommunicationDTO() { SenderId = App.Current.User.UserId, ReceiverName = receiverName };
+            var newDirectCommunication = new NewDirectCommunication() { SenderId = App.Current.UserViewModel.UserId, ReceiverName = receiverName };
 
             var subscriptable = await _directCommunicationService.NewDirectCommunication(newDirectCommunication);
             subscriptable.Subscribe(result =>

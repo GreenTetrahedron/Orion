@@ -5,6 +5,7 @@ using Orion.Models.DirectCommunicationModels;
 using Orion.Models.MessageModels;
 using Orion.Models.ServerTransmissions;
 using Orion.Models.ServerTransmissions.Results;
+using Orion.Models.ServerTransmissions.Results.Messages;
 using Orion.Models.UserModels;
 using Orion.Server.DataLayer;
 using Orion.Server.DirectCommunications;
@@ -75,6 +76,26 @@ namespace Orion.Server.Users.Repositories
                         .ToList()
                 })
                 .SingleOrDefaultAsync();
+        }
+
+        public async Task<ServerTransmission> GetUserProfileByUsername(string username)
+        {
+            var user = await _database.Users
+                .Where(user => user.Username == username)
+                .Select(user => new UserProfile()
+                {
+                    UserId = user.UserId,
+                    Username = user.Username
+                })
+                .SingleOrDefaultAsync();
+
+            return user == null
+                ? ServerTransmissionService
+                    .NewSuccessfulResponseServerTransmission("GetUserByUsernameResult", GetUserMessages.USER_NOT_FOUND)
+                    .AddResponseOperationMessage($"No user found with username: {username}")
+                : ServerTransmissionService
+                    .NewSuccessfulResponseServerTransmission("GetUserByUsernameResult", GetUserMessages.USER_FOUND, user)
+                    .AddResponseOperationMessage($"User with username: {username} was found");
         }
     }
 }

@@ -23,9 +23,9 @@ namespace Orion.Client.App.DirectCommunications
             }
         }
 
-        private UserProfile _receiverProfile;
+        private UserProfileViewModel _receiverProfile;
 
-        public UserProfile ReceiverProfile
+        public UserProfileViewModel ReceiverProfile
         {
             get { return _receiverProfile; }
             set { _receiverProfile = value; }

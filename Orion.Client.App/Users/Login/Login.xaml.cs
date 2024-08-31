@@ -9,6 +9,7 @@ using Orion.Client.Users.Services;
 using Orion.Models;
 using Orion.Models.ClientTransmissions;
 using Orion.Models.ServerTransmissions.Results;
+using Orion.Models.UserModels;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -67,7 +68,12 @@ namespace Orion.Client.App.Users.Login
                 if (result.OperationInformation.OperationMessageCode == AuthenticationMessages.VALID_CREDENTIALS)
                 {
                     SetInvisible();
-                    App.Current.UserViewModel = result.Data as User;
+                    
+                    UserDTO user = (UserDTO)result.Data;
+                    App.Current.UserViewModel.UserId = user.UserId;
+                    App.Current.UserViewModel.Username = user.Username;
+                    user.DirectCommunicationProfiles.ForEach(App.Current.UserViewModel.DirectCommunicationProfiles.Add);
+                    
                     Frame.Navigate(typeof(ApplicationPage));
                 }
                 else
