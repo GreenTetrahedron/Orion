@@ -1,3 +1,4 @@
+using Orion.Models.ClientTransmissions;
 using Orion.Models.ServerTransmissions;
 using System.ComponentModel.DataAnnotations;
 
@@ -21,7 +22,8 @@ namespace Orion.JsonParser.Tests
         {
             try
             {
-                var result = _jsonService.DeserialiseJson<ServerResponse?>(json);
+                var result = _jsonService.DeserialiseJson<ClientTransmission?>(json);
+                Guid id = (Guid)result.Data;
             }
             catch (Exception ex)
             {

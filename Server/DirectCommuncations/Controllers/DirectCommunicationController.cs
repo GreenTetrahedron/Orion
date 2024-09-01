@@ -1,5 +1,6 @@
 ﻿using Orion.Models.ClientTransmissions;
 using Orion.Models.DirectCommunicationModels;
+using Orion.Models.MessageModels;
 using Orion.Models.ServerTransmissions;
 using Orion.Models.ServerTransmissions.Results;
 using Orion.Server.Attributes;
@@ -26,6 +27,12 @@ namespace Orion.Server.DirectCommuncations.Controllers
         public async Task<ServerTransmission> AddDirectCommunication(NewDirectCommunication newDirectCommunication)
         {
             return await _directCommunicationRepository.AddDirectCommunication(newDirectCommunication);
+        }
+
+        [Handler("GetMessagesByDirectCommunicationId")]
+        public async Task<ServerTransmission> GetMessagesByDirectCommunicationId(DirectCommunicationId id)
+        {
+            return await _directCommunicationRepository.GetDirectMessagesByDirectCommunicationId(id);
         }
     }
 }

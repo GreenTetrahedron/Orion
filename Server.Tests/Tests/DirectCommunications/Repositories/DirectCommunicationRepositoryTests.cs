@@ -139,7 +139,9 @@ namespace Orion.Server.Tests.DirectCommunications.Repositories
                 await context.SaveChangesAsync();
             }
 
-            var result = await _directCommunicationRepository.GetDirectMessagesByDirectCommunicationId(directCommunication.DirectCommunicationId);
+            var thing = await _directCommunicationRepository.GetDirectMessagesByDirectCommunicationId(new DirectCommunicationId { Id = directCommunication.DirectCommunicationId });
+
+            var result = (List<MessageDTO>)thing.Response.ServerResult.Data;
 
             Assert.That(result, Is.Not.Null, "Result was null...");
             Assert.That(result.Count == directCommunication.Messages.Count

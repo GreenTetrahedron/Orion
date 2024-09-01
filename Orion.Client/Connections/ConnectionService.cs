@@ -40,7 +40,7 @@ namespace Orion.Client.Connections
 
         public async Task<MessageBytes> ReceiveMessage()
         {
-            byte[] buffer = new byte[1024];
+            byte[] buffer = new byte[2048];
             int receivedBytes = await _router.ReceiveAsync(buffer, SocketFlags.None);
 
             return new MessageBytes(buffer, receivedBytes);

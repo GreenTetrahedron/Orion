@@ -5,6 +5,8 @@ using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
+using Orion.Client.App.DirectCommunications.Pages;
+using Orion.Client.App.Messages;
 using Orion.Client.App.Users;
 using System;
 using System.Collections.Generic;
@@ -37,6 +39,15 @@ namespace Orion.Client.App.DirectCommunications
         public void LoadNewDirectCommunicationPage(object sender, RoutedEventArgs e)
         {
             App.Current.ContentFrame.Navigate(typeof(NewDirectCommunciation));
+        }
+
+        private void DirectCommunicationSelected(object sender, RoutedEventArgs e)
+        {
+            Button button = sender as Button;
+
+            DirectCommunicationProfileComponent directCommunicationProfile = button.Content as DirectCommunicationProfileComponent;
+
+            DirectCommunicationsContent.Navigate(typeof(MessageListPage), directCommunicationProfile.DirectCommunicationProfile);
         }
     }
 }

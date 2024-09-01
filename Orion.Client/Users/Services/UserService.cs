@@ -2,6 +2,7 @@
 using Orion.Client.Transmissions;
 using Orion.Models.ClientTransmissions;
 using Orion.Models.ServerTransmissions.Results;
+using Orion.Models.ServerTransmissions.Results.Messages;
 using Orion.Models.UserModels;
 
 namespace Orion.Client.Users.Services
@@ -18,6 +19,10 @@ namespace Orion.Client.Users.Services
         public async Task<Subscriptable<AuthenticationMessages>> AuthenticateUser(Credentials credentials)
         {
             return await _transmissionService.TransmitDataOfTopic<AuthenticationMessages>(credentials, "AuthenticateUser");
+        }
+        public async Task<Subscriptable<GetUserMessages>> GetUserByUsername(string username)
+        {
+            return await _transmissionService.TransmitDataOfTopic<GetUserMessages>(username, "GetUserByUsername");
         }
     }
 }

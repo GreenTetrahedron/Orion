@@ -5,6 +5,7 @@ using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
+using Orion.Client.App.DirectCommunications;
 using Orion.Client.Users.Services;
 using Orion.Models;
 using Orion.Models.ClientTransmissions;
@@ -70,9 +71,22 @@ namespace Orion.Client.App.Users.Login
                     SetInvisible();
                     
                     UserDTO user = (UserDTO)result.Data;
-                    App.Current.UserViewModel.UserId = user.UserId;
-                    App.Current.UserViewModel.Username = user.Username;
-                    user.DirectCommunicationProfiles.ForEach(App.Current.UserViewModel.DirectCommunicationProfiles.Add);
+                    App.Current.UserViewModel = new UserViewModel(user.UserId, user.Username);
+                    user.DirectCommunicationProfiles.ForEach(directCommunicationProfile =>
+                    {
+                        App.Current.UserViewModel.DirectCommunicationProfiles.Add(new DirectCommunicationProfileViewModel()
+                        {
+                            DirectCommunicationId = directCommunicationProfile.DirectCommunicationId,
+                            ReceiverProfile = directCommunicationProfile.MemberProfiles
+                                .Where(member => member.UserId != user.UserId)
+                                .Select(member => new UserProfileViewModel()
+                                {
+                                    UserId = member.UserId,
+                                    Username = member.Username
+                                })
+                                .Single()
+                        });
+                    });
                     
                     Frame.Navigate(typeof(ApplicationPage));
                 }

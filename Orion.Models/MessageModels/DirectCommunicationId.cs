@@ -6,10 +6,8 @@ using System.Threading.Tasks;
 
 namespace Orion.Models.MessageModels
 {
-    public class NewMessage
+    public class DirectCommunicationId
     {
-        public Guid SenderId { get; set; }
-
-        public string Content { get; set; }
+        public Guid Id { get; set; }
     }
 }

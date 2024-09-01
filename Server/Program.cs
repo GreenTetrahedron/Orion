@@ -17,9 +17,6 @@ var configurationService = new ConfigurationService();
 
 configurationService.AddInstanceOfType<IJsonService>(new JsonService());
 
-Console.WriteLine(ConfigurationManager.ConnectionStrings["OrionDatabase"].ToString());
-Console.ReadLine();
-
 configurationService.AddInstanceOfType(new OrionDbContext());
 configurationService.AddInstanceOfType<IUserRepository>(new UserRepository(configurationService.GetInstanceOfType<OrionDbContext>()));
 configurationService.AddInstanceOfType<IDirectCommunicationRepository>(new DirectCommunicationRepository(configurationService.GetInstanceOfType<OrionDbContext>()));

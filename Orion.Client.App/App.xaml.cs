@@ -7,10 +7,12 @@ using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using Microsoft.UI.Xaml.Shapes;
+using Orion.Client.App.DirectCommunications;
 using Orion.Client.App.Users;
 using Orion.Client.App.Users.Login;
 using Orion.Client.Connections;
 using Orion.Client.DirectCommunications.Services;
+using Orion.Client.Messages.Services;
 using Orion.Client.Subscriptions.Services;
 using Orion.Client.TopicHandlers;
 using Orion.Client.Transmissions;
@@ -20,6 +22,7 @@ using Orion.JsonParser;
 using Orion.Models;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
@@ -61,6 +64,9 @@ namespace Orion.Client.App
             }
         }
 
+        public ObservableCollection<DirectCommunicationViewModel> DirectCommunications { get; private set; }
+
+
 
         /// <summary>
         /// Initializes the singleton application object.  This is the first line of authored code
@@ -68,7 +74,8 @@ namespace Orion.Client.App
         /// </summary>
         public App()
         {
-            this.InitializeComponent();
+            InitializeComponent();
+            DirectCommunications = new ObservableCollection<DirectCommunicationViewModel>();
         }
 
         /// <summary>
@@ -93,6 +100,7 @@ namespace Orion.Client.App
             configurationService.AddInstanceOfType<IJsonService>(new JsonService());
 
             configurationService.AddInstanceOfType<ISubscriptionService>(new SubscriptionService());
+            configurationService.AddInstanceOfType<App>(this);
             configurationService.AddInstanceOfType<ITopicHandlerService>(new TopicHandlerService(configurationService));
 
             var connectionService = new ConnectionService
@@ -110,6 +118,10 @@ namespace Orion.Client.App
                 ));
 
             configurationService.AddInstanceOfType<IUserService>(new UserService(
+                    configurationService.GetInstanceOfType<ITransmissionService>()
+                ));
+
+            configurationService.AddInstanceOfType<IMessageService>(new MessageService(
                     configurationService.GetInstanceOfType<ITransmissionService>()
                 ));
 

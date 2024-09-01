@@ -1,4 +1,5 @@
-﻿using Orion.Models;
+﻿using Orion.Client.App.DirectCommunications;
+using Orion.Models;
 using Orion.Models.DirectCommunicationModels;
 using Orion.Models.UserModels;
 using System;
@@ -40,9 +41,9 @@ namespace Orion.Client.App.Users
             }
         }
 
-        private ObservableCollection<DirectCommunicationProfile> _directCommunicationProfiles;
+        private ObservableCollection<DirectCommunicationProfileViewModel> _directCommunicationProfiles;
 
-        public ObservableCollection<DirectCommunicationProfile> DirectCommunicationProfiles
+        public ObservableCollection<DirectCommunicationProfileViewModel> DirectCommunicationProfiles
         {
             get { return _directCommunicationProfiles; }
             set
@@ -57,10 +58,10 @@ namespace Orion.Client.App.Users
         {
             UserId = userId;
             Username = username;
-            DirectCommunicationProfiles = new ObservableCollection<DirectCommunicationProfile>();
+            DirectCommunicationProfiles = new ObservableCollection<DirectCommunicationProfileViewModel>();
         }
 
-        public UserViewModel(Guid userId, string username, ObservableCollection<DirectCommunicationProfile> directCommunicationProfiles)
+        public UserViewModel(Guid userId, string username, ObservableCollection<DirectCommunicationProfileViewModel> directCommunicationProfiles)
         {
             UserId = userId;
             Username = username;

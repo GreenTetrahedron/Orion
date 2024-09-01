@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Orion.Client.App.Users;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -6,33 +7,30 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Orion.Client.App.Users
+namespace Orion.Client.App.DirectCommunications
 {
-    public class UserProfileViewModel : INotifyPropertyChanged
+    public class DirectCommunicationProfileViewModel : INotifyPropertyChanged
     {
-        private Guid _userId;
+        private Guid _directCommunicationId;
 
-        public Guid UserId
+        public Guid DirectCommunicationId
         {
-            get { return _userId; }
+            get { return _directCommunicationId; }
             set
             {
-                _userId = value;
+                _directCommunicationId = value;
                 OnPropertyChanged();
             }
         }
 
-        private string _username;
+        private UserProfileViewModel _receiverProfile;
 
-        public string Username
+        public UserProfileViewModel ReceiverProfile
         {
-            get { return _username; }
-            set
-            {
-                _username = value;
-                OnPropertyChanged();
-            }
+            get { return _receiverProfile; }
+            set { _receiverProfile = value; }
         }
+
 
 
         public event PropertyChangedEventHandler PropertyChanged;

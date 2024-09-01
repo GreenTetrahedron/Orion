@@ -17,7 +17,10 @@
     <None Remove="Defaults.xaml" />
     <None Remove="DirectCommunications\DirectCommunicationsPage.xaml" />
     <None Remove="DirectCommunications\NewDirectCommunciation.xaml" />
+    <None Remove="DirectCommunications\Pages\DirectCommunicationProfileComponent.xaml" />
     <None Remove="Login.xaml" />
+    <None Remove="Messages\MessageComponent.xaml" />
+    <None Remove="Messages\MessageListPage.xaml" />
     <None Remove="Navbar.xaml" />
     <None Remove="Resources\AppStyles.xaml" />
   </ItemGroup>
@@ -68,8 +71,22 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="DirectCommunications\Pages\" />
     <Folder Include="Users\Login\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Messages\MessageComponent.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Messages\MessageListPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="DirectCommunications\Pages\DirectCommunicationProfileComponent.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Page Update="Resources\AppStyles.xaml">

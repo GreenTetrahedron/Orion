@@ -6,9 +6,12 @@ using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using Orion.Client.DirectCommunications.Services;
+using Orion.Client.Users.Services;
 using Orion.Models.ClientTransmissions;
 using Orion.Models.DirectCommunicationModels;
 using Orion.Models.ServerTransmissions.Results;
+using Orion.Models.ServerTransmissions.Results.Messages;
+using Orion.Models.UserModels;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -30,6 +33,7 @@ namespace Orion.Client.App.DirectCommunications
     public partial class NewDirectCommunciation : Page, INotifyPropertyChanged
     {
         private readonly IDirectCommunicationService _directCommunicationService;
+        private readonly IUserService _userService;
 
         public event PropertyChangedEventHandler PropertyChanged = delegate { };
 
@@ -48,9 +52,10 @@ namespace Orion.Client.App.DirectCommunications
 
         public NewDirectCommunciation()
         {
-            this.InitializeComponent();
+            InitializeComponent();
 
             _directCommunicationService = App.Current.ConfigurationService.GetInstanceOfType<IDirectCommunicationService>();
+            _userService = App.Current.ConfigurationService.GetInstanceOfType<IUserService>();
         }
 
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
@@ -61,15 +66,35 @@ namespace Orion.Client.App.DirectCommunications
         public async void CreateNewDirectCommunication(object sender, RoutedEventArgs e)
         {
             var receiverName = RecipientNameTextBox.Text;
-            var newDirectCommunication = new NewDirectCommunication() { SenderId = App.Current.UserViewModel.UserId, ReceiverName = receiverName };
 
-            var subscriptable = await _directCommunicationService.NewDirectCommunication(newDirectCommunication);
-            subscriptable.Subscribe(result =>
+            var receiverIdSubscriptable = await _userService.GetUserByUsername(receiverName);
+
+            Guid receiverId;
+
+            receiverIdSubscriptable.Subscribe(async result =>
             {
-                if (result.OperationInformation.OperationMessageCode == DirectCommunicationMessages.DIRECT_COMMUNICATION_CREATION_SUCCEEDED)
-                    return;
-                else
+                if (result.OperationInformation.OperationMessageCode != GetUserMessages.USER_FOUND)
+                {
                     InvalidMessageVisibility = Visibility.Visible;
+                    return;
+                }
+                InvalidMessageVisibility = Visibility.Collapsed;
+                receiverId = ((UserProfile)result.Data).UserId;
+
+                var newDirectCommunication = new NewDirectCommunication() { SenderId = App.Current.UserViewModel.UserId, ReceiverId = receiverId};
+
+                var subscriptable = await _directCommunicationService.NewDirectCommunication(newDirectCommunication);
+                subscriptable.Subscribe(result =>
+                {
+                    if (result.OperationInformation.OperationMessageCode == DirectCommunicationMessages.DIRECT_COMMUNICATION_CREATION_SUCCEEDED)
+                    {
+                        InvalidMessageVisibility = Visibility.Collapsed;
+                        return;
+                    }
+
+                    InvalidMessageVisibility = Visibility.Visible;
+                    return;
+                });
             });
         }
     }

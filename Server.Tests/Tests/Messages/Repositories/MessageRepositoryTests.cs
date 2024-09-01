@@ -1,12 +1,15 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Orion.Models.MessageModels;
+using Orion.Models.ServerTransmissions;
 using Orion.Server.DataLayer;
+using Orion.Server.DirectCommuncations;
 using Orion.Server.DirectCommunications.Repositories;
 using Orion.Server.Messages;
 using Orion.Server.Messages.Repositories;
 using Orion.Server.Tests.Mocks.DataLayer;
 using Orion.Server.Users;
+using System.Net.WebSockets;
 
 namespace Orion.Server.Tests.Messages.Repositories
 {
@@ -68,21 +71,74 @@ namespace Orion.Server.Tests.Messages.Repositories
                 Content = content
             };
 
+        private DirectCommunication CreateDirectCommunication(string senderName = "", string receiverName = "")
+        {
+            var sender = CreateUser(senderName);
+
+            var directCommunication = new DirectCommunication()
+            {
+                DirectCommunicationId = Guid.NewGuid(),
+                Members = new List<User> { sender, CreateUser(receiverName) },
+            };
+
+            using (var context = new MockOrionDbContext(_options))
+            {
+                context.Attach(sender);
+                context.Attach(directCommunication.Members[1]);
+                context.DirectCommunications.Add(directCommunication);
+                context.SaveChanges();
+            }
+
+            return directCommunication;
+        }
+
+        [Test]
+        
+        [TestCase("Message1")]
+        public async Task AddDirectMessage_UpdatesDirectCommunication(string content)
+        {
+            var newDirectCommunication = CreateDirectCommunication("Sender");
+            ServerTransmission? transmission = await _messageRepository.AddDirectMessage(new NewDirectMessage() { DirectCommunicationId = newDirectCommunication.DirectCommunicationId, Content = content, SenderId = newDirectCommunication.Members[0].UserId });
+
+            DirectMessageDTO directMessage = (DirectMessageDTO)transmission.Publish.ServerResult.Data;
+
+            Assert.That(directMessage, Is.Not.Null, "Returned message was null");
+
+            DirectCommunication? directCommunication;
+
+            using (var context = new MockOrionDbContext(_options))
+            {
+                directCommunication = await context.DirectCommunications
+                    .Where(directCommunication => directCommunication.DirectCommunicationId == newDirectCommunication.DirectCommunicationId)
+                    .Select(directCommunication => new DirectCommunication()
+                    {
+                        DirectCommunicationId = directCommunication.DirectCommunicationId,
+                        Messages = directCommunication.Messages
+                    })
+                    .SingleOrDefaultAsync();
+            }
+
+            Assert.That(directCommunication, Is.Not.Null, "direct communication was null");
+            Assert.That(directCommunication.Messages.Count == 1, $"No message added to direct communication");
+        }
+
         [Test]
         [TestCase("Message1")]
-        public async Task AddMessageAddsMessageToDB(string content)
+        public async Task AddDirectMessage_AddsMessageToDB(string content)
         {
-            var sender = CreateUser();
-            MessageDTO? returnedMessage = await _messageRepository.AddMessage(new NewMessage() { Content = content, SenderId = sender.UserId });
-            
-            Assert.That(returnedMessage, Is.Not.Null, "Returned message was null");
+            var newDirectCommunication = CreateDirectCommunication("Sender");
+            ServerTransmission? transmission = await _messageRepository.AddDirectMessage(new NewDirectMessage() { DirectCommunicationId = newDirectCommunication.DirectCommunicationId, Content = content, SenderId = newDirectCommunication.Members[0].UserId });
+
+            DirectMessageDTO directMessage = (DirectMessageDTO)transmission.Publish.ServerResult.Data;
+
+            Assert.That(directMessage, Is.Not.Null, "Returned message was null");
 
             MessageDTO? message;
 
             using (var context = new MockOrionDbContext(_options))
             {
                 message = await context.Messages
-                    .Where(message => message.MessageId == returnedMessage.MessageId)
+                    .Where(message => message.MessageId == directMessage.Message.MessageId)
                     .Select(message => new MessageDTO()
                     {
                         MessageId = message.MessageId,
@@ -94,26 +150,6 @@ namespace Orion.Server.Tests.Messages.Repositories
 
             Assert.That(message, Is.Not.Null, "Message was null");
             Assert.That(message.Content, Is.EqualTo(content), $"Content was: {message.Content}, when added content was: {content}");
-        }
-
-
-        [Test]
-        [TestCase("Message1")]
-        public async Task GetMessageGetsMessageFromDB(string content)
-        {
-            var message = CreateMessage(content: content);
-
-            using (var context = new MockOrionDbContext(_options))
-            {
-                context.Attach(message.Sender);
-                await context.Messages.AddAsync(message);
-                await context.SaveChangesAsync();
-            }
-
-            MessageDTO? result = await _messageRepository.GetMessage(message.MessageId);
-
-            Assert.That(result, Is.Not.Null, "Message was null");
-            Assert.That(result.Content, Is.EqualTo(content), $"Content was: {message.Content}, when added content was: {content}");
         }
     }
 }

@@ -36,7 +36,7 @@ namespace Orion.Server.Tests.Mocks.Users.Repositories
             return default;
         }
 
-        public async Task<List<MessageDTO>?> GetDirectMessagesByDirectCommunicationId(Guid id)
+        public async Task<ServerTransmission?> GetDirectMessagesByDirectCommunicationId(DirectCommunicationId id)
         {
             callStack.NewMethodCall(nameof(this.GetDirectMessagesByDirectCommunicationId), [id]);
 

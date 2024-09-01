@@ -85,7 +85,7 @@ namespace Orion.Server
 
         private async Task<ServerRequest?> ReceiveRequest()
         {
-            byte[] buffer = new byte[1024];
+            byte[] buffer = new byte[2048];
 
             int transmissionLength = await _router.ReceiveAsync(buffer);
 

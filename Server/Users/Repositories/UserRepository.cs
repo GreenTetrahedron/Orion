@@ -32,7 +32,12 @@ namespace Orion.Server.Users.Repositories
                     UserId = user.UserId,
                     Username = user.Username,
                     DirectCommunicationProfiles = user.DirectCommunications
-                        .Select(directCommunication => (DirectCommunicationProfile)directCommunication)
+                        .Select(directCommunication => new DirectCommunicationProfile()
+                        {
+                            DirectCommunicationId = directCommunication.DirectCommunicationId,
+                            MemberProfiles = directCommunication.Members
+                                .Select(member => (UserProfile)member).ToList()
+                        })
                         .ToList()
                 })
                 .SingleOrDefaultAsync();
@@ -72,7 +77,12 @@ namespace Orion.Server.Users.Repositories
                     UserId = user.UserId,
                     Username = user.Username,
                     DirectCommunicationProfiles = user.DirectCommunications
-                        .Select(directCommunication => (DirectCommunicationProfile)directCommunication)
+                        .Select(directCommunication => new DirectCommunicationProfile()
+                        {
+                            DirectCommunicationId = directCommunication.DirectCommunicationId,
+                            MemberProfiles = directCommunication.Members
+                                .Select(member => (UserProfile)member).ToList()
+                        })
                         .ToList()
                 })
                 .SingleOrDefaultAsync();

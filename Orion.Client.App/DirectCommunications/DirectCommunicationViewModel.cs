@@ -1,6 +1,7 @@
-﻿using Orion.Client.App.Users;
+﻿using Orion.Client.App.Messages;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -11,27 +12,32 @@ namespace Orion.Client.App.DirectCommunications
 {
     public class DirectCommunicationViewModel : INotifyPropertyChanged
     {
-        private Guid _directCommunicationId;
+        private DirectCommunicationProfileViewModel _directCommunicationProfile;
 
-        public Guid DirectCommunicationId
+        public DirectCommunicationProfileViewModel DirectCommunicationProfile
         {
-            get { return _directCommunicationId; }
-            private set
+            get { return _directCommunicationProfile; }
+            set
             {
-                _directCommunicationId = value;
+                _directCommunicationProfile = value;
                 OnPropertyChanged();
             }
         }
 
-        private UserProfileViewModel _receiverProfile;
+        public ObservableCollection<MessageViewModel> Messages { get; private set; }
 
-        public UserProfileViewModel ReceiverProfile
+        public DirectCommunicationViewModel(DirectCommunicationProfileViewModel directCommunicationProfile)
         {
-            get { return _receiverProfile; }
-            set { _receiverProfile = value; }
+            DirectCommunicationProfile = directCommunicationProfile;
+            Messages = new ObservableCollection<MessageViewModel>();
         }
 
 
+        public DirectCommunicationViewModel(DirectCommunicationProfileViewModel directCommunicationProfile, ObservableCollection<MessageViewModel> messages)
+        {
+            DirectCommunicationProfile = directCommunicationProfile;
+            Messages = messages;
+        }
 
         public event PropertyChangedEventHandler PropertyChanged;
 

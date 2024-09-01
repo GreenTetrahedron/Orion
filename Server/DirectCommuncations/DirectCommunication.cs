@@ -21,6 +21,7 @@ namespace Orion.Server.DirectCommuncations
 
         public List<Message> Messages { get; set; }
 
+
         public static explicit operator DirectCommunicationDTO(DirectCommunication directCommunication) =>
             new DirectCommunicationDTO()
             {

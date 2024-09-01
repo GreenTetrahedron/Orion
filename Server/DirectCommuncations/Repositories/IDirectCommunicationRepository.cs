@@ -16,10 +16,10 @@ namespace Orion.Server.DirectCommunications.Repositories
 {
     public interface IDirectCommunicationRepository
     {
-        public Task<ServerTransmission> AddDirectCommunication(NewDirectCommunication newDirectCommunication);
+        public Task<ServerTransmission?> AddDirectCommunication(NewDirectCommunication newDirectCommunication);
 
         public Task<DirectCommunicationDTO?> GetDirectCommunicationById(Guid id);
 
-        public Task<List<MessageDTO>?> GetDirectMessagesByDirectCommunicationId(Guid id);
+        public Task<ServerTransmission?> GetDirectMessagesByDirectCommunicationId(DirectCommunicationId id);
     }
 }

@@ -5,6 +5,7 @@ using Orion.Models.DirectCommunicationModels;
 using Orion.Models.MessageModels;
 using Orion.Models.ServerTransmissions;
 using Orion.Models.ServerTransmissions.Results;
+using Orion.Models.ServerTransmissions.Results.Messages;
 using Orion.Models.UserModels;
 using Orion.Server.DataLayer;
 using Orion.Server.DirectCommuncations;
@@ -90,10 +91,10 @@ namespace Orion.Server.DirectCommunications.Repositories
             return directCommunication;
         }
 
-        public async Task<List<MessageDTO>?> GetDirectMessagesByDirectCommunicationId(Guid id)
+        public async Task<ServerTransmission?> GetDirectMessagesByDirectCommunicationId(DirectCommunicationId id)
         {
-            return await _database.DirectCommunications
-                .Where(directCommunication => directCommunication.DirectCommunicationId == id)
+            var messages = await _database.DirectCommunications
+                .Where(directCommunication => directCommunication.DirectCommunicationId == id.Id)
                 .Select(directCommunication => 
                     directCommunication.Messages
                         .Select(x => new MessageDTO
@@ -103,6 +104,14 @@ namespace Orion.Server.DirectCommunications.Repositories
                             Content = x.Content
                         }).ToList()
                 ).SingleOrDefaultAsync();
+
+            return messages == null
+                ? ServerTransmissionService
+                    .NewSuccessfulResponseServerTransmission("GetDirectMessagesByDirectCommunicationIdResult", GetMessageMessages.NO_MESSAGES_FOUND)
+                    .AddResponseOperationMessage("No messages were found in the direct communication")
+                : ServerTransmissionService
+                    .NewSuccessfulResponseServerTransmission("GetDirectMessagesByDirectCommunicationIdResult", GetMessageMessages.SUCCESSFULLY_RETRIEVED_MESSAGE)
+                    .AddResponseOperationMessage("Messages were successfully retrieved");
         }
     }
 }
