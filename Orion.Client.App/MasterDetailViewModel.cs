@@ -1,7 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using System;
 using System.Collections.ObjectModel;
-using System.Linq;
 
 namespace Orion.Client.App
 {
@@ -45,7 +44,7 @@ namespace Orion.Client.App
 
             var i = items.IndexOf(original);
             items[i] = item; // Raises CollectionChanged.
-            
+
             OnPropertyChanged(nameof(Items));
 
             if (hasCurrent && !HasSelected)

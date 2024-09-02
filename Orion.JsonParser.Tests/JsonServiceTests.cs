@@ -1,6 +1,4 @@
 using Orion.Models.ClientTransmissions;
-using Orion.Models.ServerTransmissions;
-using System.ComponentModel.DataAnnotations;
 
 namespace Orion.JsonParser.Tests
 {

@@ -1,19 +1,6 @@
-﻿using Orion.Client.Subscriptions;
-using Orion.Client.Subscriptions.Services;
-using Orion.Client.TopicHandlers;
-using Orion.Client.Transmissions;
-using Orion.JsonParser;
-using Orion.Models.ClientTransmissions;
-using Orion.Models.ServerTransmissions.Results;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using Orion.Client.Transmissions;
 using System.Net;
 using System.Net.Sockets;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using System.Transactions;
 
 namespace Orion.Client.Connections
 {

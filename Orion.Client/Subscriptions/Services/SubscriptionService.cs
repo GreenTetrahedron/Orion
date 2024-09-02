@@ -1,5 +1,4 @@
-﻿using Orion.Client.Subscriptions;
-using Orion.Models.ServerTransmissions.Results;
+﻿using Orion.Models.ServerTransmissions.Results;
 
 namespace Orion.Client.Subscriptions.Services
 {
@@ -20,7 +19,7 @@ namespace Orion.Client.Subscriptions.Services
 
         public Subscriptable<T> GetOrCreateSubscriptableForTopic<T>(string topic) where T : Enum
         {
-            if(_topics.Contains(topic))
+            if (_topics.Contains(topic))
                 return _topicToSubscriptable[topic];
 
             var subscriptable = new Subscriptable<T>();

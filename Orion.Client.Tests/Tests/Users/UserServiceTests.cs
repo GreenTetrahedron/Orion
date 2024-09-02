@@ -1,9 +1,5 @@
-using Orion.Client.Subscriptions;
 using Orion.Client.Tests.Mocks.Transmissions;
 using Orion.Client.Users.Services;
-using Orion.Models.ClientTransmissions;
-using Orion.Models.ServerTransmissions.Results;
-using System.Threading.Tasks.Sources;
 
 namespace Orion.Client.Tests.Tests.Users
 {

@@ -1,5 +1,4 @@
-﻿using Orion.Models.ServerTransmissions.Results;
-using Orion.Client.Attributes;
+﻿using Orion.Client.Attributes;
 using Orion.Configuration;
 using System.Reflection;
 

@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Client\Orion.Client.Console.csproj" />
+    <ProjectReference Include="..\Orion.Client\Orion.Client.csproj" />
   </ItemGroup>
 
   <ItemGroup>

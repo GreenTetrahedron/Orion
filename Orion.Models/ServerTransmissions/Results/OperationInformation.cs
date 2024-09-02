@@ -1,7 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-using System.Text.Json.Serialization;
-
-namespace Orion.Models.ServerTransmissions.Results
+﻿namespace Orion.Models.ServerTransmissions.Results
 {
     public class OperationInformation<T> where T : Enum
     {

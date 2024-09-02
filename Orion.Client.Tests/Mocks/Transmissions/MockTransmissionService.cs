@@ -1,12 +1,6 @@
 ﻿using Orion.Client.Subscriptions;
 using Orion.Client.Transmissions;
 using Orion.Models.ClientTransmissions;
-using Orion.Models.ServerTransmissions.Results;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Orion.Client.Tests.Mocks.Transmissions
 {
@@ -27,14 +21,14 @@ namespace Orion.Client.Tests.Mocks.Transmissions
         public async Task<ClientTransmission?> ReceiveData()
         {
             _callStack.NewMethodCall(nameof(this.ReceiveData));
-            
+
             return default;
         }
 
         public async Task<Subscriptable<T>> TransmitDataOfTopic<T>(object? data, string topic) where T : Enum
         {
             _callStack.NewMethodCall("TransmitDataOfTopic", [data, topic]);
-            
+
             return default;
         }
     }

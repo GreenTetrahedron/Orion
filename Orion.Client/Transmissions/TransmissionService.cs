@@ -4,7 +4,6 @@ using Orion.Client.Subscriptions.Services;
 using Orion.Client.TopicHandlers;
 using Orion.JsonParser;
 using Orion.Models.ClientTransmissions;
-using System.ComponentModel.DataAnnotations;
 using System.Text;
 
 namespace Orion.Client.Transmissions

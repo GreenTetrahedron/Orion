@@ -1,7 +1,5 @@
 ﻿using Orion.Client.Subscriptions;
 using Orion.Client.Subscriptions.Services;
-using Orion.Client.Tests.Mocks;
-using Orion.Client.Tests.Tests.Transmissions;
 
 namespace Orion.Client.Tests.Mocks.Subscriptions
 {

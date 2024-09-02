@@ -1,6 +1,5 @@
 ﻿using Orion.Client.Subscriptions;
 using Orion.Client.Transmissions;
-using Orion.Models.ClientTransmissions;
 using Orion.Models.ServerTransmissions.Results;
 using Orion.Models.ServerTransmissions.Results.Messages;
 using Orion.Models.UserModels;

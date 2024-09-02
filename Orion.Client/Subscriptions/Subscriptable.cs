@@ -23,7 +23,7 @@ namespace Orion.Client.Subscriptions
 
         public void Publish(ServerResult<T> serverResult)
         {
-            foreach(var subscription in _subscriptions)
+            foreach (var subscription in _subscriptions)
             {
                 subscription.Invoke(serverResult);
             }

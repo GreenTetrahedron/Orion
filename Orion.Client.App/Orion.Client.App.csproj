@@ -11,6 +11,8 @@
     <PublishProfile>win-$(Platform).pubxml</PublishProfile>
     <UseWinUI>true</UseWinUI>
     <EnableMsixTooling>true</EnableMsixTooling>
+	<WindowsPackageType>None</WindowsPackageType>
+	<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Defaults.xaml" />
@@ -52,7 +54,7 @@
     <ProjectReference Include="..\Orion.Client\Orion.Client.csproj" />
     <ProjectReference Include="..\Orion.Configuration\Orion.Configuration.csproj" />
     <ProjectReference Include="..\Orion.Models\Orion.Models.csproj" />
-    <ProjectReference Include="..\Orion.Utilities\Orion.JsonParser.csproj" />
+    <ProjectReference Include="..\Orion.JsonParser\Orion.JsonParser.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Content Update="Assets\tim-stief-YFFGkE3y4F8-unsplash.jpg">

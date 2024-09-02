@@ -1,10 +1,5 @@
 ﻿using Orion.Client.Connections;
 using Orion.Client.Transmissions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Orion.Client.Tests.Mocks.Connections
 {
@@ -26,7 +21,7 @@ namespace Orion.Client.Tests.Mocks.Connections
 
         public Task<bool> SendMessage(byte[] data)
         {
-            _callStack.NewMethodCall("SendMessage", [ data ]);
+            _callStack.NewMethodCall("SendMessage", [data]);
 
             return default;
         }

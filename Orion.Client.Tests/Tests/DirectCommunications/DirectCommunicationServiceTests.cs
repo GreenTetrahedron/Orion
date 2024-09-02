@@ -1,11 +1,5 @@
 ﻿using Orion.Client.DirectCommunications.Services;
 using Orion.Client.Tests.Mocks.Transmissions;
-using Orion.Models.ClientTransmissions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Orion.Client.Tests.Tests.DirectCommunications
 {
