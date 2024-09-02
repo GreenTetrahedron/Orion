@@ -13,16 +13,14 @@
     <EnableMsixTooling>true</EnableMsixTooling>
   </PropertyGroup>
   <ItemGroup>
-    <None Remove="ApplicationPage.xaml" />
     <None Remove="Defaults.xaml" />
-    <None Remove="DirectCommunications\DirectCommunicationsPage.xaml" />
-    <None Remove="DirectCommunications\NewDirectCommunciation.xaml" />
-    <None Remove="DirectCommunications\Pages\DirectCommunicationProfileComponent.xaml" />
+    <None Remove="DirectCommunications\Views\AddDirectCommunicationPage.xaml" />
+    <None Remove="DirectCommunications\Views\DirectCommunicationListPage.xaml" />
     <None Remove="Login.xaml" />
-    <None Remove="Messages\MessageComponent.xaml" />
-    <None Remove="Messages\MessageListPage.xaml" />
-    <None Remove="Navbar.xaml" />
-    <None Remove="Resources\AppStyles.xaml" />
+    <None Remove="MainPage.xaml" />
+    <None Remove="Messages\Views\MessageListPage.xaml" />
+    <None Remove="NavbarPage.xaml" />
+    <None Remove="Users\Views\LoginPage.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -36,6 +34,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.756" />
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.5.240802000" />
     <Manifest Include="$(ApplicationManifest)" />
@@ -61,6 +60,21 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <Page Update="DirectCommunications\Views\AddDirectCommunicationPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="NavbarPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="MainPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
     <Page Update="Defaults.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -71,45 +85,17 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Users\Login\" />
-  </ItemGroup>
-  <ItemGroup>
-    <Page Update="Messages\MessageComponent.xaml">
+    <Page Update="Users\Views\LoginPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Page Update="Messages\MessageListPage.xaml">
+    <Page Update="DirectCommunications\Views\DirectCommunicationListPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Page Update="DirectCommunications\Pages\DirectCommunicationProfileComponent.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <Page Update="Resources\AppStyles.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <Page Update="DirectCommunications\NewDirectCommunciation.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <Page Update="DirectCommunications\DirectCommunicationsPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <Page Update="Navbar.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <Page Update="ApplicationPage.xaml">
+    <Page Update="Messages\Views\MessageListPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>

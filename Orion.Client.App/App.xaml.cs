@@ -9,7 +9,8 @@ using Microsoft.UI.Xaml.Navigation;
 using Microsoft.UI.Xaml.Shapes;
 using Orion.Client.App.DirectCommunications;
 using Orion.Client.App.Users;
-using Orion.Client.App.Users.Login;
+using Orion.Client.App.Users.Models;
+using Orion.Client.App.Users.Views;
 using Orion.Client.Connections;
 using Orion.Client.DirectCommunications.Services;
 using Orion.Client.Messages.Services;
@@ -47,26 +48,10 @@ namespace Orion.Client.App
     {
         public new static App Current => (App)Application.Current;
 
-        public IConfigurationService ConfigurationService;
+        public IConfigurationService ConfigurationService { get; set; }
 
-        public Frame ContentFrame;
-        public Frame NavbarFrame;
-
-        private UserViewModel _userViewModel;
-
-        public UserViewModel UserViewModel
-        {
-            get { return _userViewModel; }
-            set
-            {
-                _userViewModel = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public ObservableCollection<DirectCommunicationViewModel> DirectCommunications { get; private set; }
-
-
+        public CurrentUser CurrentUser { get; set; }
+        public Frame RootFrame { get; set; }
 
         /// <summary>
         /// Initializes the singleton application object.  This is the first line of authored code
@@ -75,7 +60,6 @@ namespace Orion.Client.App
         public App()
         {
             InitializeComponent();
-            DirectCommunications = new ObservableCollection<DirectCommunicationViewModel>();
         }
 
         /// <summary>
@@ -146,14 +130,14 @@ namespace Orion.Client.App
 
             d.Start();
 
-            m_window = new MainWindow();
-            var rootFrame = new Frame();
-            rootFrame.NavigationFailed += OnNavigationFailed;
+            window = new MainWindow();
 
-            rootFrame.Navigate(typeof(Login), args.Arguments);
+            RootFrame = window.RootFrame;
 
-            m_window.Content = rootFrame;
-            m_window.Activate();
+            RootFrame.Navigate(typeof(LoginPage), args.Arguments);
+            RootFrame.NavigationFailed += OnNavigationFailed;
+
+            window.Activate();
         }
 
         private void OnNavigationFailed(object sender, NavigationFailedEventArgs e)
@@ -161,7 +145,7 @@ namespace Orion.Client.App
             throw new NotImplementedException();
         }
 
-        private Window m_window;
+        private MainWindow window;
 
         public event PropertyChangedEventHandler PropertyChanged;
 

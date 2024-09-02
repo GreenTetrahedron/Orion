@@ -29,7 +29,7 @@ namespace Orion.Server.DirectCommuncations.Controllers
             return await _directCommunicationRepository.AddDirectCommunication(newDirectCommunication);
         }
 
-        [Handler("GetMessagesByDirectCommunicationId")]
+        [Handler("GetDirectMessagesByDirectCommunicationId")]
         public async Task<ServerTransmission> GetMessagesByDirectCommunicationId(DirectCommunicationId id)
         {
             return await _directCommunicationRepository.GetDirectMessagesByDirectCommunicationId(id);

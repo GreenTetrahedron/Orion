@@ -155,7 +155,7 @@ namespace Orion.Router
 
         public async Task<string> ReceiveTransmission(Socket handler)
         {
-            var buffer = new byte[2048];
+            var buffer = new byte[4096];
 
             int transmissionBytesCount = await handler.ReceiveAsync(buffer, SocketFlags.None);
 
@@ -166,7 +166,7 @@ namespace Orion.Router
 
         public async Task<ServerTransmission?> ReceiveServerTransmission()
         {
-            var buffer = new byte[2048];
+            var buffer = new byte[4096];
 
             int transmissionBytesCount = await _server.ReceiveAsync(buffer, SocketFlags.None);
 

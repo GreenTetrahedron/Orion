@@ -27,6 +27,8 @@ namespace Orion.Client.App
     /// </summary>
     public sealed partial class MainWindow : Window
     {
+        public Frame RootFrame { get => rootFrame; }
+
         public MainWindow()
         {
             this.InitializeComponent();

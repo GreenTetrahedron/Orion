@@ -19,7 +19,7 @@ namespace Orion.Client.DirectCommunications.Services
 
         public async Task<Subscriptable<GetMessageMessages>> GetMessagesByDirectCommunicationId(Guid id)
         {
-            return await _transmissionService.TransmitDataOfTopic<GetMessageMessages>(new DirectCommunicationId() { Id = id}, "GetMessagesByDirectCommunicationId");
+            return await _transmissionService.TransmitDataOfTopic<GetMessageMessages>(new DirectCommunicationId() { Id = id}, "GetDirectMessagesByDirectCommunicationId");
         }
 
         public async Task<Subscriptable<DirectCommunicationMessages>> NewDirectCommunication(NewDirectCommunication newDirectCommunication)

@@ -110,7 +110,7 @@ namespace Orion.Server.DirectCommunications.Repositories
                     .NewSuccessfulResponseServerTransmission("GetDirectMessagesByDirectCommunicationIdResult", GetMessageMessages.NO_MESSAGES_FOUND)
                     .AddResponseOperationMessage("No messages were found in the direct communication")
                 : ServerTransmissionService
-                    .NewSuccessfulResponseServerTransmission("GetDirectMessagesByDirectCommunicationIdResult", GetMessageMessages.SUCCESSFULLY_RETRIEVED_MESSAGE)
+                    .NewSuccessfulResponseServerTransmission("GetDirectMessagesByDirectCommunicationIdResult", GetMessageMessages.SUCCESSFULLY_RETRIEVED_MESSAGE, messages)
                     .AddResponseOperationMessage("Messages were successfully retrieved");
         }
     }
