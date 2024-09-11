@@ -16,7 +16,7 @@
         <viewmodel:DirectCommunicationListViewModel x:Name="Model" />
     </Page.DataContext>
     
-    <Grid>
+    <Grid Padding="15" Background="#000">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="2*" />

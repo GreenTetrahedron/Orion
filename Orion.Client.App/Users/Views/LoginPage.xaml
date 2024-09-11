@@ -12,24 +12,29 @@
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="auto" />
-            <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
-            <RowDefinition Height="auto" />
-            <RowDefinition Height="40px" />
-            <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <StackPanel Grid.Row="1">
+        <Image Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Top" Source="/Assets/tim-stief-YFFGkE3y4F8-unsplash.jpg" />
+
+        <Grid RowSpacing="15" Padding="25" HorizontalAlignment="Center" VerticalAlignment="Center" MinHeight="300" MinWidth="300" MaxWidth="400" Background="#333" CornerRadius="10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <!--<RowDefinition Height="auto"/>-->
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <TextBlock FontSize="30" Text="Login" />
             <TextBlock Visibility="{x:Bind Visible, Mode=OneWay}" Text="Invalid credentials entered!" />
 
-            <TextBlock Grid.Row="1" Grid.Column="0" Text="Username: " />
-            <TextBox Grid.Row="1" Grid.Column="1" x:Name="usernameTextEntry" />
-        </StackPanel>
+            <TextBlock Grid.Row="1" Text="Username: " />
+            <TextBox Grid.Row="2" BorderThickness="1" CornerRadius="2" x:Name="usernameTextEntry" />
+            <Button Grid.Row="3" VerticalAlignment="Bottom" CornerRadius="2" HorizontalAlignment="Stretch" Grid.ColumnSpan="2" Grid.Column="0" Click="OnLogin" >Login</Button>
+        </Grid>
 
-        <Button Grid.Row="2" Grid.ColumnSpan="2" Grid.Column="0" Click="OnLogin" >Login</Button>
     </Grid>
 </Page>

@@ -31,3 +31,4 @@ var routerService = new RouterService(new IPEndPoint(ipAddress, port),
 
 Console.WriteLine("Running broker...");
 routerService.Run();
+Console.ReadLine();
