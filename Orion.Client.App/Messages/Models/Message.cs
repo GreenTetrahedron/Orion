@@ -13,6 +13,9 @@ namespace Orion.Client.App.Messages.Models
         private string content;
 
         [ObservableProperty]
+        private DateTime lastUpdated;
+
+        [ObservableProperty]
         private UserProfile senderProfile;
     }
 }

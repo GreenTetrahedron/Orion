@@ -15,12 +15,16 @@ namespace Orion.Server.Messages
 
         public User Sender { get; set; }
 
+        public DateTime LastUpdated { get; set; }
+
+
         public static explicit operator MessageDTO(Message message) =>
             new MessageDTO()
             {
                 MessageId = message.MessageId,
                 Content = message.Content,
-                SenderProfile = message.Sender
+                SenderProfile = message.Sender,
+                LastUpdated = message.LastUpdated
             };
     }
 }

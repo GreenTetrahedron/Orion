@@ -69,7 +69,8 @@ namespace Orion.Server.DirectCommunications.Repositories
                     Messages = directCommunication.Messages.Select(message => new MessageDTO()
                     {
                         MessageId = message.MessageId,
-                        SenderProfile = message.Sender
+                        SenderProfile = message.Sender,
+                        LastUpdated = message.LastUpdated
                     }).ToList(),
                     MemberProfiles = directCommunication.Members.Select(member => (UserProfile)member).ToList()
                 })
@@ -88,11 +89,12 @@ namespace Orion.Server.DirectCommunications.Repositories
                 .Where(directCommunication => directCommunication.DirectCommunicationId == id.Id)
                 .Select(directCommunication =>
                     directCommunication.Messages
-                        .Select(x => new MessageDTO
+                        .Select(message => new MessageDTO
                         {
-                            MessageId = x.MessageId,
-                            SenderProfile = x.Sender,
-                            Content = x.Content
+                            MessageId = message.MessageId,
+                            SenderProfile = message.Sender,
+                            Content = message.Content,
+                            LastUpdated = message.LastUpdated
                         }).ToList()
                 ).SingleOrDefaultAsync();
 

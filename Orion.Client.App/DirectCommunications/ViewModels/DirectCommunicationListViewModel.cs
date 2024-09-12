@@ -62,7 +62,8 @@ namespace Orion.Client.App.DirectCommunications.ViewModels
                 {
                     UserId = message.SenderProfile.UserId,
                     Username = message.SenderProfile.Username
-                }
+                },
+                LastUpdated = message.LastUpdated
             });
 
         }

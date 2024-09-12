@@ -7,5 +7,7 @@
         public Guid SenderId { get; set; }
 
         public string Content { get; set; }
+
+        public DateTime LastUpdated { get; set; }
     }
 }

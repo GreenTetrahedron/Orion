@@ -7,6 +7,7 @@ using Orion.Models.MessageModels;
 using Orion.Client.App.Messages.Models;
 using System.Collections.ObjectModel;
 using Orion.Client.Messages.Services;
+using System;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -44,7 +45,8 @@ namespace Orion.Client.App.Messages.Views
             {
                 Content = content,
                 DirectCommunicationId = DirectCommunication.DirectCommunicationId,
-                SenderId = App.Current.CurrentUser.UserProfile.UserId
+                SenderId = App.Current.CurrentUser.UserProfile.UserId,
+                LastUpdated = DateTime.Now
             });
         }
     }

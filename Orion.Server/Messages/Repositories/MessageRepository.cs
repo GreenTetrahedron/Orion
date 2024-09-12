@@ -42,7 +42,8 @@ namespace Orion.Server.Messages.Repositories
             {
                 MessageId = Guid.NewGuid(),
                 Content = newMessage.Content,
-                Sender = sender
+                Sender = sender,
+                LastUpdated = newMessage.LastUpdated
             };
 
 
@@ -80,7 +81,8 @@ namespace Orion.Server.Messages.Repositories
                 {
                     MessageId = message.MessageId,
                     SenderProfile = message.Sender,
-                    Content = message.Content
+                    Content = message.Content,
+                    LastUpdated = message.LastUpdated
                 })
                 .SingleOrDefaultAsync();
 
