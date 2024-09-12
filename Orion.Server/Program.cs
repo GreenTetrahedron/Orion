@@ -7,15 +7,17 @@ using Orion.Server.TopicHandlers;
 using Orion.Server.Users.Repositories;
 using System.Net;
 using Orion.Server.DirectCommunications.Repositories;
+using Orion.Cryptography.HashingServices;
 
 
 
 var configurationService = new ConfigurationService();
 
 configurationService.AddInstanceOfType<IJsonService>(new JsonService());
+configurationService.AddInstanceOfType<IHashingService>(new HashingService());
 
 configurationService.AddInstanceOfType(new OrionDbContext());
-configurationService.AddInstanceOfType<IUserRepository>(new UserRepository(configurationService.GetInstanceOfType<OrionDbContext>()));
+configurationService.AddInstanceOfType<IUserRepository>(new UserRepository(configurationService.GetInstanceOfType<OrionDbContext>(), configurationService.GetInstanceOfType<IHashingService>()));
 configurationService.AddInstanceOfType<IDirectCommunicationRepository>(new DirectCommunicationRepository(configurationService.GetInstanceOfType<OrionDbContext>()));
 configurationService.AddInstanceOfType<IMessageRepository>(new MessageRepository(configurationService.GetInstanceOfType<OrionDbContext>()));
 

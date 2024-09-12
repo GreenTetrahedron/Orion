@@ -25,6 +25,9 @@
                 <RowDefinition Height="auto"/>
                 <RowDefinition Height="auto"/>
                 <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
                 <!--<RowDefinition Height="auto"/>-->
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
@@ -33,7 +36,9 @@
 
             <TextBlock Grid.Row="1" Text="Username: " />
             <TextBox Grid.Row="2" BorderThickness="1" CornerRadius="2" x:Name="usernameTextEntry" />
-            <Button Grid.Row="3" VerticalAlignment="Bottom" CornerRadius="2" HorizontalAlignment="Stretch" Grid.ColumnSpan="2" Grid.Column="0" Click="OnLogin" >Login</Button>
+            <TextBlock Grid.Row="3" Text="Password: " />
+            <TextBox Grid.Row="4" BorderThickness="1" CornerRadius="2" x:Name="passwordTextEntry" />
+            <Button Grid.Row="5" VerticalAlignment="Bottom" CornerRadius="2" HorizontalAlignment="Stretch" Grid.ColumnSpan="2" Grid.Column="0" Click="OnLogin" >Login</Button>
         </Grid>
 
     </Grid>

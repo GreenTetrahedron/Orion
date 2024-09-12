@@ -7,7 +7,7 @@ namespace Orion.Server.Users.Repositories
     {
         public Task<ServerTransmission> AuthenticateUser(Credentials credentials);
 
-        public Task<UserDTO?> AddUser(string username);
+        public Task<UserDTO?> AddUser(Credentials credentials);
 
         public Task<UserDTO?> GetUser(Guid userId);
 

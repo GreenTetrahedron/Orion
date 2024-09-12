@@ -49,7 +49,8 @@ namespace Orion.Client.App.Users.Views
         private async void OnLogin(object sender, RoutedEventArgs e)
         {
             var enteredUsername = usernameTextEntry.Text;
-            var credentials = new Credentials() { Username = enteredUsername };
+            var enteredPassword = passwordTextEntry.Text;
+            var credentials = new Credentials() { Username = enteredUsername, Password = enteredPassword };
 
             var subscriptable = await _userService.AuthenticateUser(credentials);
             subscriptable.Subscribe(OnAuthenticationResultReceived);

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Orion.Cryptography.HashingServices;
 using Orion.Models.DirectCommunicationModels;
 using Orion.Models.ServerTransmissions;
 using Orion.Models.ServerTransmissions.Results;
@@ -6,22 +7,27 @@ using Orion.Models.ServerTransmissions.Results.Messages;
 using Orion.Models.UserModels;
 using Orion.Server.DataLayer;
 using Orion.Server.ServerTransmissionServices;
+using System.Text;
 
 namespace Orion.Server.Users.Repositories
 {
     public class UserRepository : IUserRepository
     {
         private readonly OrionDbContext _database;
+        private readonly IHashingService _hashingService;
 
-        public UserRepository(OrionDbContext database)
+        public UserRepository(OrionDbContext database, IHashingService hashingService)
         {
             _database = database;
+            _hashingService = hashingService;
         }
 
         public async Task<ServerTransmission> AuthenticateUser(Credentials credentials)
         {
+            var passwordHash = _hashingService.Hash(Encoding.UTF8.GetBytes(credentials.Password));
+
             var user = await _database.Users
-                .Where(user => user.Username == credentials.Username)
+                .Where(user => user.Username == credentials.Username && user.PasswordHash == passwordHash)
                 .Select(user => new UserDTO
                 {
                     UserId = user.UserId,
@@ -45,12 +51,14 @@ namespace Orion.Server.Users.Repositories
                     .AddResponseOperationMessage("Valid credentials entered");
         }
 
-        public async Task<UserDTO?> AddUser(string username)
+        public async Task<UserDTO?> AddUser(Credentials credentials)
         {
+            var passwordHash = _hashingService.Hash(Encoding.UTF8.GetBytes(credentials.Password));
             var user = new User()
             {
                 UserId = Guid.NewGuid(),
-                Username = username,
+                Username = credentials.Username,
+                PasswordHash = passwordHash,
                 DirectCommunications = new List<DirectCommuncations.DirectCommunication>()
             };
 

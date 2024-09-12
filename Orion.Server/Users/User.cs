@@ -10,6 +10,8 @@ namespace Orion.Server.Users
 
         public string Username { get; set; }
 
+        public byte[] PasswordHash { get; set; }
+
         public List<DirectCommunication> DirectCommunications { get; set; }
 
         public static implicit operator UserProfile(User user) =>
