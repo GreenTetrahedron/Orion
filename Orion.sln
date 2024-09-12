@@ -27,6 +27,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orion.Router", "Orion.Route
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orion.Server.Tests", "Orion.Server.Tests\Orion.Server.Tests.csproj", "{E432162A-2208-438A-8DDF-D38286B8365E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orion.Cryptography", "Orion.Cryptography\Orion.Cryptography.csproj", "{1E96D6ED-1C51-49FC-B6FC-BF5B05B1D498}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -239,6 +241,22 @@ Global
 		{E432162A-2208-438A-8DDF-D38286B8365E}.Release|x64.Build.0 = Release|Any CPU
 		{E432162A-2208-438A-8DDF-D38286B8365E}.Release|x86.ActiveCfg = Release|Any CPU
 		{E432162A-2208-438A-8DDF-D38286B8365E}.Release|x86.Build.0 = Release|Any CPU
+		{1E96D6ED-1C51-49FC-B6FC-BF5B05B1D498}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1E96D6ED-1C51-49FC-B6FC-BF5B05B1D498}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1E96D6ED-1C51-49FC-B6FC-BF5B05B1D498}.Debug|ARM64.ActiveCfg = Debug|Any CPU
+		{1E96D6ED-1C51-49FC-B6FC-BF5B05B1D498}.Debug|ARM64.Build.0 = Debug|Any CPU
+		{1E96D6ED-1C51-49FC-B6FC-BF5B05B1D498}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{1E96D6ED-1C51-49FC-B6FC-BF5B05B1D498}.Debug|x64.Build.0 = Debug|Any CPU
+		{1E96D6ED-1C51-49FC-B6FC-BF5B05B1D498}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{1E96D6ED-1C51-49FC-B6FC-BF5B05B1D498}.Debug|x86.Build.0 = Debug|Any CPU
+		{1E96D6ED-1C51-49FC-B6FC-BF5B05B1D498}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1E96D6ED-1C51-49FC-B6FC-BF5B05B1D498}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1E96D6ED-1C51-49FC-B6FC-BF5B05B1D498}.Release|ARM64.ActiveCfg = Release|Any CPU
+		{1E96D6ED-1C51-49FC-B6FC-BF5B05B1D498}.Release|ARM64.Build.0 = Release|Any CPU
+		{1E96D6ED-1C51-49FC-B6FC-BF5B05B1D498}.Release|x64.ActiveCfg = Release|Any CPU
+		{1E96D6ED-1C51-49FC-B6FC-BF5B05B1D498}.Release|x64.Build.0 = Release|Any CPU
+		{1E96D6ED-1C51-49FC-B6FC-BF5B05B1D498}.Release|x86.ActiveCfg = Release|Any CPU
+		{1E96D6ED-1C51-49FC-B6FC-BF5B05B1D498}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
