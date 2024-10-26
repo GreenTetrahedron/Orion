@@ -26,22 +26,30 @@ namespace Orion.Server.Users.Repositories
         {
             var passwordHash = _hashingService.Hash(Encoding.UTF8.GetBytes(credentials.Password));
 
-            var user = await _database.Users
+            var getDataQuery = _database.Users
                 .Where(user => user.Username == credentials.Username && user.PasswordHash == passwordHash)
-                .Select(user => new UserDTO
-                {
-                    UserId = user.UserId,
-                    Username = user.Username,
-                    DirectCommunicationProfiles = user.DirectCommunications
-                        .Select(directCommunication => new DirectCommunicationProfile()
-                        {
-                            DirectCommunicationId = directCommunication.DirectCommunicationId,
-                            MemberProfiles = directCommunication.Members
-                                .Select(member => (UserProfile)member).ToList()
-                        })
-                        .ToList()
-                })
+                .Include(user => user.DirectCommunications)
+                .ThenInclude(d => d.Members);
+
+            var getDataQueryResult = await getDataQuery
                 .SingleOrDefaultAsync();
+
+            var user = new UserDTO()
+            {
+                Username = getDataQueryResult.Username,
+                UserId = getDataQueryResult.UserId,
+                DirectCommunicationProfiles = getDataQueryResult.DirectCommunications
+                    .Select(directCommunication => new DirectCommunicationProfile()
+                    {
+                        DirectCommunicationId = directCommunication.DirectCommunicationId,
+                        MemberProfiles = directCommunication.Members
+                            .Select(member => new UserProfile()
+                            {
+                                UserId = member.UserId,
+                                Username = member.Username
+                            }).ToList()
+                    }).ToList()
+            };
 
             return (user == null)
                 ? ServerTransmissionService.NewSuccessfulResponseServerTransmission("AuthenticateUserResult", AuthenticationMessages.INVALID_CREDENTIALS)
