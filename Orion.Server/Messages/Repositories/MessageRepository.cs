@@ -19,10 +19,6 @@ namespace Orion.Server.Messages.Repositories
 
         public async Task<ServerTransmission?> AddDirectMessage(NewDirectMessage newMessage)
         {
-            var sender = await _database.Users
-                .Where(user => user.UserId == newMessage.SenderId)
-                .SingleAsync();
-
             var directCommunication = await _database.DirectCommunications
                 .Where(directCommunication => directCommunication.DirectCommunicationId == newMessage.DirectCommunicationId)
                 .Select(directCommuncication => new DirectCommunication()
@@ -33,28 +29,21 @@ namespace Orion.Server.Messages.Repositories
                 })
                 .SingleAsync();
 
-
-            var receiver = directCommunication.Members
-                .Where(member => member.UserId != sender.UserId)
-                .Single();
-
             var message = new Message()
             {
                 MessageId = Guid.NewGuid(),
                 Content = newMessage.Content,
-                Sender = sender,
+                SenderId = newMessage.SenderId,
                 LastUpdated = newMessage.LastUpdated
             };
 
+            _database.ChangeTracker.Clear();
 
-            _database.Attach(sender);
-            _database.Attach(receiver);
-
-            await _database.Messages.AddAsync(message);
-            directCommunication.Members.Clear();
+            //directCommunication.Members.ForEach(member => _database.Attach(member));
+            _database.Attach(directCommunication);
             directCommunication.Messages.Add(message);
 
-            _database.Update(directCommunication);
+            _database.Messages.Add(message);
 
             bool wasSuccessful = await _database.SaveChangesAsync() > 0;
 
@@ -69,7 +58,7 @@ namespace Orion.Server.Messages.Repositories
                     {
                         Message = (MessageDTO)message,
                         DirectCommunicationId = newMessage.DirectCommunicationId
-                    }, [sender.UserId, receiver.UserId]);
+                    }, directCommunication.Members.Select(member => member.UserId).ToArray());
 
         }
 

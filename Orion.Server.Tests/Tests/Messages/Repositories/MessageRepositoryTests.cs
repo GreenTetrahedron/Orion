@@ -34,7 +34,8 @@ namespace Orion.Server.Tests.Messages.Repositories
             var user = new User()
             {
                 UserId = Guid.NewGuid(),
-                Username = username
+                Username = username,
+                PasswordHash = [1, 2, 3]
             };
 
             using (var context = new MockOrionDbContext(_options))

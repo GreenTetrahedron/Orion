@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Orion.Cryptography.HashingServices;
 using Orion.Models.ServerTransmissions;
 using Orion.Models.ServerTransmissions.Results;
 using Orion.Models.ServerTransmissions.Results.Messages;
@@ -21,7 +22,7 @@ namespace Orion.Server.Tests.Users.Repositories
 
             var context = new MockOrionDbContext(_options);
             context.Database.EnsureDeleted();
-            _userRepository = new UserRepository(context);
+            _userRepository = new UserRepository(context, new HashingService());
         }
         private User CreateUser(string username = "")
         {
@@ -153,7 +154,7 @@ namespace Orion.Server.Tests.Users.Repositories
         [TestCase("User212343441")]
         public async Task AddUser_AddsUserToDB(string username)
         {
-            var newUser = await _userRepository.AddUser(username);
+            var newUser = await _userRepository.AddUser(new Credentials { Username = username, Password = "Password"});
 
             User result;
 

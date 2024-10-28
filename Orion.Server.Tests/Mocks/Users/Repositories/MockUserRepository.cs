@@ -13,9 +13,9 @@ namespace Orion.Server.Tests.Mocks.Users.Repositories
             methodCallStack = new Stack<string>();
         }
 
-        public async Task<UserDTO?> AddUser(string username)
+        public async Task<UserDTO?> AddUser(Credentials credentials)
         {
-            methodCallStack.Push($"AddUser: {username}");
+            methodCallStack.Push($"AddUser: {credentials.Username} {credentials.Password}");
             return null;
         }
 
