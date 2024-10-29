@@ -34,7 +34,7 @@ namespace Orion.Client.App.Messages.Views
         public MessageListPage()
         {
             InitializeComponent();
-            _messageService = App.Current.ConfigurationService.GetInstanceOfType<IMessageService>();
+            _messageService = App.Current.ConfigurationService.GetSingletonOfType<IMessageService>();
         }
 
         private void SendMessage(object sender, RoutedEventArgs e)

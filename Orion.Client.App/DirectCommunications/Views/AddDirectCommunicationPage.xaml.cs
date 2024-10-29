@@ -23,8 +23,8 @@ namespace Orion.Client.App.DirectCommunications.Views
         public AddDirectCommunicationPage()
         {
             InitializeComponent();
-            _directCommunicationService = App.Current.ConfigurationService.GetInstanceOfType<IDirectCommunicationService>();
-            _userService = App.Current.ConfigurationService.GetInstanceOfType<IUserService>();
+            _directCommunicationService = App.Current.ConfigurationService.GetSingletonOfType<IDirectCommunicationService>();
+            _userService = App.Current.ConfigurationService.GetSingletonOfType<IUserService>();
         }
 
         private void AddDirectCommunication(object sender, RoutedEventArgs e)

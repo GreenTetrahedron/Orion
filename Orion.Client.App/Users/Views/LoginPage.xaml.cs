@@ -19,7 +19,7 @@ namespace Orion.Client.App.Users.Views
     /// </summary>
     public partial class LoginPage : Page, INotifyPropertyChanged
     {
-        private readonly IUserService _userService = App.Current.ConfigurationService.GetInstanceOfType<IUserService>();
+        private readonly IUserService _userService = App.Current.ConfigurationService.GetSingletonOfType<IUserService>();
 
         private Visibility _visible;
 

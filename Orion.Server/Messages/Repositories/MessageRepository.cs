@@ -37,7 +37,7 @@ namespace Orion.Server.Messages.Repositories
                 LastUpdated = newMessage.LastUpdated
             };
 
-            _database.ChangeTracker.Clear();
+            //_database.ChangeTracker.Clear();
 
             //directCommunication.Members.ForEach(member => _database.Attach(member));
             _database.Attach(directCommunication);

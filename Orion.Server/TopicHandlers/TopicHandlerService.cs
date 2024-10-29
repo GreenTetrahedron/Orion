@@ -2,16 +2,21 @@
 using Orion.Configuration;
 using System.Reflection;
 using Orion.Models.ServerTransmissions;
+using Newtonsoft.Json.Linq;
 
 namespace Orion.Server.TopicHandlers
 {
     public class TopicHandlerService : ITopicHandlerService
     {
-        private readonly IDictionary<string, Func<object, Task<ServerTransmission>>> topicToHandler;
+        private readonly IDictionary<string, Type> topicToHandlerControllerType;
+
+        private readonly IConfigurationService _configurationService;
 
         public TopicHandlerService(IConfigurationService configurationService)
         {
-            topicToHandler = new Dictionary<string, Func<object, Task<ServerTransmission>>>();
+            _configurationService = configurationService;
+
+            topicToHandlerControllerType = new Dictionary<string, Type>();
 
 
             var controllers =
@@ -30,7 +35,7 @@ namespace Orion.Server.TopicHandlers
 
                 foreach (var parameter in constructorParameters)
                 {
-                    var argument = configurationService.GetInstanceOfType(parameter.ParameterType);
+                    var argument = configurationService.GetSingletonOfType(parameter.ParameterType) ?? configurationService.GetScopedOfType(parameter.ParameterType);
                     arguments.Add(argument);
                 }
 
@@ -41,24 +46,44 @@ namespace Orion.Server.TopicHandlers
 
                 foreach (var handler in handlers)
                 {
-                    topicToHandler.Add(handler.GetCustomAttribute<HandlerAttribute>().Topic, async (x) =>
-                    {
-                        Task handlerTask = (Task)handler.Invoke(controllerInstance, [Convert.ChangeType(x, handler.GetParameters()[0].ParameterType)]);
-                        await handlerTask.ConfigureAwait(false);
-                        return (ServerTransmission)((dynamic)handlerTask).Result;
-                    });
+                    topicToHandlerControllerType.Add(handler.GetCustomAttribute<HandlerAttribute>().Topic, controller);
                 }
             }
         }
 
         public Func<object, Task<ServerTransmission>>? GetTopicHandler(string topic)
         {
-            bool topicHadHandler = topicToHandler.TryGetValue(topic, out var handler);
+            _configurationService.ResetScope();
 
-            if (!topicHadHandler)
-                throw new Exception($"No handler found for requested topic: {topic})");
+            bool topicIsKnown = topicToHandlerControllerType.ContainsKey(topic);
 
-            return handler;
+            if (!topicIsKnown)
+                throw new Exception($"Unknown topic: {topic})");
+
+            var constructorInfo = topicToHandlerControllerType[topic].GetConstructors().Single();
+
+            var parameters = constructorInfo.GetParameters();
+            var arguments = new object[parameters.Length];
+
+            for (int i = 0; i < parameters.Length; i++)
+            {
+                arguments[i] = _configurationService.GetInstanceOfType(parameters[i].ParameterType);
+            }
+
+            var controllerInstance = constructorInfo.Invoke(arguments);
+
+            var handler = topicToHandlerControllerType[topic].GetMethods()
+                .Where(m => m.GetCustomAttributes(typeof(HandlerAttribute), false) != null && m.GetCustomAttributes(typeof(HandlerAttribute), false).Length > 0)
+                .Where(m => m.GetCustomAttribute<HandlerAttribute>().Topic == topic)
+                .Single();
+
+
+            return async (x) =>
+            {
+                Task handlerTask = (Task)handler.Invoke(controllerInstance, [Convert.ChangeType(x, handler.GetParameters()[0].ParameterType)]);
+                await handlerTask.ConfigureAwait(false);
+                return (ServerTransmission)((dynamic)handlerTask).Result;
+            };
         }
     }
 }

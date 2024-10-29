@@ -13,15 +13,17 @@ using Orion.Cryptography.HashingServices;
 
 var configurationService = new ConfigurationService();
 
-configurationService.AddInstanceOfType<IJsonService>(new JsonService());
-configurationService.AddInstanceOfType<IHashingService>(new HashingService());
+configurationService.AddSingleton<IConfigurationService>(configurationService);
 
-configurationService.AddInstanceOfType(new OrionDbContext());
-configurationService.AddInstanceOfType<IUserRepository>(new UserRepository(configurationService.GetInstanceOfType<OrionDbContext>(), configurationService.GetInstanceOfType<IHashingService>()));
-configurationService.AddInstanceOfType<IDirectCommunicationRepository>(new DirectCommunicationRepository(configurationService.GetInstanceOfType<OrionDbContext>()));
-configurationService.AddInstanceOfType<IMessageRepository>(new MessageRepository(configurationService.GetInstanceOfType<OrionDbContext>()));
+configurationService.AddSingleton<IJsonService, JsonService>();
+configurationService.AddSingleton<IHashingService, HashingService>();
 
-configurationService.AddInstanceOfType<ITopicHandlerService>(new TopicHandlerService(configurationService));
+configurationService.AddScoped<OrionDbContext, OrionDbContext>();
+configurationService.AddScoped<IUserRepository, UserRepository>();
+configurationService.AddScoped<IDirectCommunicationRepository, DirectCommunicationRepository>();
+configurationService.AddScoped<IMessageRepository, MessageRepository>();
+
+configurationService.AddSingleton<ITopicHandlerService>(new TopicHandlerService(configurationService));
 
 Console.WriteLine("SERVER");
 
@@ -39,8 +41,8 @@ Console.WriteLine($"On IP address: {routerIPAddress} and port: {routerPort}");
 var routerIPEndPoint = new IPEndPoint(routerIPAddress, routerPort);
 
 var serverService = new ServerService(routerIPEndPoint,
-    configurationService.GetInstanceOfType<IJsonService>(),
-    configurationService.GetInstanceOfType<ITopicHandlerService>());
+    configurationService.GetSingletonOfType<IJsonService>(),
+    configurationService.GetSingletonOfType<ITopicHandlerService>());
 
 serverService.Run();
 

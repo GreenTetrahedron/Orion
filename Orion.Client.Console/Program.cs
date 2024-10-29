@@ -30,36 +30,36 @@ var routerIPEndPoint = new IPEndPoint(routerIPAddress, routerPort);
 
 var configurationService = new ConfigurationService();
 
-configurationService.AddInstanceOfType<IJsonService>(new JsonService());
+configurationService.AddSingleton<IJsonService>(new JsonService());
 
-configurationService.AddInstanceOfType<ISubscriptionService>(new SubscriptionService());
-configurationService.AddInstanceOfType<ITopicHandlerService>(new TopicHandlerService(configurationService));
+configurationService.AddSingleton<ISubscriptionService>(new SubscriptionService());
+configurationService.AddSingleton<ITopicHandlerService>(new TopicHandlerService(configurationService));
 
 var connectionService = new ConnectionService
     (
         routerIPEndPoint
     );
 
-configurationService.AddInstanceOfType<IConnectionService>(connectionService);
+configurationService.AddSingleton<IConnectionService>(connectionService);
 
-configurationService.AddInstanceOfType<ITransmissionService>(new TransmissionService(
-        configurationService.GetInstanceOfType<IConnectionService>(),
-        configurationService.GetInstanceOfType<IJsonService>(),
-        configurationService.GetInstanceOfType<ISubscriptionService>()
+configurationService.AddSingleton<ITransmissionService>(new TransmissionService(
+        configurationService.GetSingletonOfType<IConnectionService>(),
+        configurationService.GetSingletonOfType<IJsonService>(),
+        configurationService.GetSingletonOfType<ISubscriptionService>()
     ));
 
-configurationService.AddInstanceOfType<IUserService>(new UserService(
-        configurationService.GetInstanceOfType<ITransmissionService>()
+configurationService.AddSingleton<IUserService>(new UserService(
+        configurationService.GetSingletonOfType<ITransmissionService>()
     ));
 
-configurationService.AddInstanceOfType<IDirectCommunicationService>(new DirectCommunicationService(
-        configurationService.GetInstanceOfType<ITransmissionService>()
+configurationService.AddSingleton<IDirectCommunicationService>(new DirectCommunicationService(
+        configurationService.GetSingletonOfType<ITransmissionService>()
     ));
 
 var application = new TestApplication(
-    configurationService.GetInstanceOfType<IUserService>(),
-    configurationService.GetInstanceOfType<IDirectCommunicationService>(),
-    configurationService.GetInstanceOfType<ITransmissionService>()
+    configurationService.GetSingletonOfType<IUserService>(),
+    configurationService.GetSingletonOfType<IDirectCommunicationService>(),
+    configurationService.GetSingletonOfType<ITransmissionService>()
     );
 
 application.Run();

@@ -16,9 +16,9 @@ namespace Orion.Server.Tests.TopicHandlers
         public void Setup()
         {
             _configurationService = new ConfigurationService();
-            _configurationService.AddInstanceOfType<MethodCallStack>(new MethodCallStack());
+            _configurationService.AddSingleton<MethodCallStack>(new MethodCallStack());
 
-            callStack = _configurationService.GetInstanceOfType<MethodCallStack>();
+            callStack = _configurationService.GetSingletonOfType<MethodCallStack>();
 
             _topicHandlerService = new TopicHandlerService(_configurationService);
         }

@@ -63,41 +63,30 @@ namespace Orion.Client.App
 
             var configurationService = new ConfigurationService();
 
-            configurationService.AddInstanceOfType<IJsonService>(new JsonService());
+            configurationService.AddSingleton<IJsonService, JsonService>();
 
-            configurationService.AddInstanceOfType<ISubscriptionService>(new SubscriptionService());
-            configurationService.AddInstanceOfType<App>(this);
-            configurationService.AddInstanceOfType<ITopicHandlerService>(new TopicHandlerService(configurationService));
+            configurationService.AddSingleton<ISubscriptionService, SubscriptionService>();
+            configurationService.AddSingleton<App>(this);
+            configurationService.AddSingleton<ITopicHandlerService, TopicHandlerService>();
 
             var connectionService = new ConnectionService
                 (
                     routerIPEndPoint
                 );
 
-            configurationService.AddInstanceOfType<IConnectionService>(connectionService);
+            configurationService.AddSingleton<IConnectionService>(connectionService);
 
-            configurationService.AddInstanceOfType<ITransmissionService>(new TransmissionService(
-                    configurationService.GetInstanceOfType<IConnectionService>(),
-                    configurationService.GetInstanceOfType<IJsonService>(),
-                    configurationService.GetInstanceOfType<ISubscriptionService>(),
-                    configurationService.GetInstanceOfType<ITopicHandlerService>()
-                ));
+            configurationService.AddSingleton<ITransmissionService, TransmissionService>();
 
-            configurationService.AddInstanceOfType<IUserService>(new UserService(
-                    configurationService.GetInstanceOfType<ITransmissionService>()
-                ));
+            configurationService.AddSingleton<IUserService, UserService>();
 
-            configurationService.AddInstanceOfType<IMessageService>(new MessageService(
-                    configurationService.GetInstanceOfType<ITransmissionService>()
-                ));
+            configurationService.AddSingleton<IMessageService, MessageService>();
 
-            configurationService.AddInstanceOfType<IDirectCommunicationService>(new DirectCommunicationService(
-                    configurationService.GetInstanceOfType<ITransmissionService>()
-                ));
+            configurationService.AddSingleton<IDirectCommunicationService, DirectCommunicationService>();
 
             ConfigurationService = configurationService;
 
-            var transmissionService = ConfigurationService.GetInstanceOfType<ITransmissionService>();
+            var transmissionService = ConfigurationService.GetSingletonOfType<ITransmissionService>();
 
             transmissionService.InitialiseRouterConnection();
 

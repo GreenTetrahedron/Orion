@@ -25,7 +25,7 @@ namespace Orion.Client.App.DirectCommunications.ViewModels
 
         public DirectCommunicationListViewModel()
         {
-            _directCommunicationService = App.Current.ConfigurationService.GetInstanceOfType<IDirectCommunicationService>();
+            _directCommunicationService = App.Current.ConfigurationService.GetSingletonOfType<IDirectCommunicationService>();
 
             App.Current.CurrentUser.DirectCommunications.ToList().ForEach(directCommunication => AddItem(directCommunication));
             Messages = new ObservableCollection<Message>();

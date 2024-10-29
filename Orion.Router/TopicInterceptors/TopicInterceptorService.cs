@@ -31,7 +31,7 @@ namespace Orion.Router.TopicInterceptors
 
                 foreach (var parameter in constructorParameters)
                 {
-                    var argument = configurationService.GetInstanceOfType(parameter.ParameterType);
+                    var argument = configurationService.GetSingletonOfType(parameter.ParameterType);
                     arguments.Add(argument);
                 }
 

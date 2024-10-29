@@ -8,12 +8,12 @@ using System.Net;
 
 var configurationService = new ConfigurationService();
 
-configurationService.AddInstanceOfType<IJsonService>(new JsonService());
+configurationService.AddSingleton<IJsonService>(new JsonService());
 
-configurationService.AddInstanceOfType<IConnectionService>(new ConnectionService());
-configurationService.AddInstanceOfType<IRequestService>(new RequestService());
+configurationService.AddSingleton<IConnectionService>(new ConnectionService());
+configurationService.AddSingleton<IRequestService>(new RequestService());
 
-configurationService.AddInstanceOfType<ITopicInterceptorService>(new TopicInterceptorService(configurationService));
+configurationService.AddSingleton<ITopicInterceptorService>(new TopicInterceptorService(configurationService));
 
 //Console.WriteLine("Router IP address: ");
 IPAddress ipAddress = IPAddress.Parse("192.168.0.26");
@@ -24,10 +24,10 @@ int port = Convert.ToInt32(50000);
 Console.WriteLine($"On IP address: {ipAddress} and port: {port}");
 
 var routerService = new RouterService(new IPEndPoint(ipAddress, port),
-    configurationService.GetInstanceOfType<ITopicInterceptorService>(),
-    configurationService.GetInstanceOfType<IConnectionService>(),
-    configurationService.GetInstanceOfType<IRequestService>(),
-    configurationService.GetInstanceOfType<IJsonService>());
+    configurationService.GetSingletonOfType<ITopicInterceptorService>(),
+    configurationService.GetSingletonOfType<IConnectionService>(),
+    configurationService.GetSingletonOfType<IRequestService>(),
+    configurationService.GetSingletonOfType<IJsonService>());
 
 Console.WriteLine("Running broker...");
 routerService.Run();

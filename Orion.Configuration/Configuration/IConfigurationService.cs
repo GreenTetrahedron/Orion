@@ -2,10 +2,22 @@
 {
     public interface IConfigurationService
     {
-        T GetInstanceOfType<T>();
+        public T GetSingletonOfType<T>();
 
-        object GetInstanceOfType(Type type);
+        public object GetSingletonOfType(Type type);
 
-        void AddInstanceOfType<T>(T instance);
+        public void AddSingleton<Type, InstanceType>() where InstanceType : Type;
+        public void AddSingleton<T>(T instance);
+
+        public T GetScopedOfType<T>();
+
+        public object GetScopedOfType(Type type);
+
+        public void AddScoped<Type, InstanceType>() where InstanceType : Type;
+
+        public T GetInstanceOfType<T>();
+        public object GetInstanceOfType(Type type);
+
+        public void ResetScope();
     }
 }
