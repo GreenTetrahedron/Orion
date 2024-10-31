@@ -90,23 +90,23 @@ namespace Orion.Client.App
 
             transmissionService.InitialiseRouterConnection();
 
-            DispatcherQueueTimer d = DispatcherQueue.GetForCurrentThread().CreateTimer();
+            //DispatcherQueueTimer d = DispatcherQueue.GetForCurrentThread().CreateTimer();
 
-            d.Interval = TimeSpan.Zero;
+            //d.Interval = TimeSpan.Zero;
 
-            d.Tick += (s, e) =>
-            {
-                transmissionService.ReceiveData();
-            };
+            //d.Tick += (s, e) =>
+            //{
+            //    transmissionService.ReceiveData();
+            //};
 
-            d.Start();
+            //d.Start();
 
             window = new MainWindow();
 
             RootFrame = window.RootFrame;
 
-            RootFrame.Navigate(typeof(LoginPage), args.Arguments);
             RootFrame.NavigationFailed += OnNavigationFailed;
+            RootFrame.Navigate(typeof(LoginPage), args.Arguments);
 
             window.Activate();
         }

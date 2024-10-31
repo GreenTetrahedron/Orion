@@ -9,8 +9,67 @@
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
+    <Page.Resources>
+        <Style TargetType="Image" x:Key="HeroImage">
+            <Setter Property="Stretch" Value="UniformToFill" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+        </Style>
+        
+        <Style TargetType="TextBlock" x:Key="DefaultText">
+            <Setter Property="FontFamily" Value="\assets\assets\fonts\roboto-regular.ttf" />
+            <Setter Property="FontSize" Value="14" />
+        </Style>
+        <Style TargetType="TextBlock" x:Key="HeroTitle" BasedOn="{StaticResource DefaultText}">
+            <Setter Property="FontSize" Value="50" />
+            <Setter Property="LineHeight" Value="75" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="FontFamily" Value="\assets\assets\fonts\roboto-bold.ttf" />
+        </Style>
+        <Style TargetType="TextBlock" x:Key="HeroText" BasedOn="{StaticResource DefaultText}">
+            <Setter Property="FontSize" Value="12" />
+        </Style>
+        <Style TargetType="TextBlock" x:Key="ValidationText" BasedOn="{StaticResource DefaultText}">
+            <Setter Property="Foreground" Value="MediumVioletRed" />
+        </Style>
+
+        <Style TargetType="TextBox" x:Key="InputField">
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="PlaceholderForeground" Value="#ccc" />
+            <Setter Property="Foreground" Value="#fff" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0 0 0 1" />
+            <Setter Property="Padding" Value="0" />
+        </Style>
+
+        <Style TargetType="Button" x:Key="DefaultButton">
+            <Setter Property="FontFamily" Value="\assets\assets\fonts\roboto-regular.ttf" />
+            <Setter Property="FontSize" Value="14" />
+        </Style>
+        <Style TargetType="Button" x:Key="LoginButton" BasedOn="{StaticResource DefaultButton}">
+            <Setter Property="Background" Value="#574ae2" />
+            <Setter Property="Foreground" Value="white" />
+            <Setter Property="CornerRadius" Value="0" />
+            <Setter Property="Padding" Value="10" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="VerticalAlignment" Value="Stretch" />
+            <Setter Property="BorderThickness" Value="0" />
+        </Style>
+        
+        <Style TargetType="StackPanel" x:Key="LoginContainer">
+            <Setter Property="Orientation" Value="Vertical" />
+            <Setter Property="Padding" Value="50 55 70 50" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="Background" Value="#262626" />
+            <Setter Property="Spacing" Value="25" />
+        </Style>
+        <Style TargetType="Grid" x:Key="LoginForm">
+            <Setter Property="RowSpacing" Value="25" />
+        </Style>
+    </Page.Resources>
+    
     <Grid>
         <Grid.ColumnDefinitions>
+            <ColumnDefinition MinWidth="300" MaxWidth="500" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
@@ -18,28 +77,45 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <Image Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Top" Source="/Assets/tim-stief-YFFGkE3y4F8-unsplash.jpg" />
+        <Image Grid.Column="1" Style="{StaticResource HeroImage}" Source="/Assets/zach-lezniewicz-BH2QtVjBedg-unsplash (1).jpg" />
 
-        <Grid RowSpacing="15" Padding="25" HorizontalAlignment="Center" VerticalAlignment="Center" MinHeight="300" MinWidth="300" MaxWidth="400" Background="#333" CornerRadius="10">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="auto"/>
-                <RowDefinition Height="auto"/>
-                <RowDefinition Height="auto"/>
-                <RowDefinition Height="auto"/>
-                <RowDefinition Height="auto"/>
-                <RowDefinition Height="auto"/>
-                <!--<RowDefinition Height="auto"/>-->
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
-            <TextBlock FontSize="30" Text="Login" />
-            <TextBlock Visibility="{x:Bind Visible, Mode=OneWay}" Text="Invalid credentials entered!" />
+        <StackPanel Grid.Column="0" Style="{StaticResource LoginContainer}" >
+            <StackPanel>
+                <TextBlock Style="{StaticResource HeroTitle}" Text="SIGN IN" />
+                <TextBlock Style="{StaticResource HeroText}" Text="Please sign in below." />
+            </StackPanel>
 
-            <TextBlock Grid.Row="1" Text="Username: " />
-            <TextBox Grid.Row="2" BorderThickness="1" CornerRadius="2" x:Name="usernameTextEntry" />
-            <TextBlock Grid.Row="3" Text="Password: " />
-            <TextBox Grid.Row="4" BorderThickness="1" CornerRadius="2" x:Name="passwordTextEntry" />
-            <Button Grid.Row="5" VerticalAlignment="Bottom" CornerRadius="2" HorizontalAlignment="Stretch" Grid.ColumnSpan="2" Grid.Column="0" Click="OnLogin" >Login</Button>
-        </Grid>
+            <Grid Style="{StaticResource LoginForm}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
+                </Grid.RowDefinitions>
+                
+                <TextBlock Grid.Row="0" Visibility="{x:Bind Visible, Mode=OneWay}" Style="{StaticResource ValidationText}" Text="Invalid credentials entered!" />
+
+                <TextBox Grid.Row="1" x:Name="usernameTextEntry" PlaceholderText="Username" Style="{StaticResource InputField}">
+                    <TextBox.Resources>
+                        <SolidColorBrush x:Key="TextControlBackgroundPointerOver" Color="Transparent" />
+                        <SolidColorBrush x:Key="TextControlBackgroundFocused" Color="Transparent" />
+                    </TextBox.Resources>
+                </TextBox>
+                <TextBox Grid.Row="2" x:Name="passwordTextEntry" PlaceholderText="Password" Style="{StaticResource InputField}">
+                    <TextBox.Resources>
+                        <SolidColorBrush x:Key="TextControlBackgroundPointerOver" Color="Transparent" />
+                        <SolidColorBrush x:Key="TextControlBackgroundFocused" Color="Transparent" />
+                    </TextBox.Resources>
+                </TextBox>
+
+                <Button Grid.Row="3" Click="OnLogin" Style="{StaticResource LoginButton}">
+                    <Button.Resources>
+                        <Color x:Key="ButtonBackgroundPointerOver">#372ac2</Color>
+                    </Button.Resources>
+                    Sign in
+                </Button>
+            </Grid>
+        </StackPanel>
 
     </Grid>
 </Page>
