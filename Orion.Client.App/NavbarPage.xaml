@@ -9,11 +9,11 @@
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <StackPanel Padding="15" Spacing="15" MaxWidth="80" MinWidth="50">
-        <Button FontSize="10" Height="50" Width="50" Click="LoadDirectCommunicationListPage">
+    <StackPanel Padding="0 0 0 0" Spacing="15" Width="75" Background="#1a1a19">
+        <Button HorizontalAlignment="Center" FontSize="10" Height="47" Width="47" Click="LoadDirectCommunicationListPage">
             DMs
         </Button>
-        <Button FontSize="10" Height="50" Width="50" Click="LoadAddDirectCommunicationPage">
+        <Button HorizontalAlignment="Center" FontSize="10" Height="47" Width="47" Click="LoadAddDirectCommunicationPage">
             + DM
         </Button>
     </StackPanel>

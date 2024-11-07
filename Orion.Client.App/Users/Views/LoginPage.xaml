@@ -15,15 +15,10 @@
             <Setter Property="HorizontalAlignment" Value="Center" />
         </Style>
         
-        <Style TargetType="TextBlock" x:Key="DefaultText">
-            <Setter Property="FontFamily" Value="\assets\assets\fonts\roboto-regular.ttf" />
-            <Setter Property="FontSize" Value="14" />
-        </Style>
         <Style TargetType="TextBlock" x:Key="HeroTitle" BasedOn="{StaticResource DefaultText}">
             <Setter Property="FontSize" Value="50" />
             <Setter Property="LineHeight" Value="75" />
             <Setter Property="FontWeight" Value="Bold" />
-            <Setter Property="FontFamily" Value="\assets\assets\fonts\roboto-bold.ttf" />
         </Style>
         <Style TargetType="TextBlock" x:Key="HeroText" BasedOn="{StaticResource DefaultText}">
             <Setter Property="FontSize" Value="12" />
@@ -32,27 +27,18 @@
             <Setter Property="Foreground" Value="MediumVioletRed" />
         </Style>
 
-        <Style TargetType="TextBox" x:Key="InputField">
-            <Setter Property="FontSize" Value="14" />
+        <Style TargetType="TextBox" x:Key="InputField" BasedOn="{StaticResource DefaultTextBox}">
             <Setter Property="PlaceholderForeground" Value="#ccc" />
             <Setter Property="Foreground" Value="#fff" />
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="BorderThickness" Value="0 0 0 1" />
-            <Setter Property="Padding" Value="0" />
         </Style>
 
-        <Style TargetType="Button" x:Key="DefaultButton">
-            <Setter Property="FontFamily" Value="\assets\assets\fonts\roboto-regular.ttf" />
-            <Setter Property="FontSize" Value="14" />
-        </Style>
         <Style TargetType="Button" x:Key="LoginButton" BasedOn="{StaticResource DefaultButton}">
             <Setter Property="Background" Value="#574ae2" />
             <Setter Property="Foreground" Value="white" />
-            <Setter Property="CornerRadius" Value="0" />
-            <Setter Property="Padding" Value="10" />
             <Setter Property="HorizontalAlignment" Value="Stretch" />
             <Setter Property="VerticalAlignment" Value="Stretch" />
-            <Setter Property="BorderThickness" Value="0" />
         </Style>
         
         <Style TargetType="StackPanel" x:Key="LoginContainer">
@@ -99,12 +85,14 @@
                     <TextBox.Resources>
                         <SolidColorBrush x:Key="TextControlBackgroundPointerOver" Color="Transparent" />
                         <SolidColorBrush x:Key="TextControlBackgroundFocused" Color="Transparent" />
+                        <SolidColorBrush x:Key="TextControlBorderBrushFocused" Color="#ccd" />
                     </TextBox.Resources>
                 </TextBox>
                 <TextBox Grid.Row="2" x:Name="passwordTextEntry" PlaceholderText="Password" Style="{StaticResource InputField}">
                     <TextBox.Resources>
                         <SolidColorBrush x:Key="TextControlBackgroundPointerOver" Color="Transparent" />
                         <SolidColorBrush x:Key="TextControlBackgroundFocused" Color="Transparent" />
+                        <SolidColorBrush x:Key="TextControlBorderBrushFocused" Color="#ccd" />
                     </TextBox.Resources>
                 </TextBox>
 

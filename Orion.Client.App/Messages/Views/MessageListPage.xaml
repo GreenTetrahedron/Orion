@@ -16,7 +16,7 @@
         <converters:DateTimeToStringConverter x:Name="DateTimeToStringConverter" />
     </Page.Resources>
     
-    <Grid Background="#000" Padding="15">
+    <Grid Background="#262626" Padding="15">
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="50px" />

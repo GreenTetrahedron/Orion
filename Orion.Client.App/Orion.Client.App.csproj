@@ -15,6 +15,13 @@
 	<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
   </PropertyGroup>
   <ItemGroup>
+    <Content Remove="Assets\Assets\Fonts\Roboto-Black.ttf" />
+    <Content Remove="Assets\Assets\Fonts\Roboto-Bold.ttf" />
+    <Content Remove="Assets\Assets\Fonts\Roboto-Medium.ttf" />
+    <Content Remove="Assets\Assets\Fonts\Roboto-Regular.ttf" />
+    <Content Remove="Assets\tim-stief-YFFGkE3y4F8-unsplash.jpg" />
+  </ItemGroup>
+  <ItemGroup>
     <None Remove="Defaults.xaml" />
     <None Remove="DirectCommunications\Views\AddDirectCommunicationPage.xaml" />
     <None Remove="DirectCommunications\Views\DirectCommunicationListPage.xaml" />
@@ -55,11 +62,6 @@
     <ProjectReference Include="..\Orion.Configuration\Orion.Configuration.csproj" />
     <ProjectReference Include="..\Orion.Models\Orion.Models.csproj" />
     <ProjectReference Include="..\Orion.JsonParser\Orion.JsonParser.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Update="Assets\tim-stief-YFFGkE3y4F8-unsplash.jpg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
   <ItemGroup>
     <Page Update="DirectCommunications\Views\AddDirectCommunicationPage.xaml">
@@ -103,6 +105,15 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Themes\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\Assets\Fonts\Roboto-Black.ttf" />
+    <Resource Include="Assets\Assets\Fonts\Roboto-Bold.ttf" />
+    <Resource Include="Assets\Assets\Fonts\Roboto-Medium.ttf" />
+    <Resource Include="Assets\Assets\Fonts\Roboto-Regular.ttf" />
+    <Resource Include="Assets\tim-stief-YFFGkE3y4F8-unsplash.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
 
   <!--

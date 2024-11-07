@@ -90,16 +90,16 @@ namespace Orion.Client.App
 
             transmissionService.InitialiseRouterConnection();
 
-            //DispatcherQueueTimer d = DispatcherQueue.GetForCurrentThread().CreateTimer();
+            DispatcherQueueTimer d = DispatcherQueue.GetForCurrentThread().CreateTimer();
 
-            //d.Interval = TimeSpan.Zero;
+            d.Interval = TimeSpan.Zero;
 
-            //d.Tick += (s, e) =>
-            //{
-            //    transmissionService.ReceiveData();
-            //};
+            d.Tick += (s, e) =>
+            {
+                transmissionService.ReceiveData();
+            };
 
-            //d.Start();
+            d.Start();
 
             window = new MainWindow();
 
