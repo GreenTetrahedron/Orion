@@ -1,0 +1,16 @@
+﻿using Orion.Models.ServerTransmissions;
+using Orion.Models.UserModels;
+
+namespace Orion.Server.Users.Repositories
+{
+    public interface IUserRepository
+    {
+        public Task<ServerTransmission> AuthenticateUser(Credentials credentials);
+
+        public Task<UserDTO?> AddUser(Credentials credentials);
+
+        public Task<UserDTO?> GetUser(Guid userId);
+
+        public Task<ServerTransmission> GetUserProfileByUsername(string username);
+    }
+}

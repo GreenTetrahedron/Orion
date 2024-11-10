@@ -1,0 +1,43 @@
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Navigation;
+using Orion.Client.App.DirectCommunications.Views;
+
+// To learn more about WinUI, the WinUI project structure,
+// and more about our project templates, see: http://aka.ms/winui-project-info.
+
+namespace Orion.Client.App
+{
+    /// <summary>
+    /// An empty page that can be used on its own or navigated to within a Frame.
+    /// </summary>
+    public sealed partial class NavbarPage : Page
+    {
+        private Frame contentFrame;
+
+        public NavbarPage()
+        {
+            this.InitializeComponent();
+        }
+
+        private void LoadDirectCommunicationListPage(object sender, RoutedEventArgs e)
+        {
+            contentFrame.Navigate(typeof(DirectCommunicationListPage));
+        }
+
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+
+            if (e.Parameter.GetType() != typeof(Frame))
+                return;
+
+            contentFrame = (Frame)e.Parameter;
+        }
+
+        private void LoadAddDirectCommunicationPage(object sender, RoutedEventArgs e)
+        {
+            contentFrame.Navigate(typeof(AddDirectCommunicationPage));
+        }
+    }
+}

@@ -1,0 +1,5 @@
+{
+  "$type": "Orion.Models.ClientTransmissions.ClientTransmission, Orion.Models",
+  "Topic": "GetMessagesByDirectCommunicationId",
+  "Data": "c48a6583-729a-4dce-936f-24927beadec3"
+}

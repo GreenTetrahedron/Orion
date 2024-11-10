@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Orion.Client\Orion.Client.csproj" />
+    <ProjectReference Include="..\Orion.Configuration\Orion.Configuration.csproj" />
+    <ProjectReference Include="..\Orion.Models\Orion.Models.csproj" />
+    <ProjectReference Include="..\Orion.JsonParser\Orion.JsonParser.csproj" />
+  </ItemGroup>
+
+</Project>
