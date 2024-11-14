@@ -89,13 +89,15 @@ namespace Orion.Server.DirectCommunications.Repositories
                 .Where(directCommunication => directCommunication.DirectCommunicationId == id.Id)
                 .Select(directCommunication =>
                     directCommunication.Messages
+                        .OrderBy(message => message.LastUpdated)
                         .Select(message => new MessageDTO
                         {
                             MessageId = message.MessageId,
                             SenderProfile = message.Sender,
                             Content = message.Content,
                             LastUpdated = message.LastUpdated
-                        }).ToList()
+                        })
+                        .ToList()
                 ).SingleOrDefaultAsync();
 
             return messages == null
