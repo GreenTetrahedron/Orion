@@ -49,7 +49,7 @@ namespace Orion.Client.App.Users.Views
         private async void OnLogin(object sender, RoutedEventArgs e)
         {
             var enteredUsername = usernameTextEntry.Text;
-            var enteredPassword = passwordTextEntry.Text;
+            var enteredPassword = passwordTextEntry.Password;
             var credentials = new Credentials() { Username = enteredUsername, Password = enteredPassword };
 
             var subscriptable = await _userService.AuthenticateUser(credentials);

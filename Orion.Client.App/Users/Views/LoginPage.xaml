@@ -33,6 +33,14 @@
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="BorderThickness" Value="0 0 0 1" />
         </Style>
+        <Style TargetType="PasswordBox" x:Key="InputFieldPassword" BasedOn="{StaticResource DefaultPasswordBox}">
+            <Setter Property="Foreground" Value="#fff" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0 0 0 1" />
+            <Setter Property="PasswordChar" Value="*" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="IsPasswordRevealButtonEnabled" Value="False" />
+        </Style>
 
         <Style TargetType="Button" x:Key="LoginButton" BasedOn="{StaticResource DefaultButton}">
             <Setter Property="Background" Value="#574ae2" />
@@ -88,13 +96,13 @@
                         <SolidColorBrush x:Key="TextControlBorderBrushFocused" Color="#ccd" />
                     </TextBox.Resources>
                 </TextBox>
-                <TextBox Grid.Row="2" x:Name="passwordTextEntry" PlaceholderText="Password" Style="{StaticResource InputField}">
-                    <TextBox.Resources>
+                <PasswordBox Grid.Row="2" x:Name="passwordTextEntry" PlaceholderText="Password" Style="{StaticResource InputFieldPassword}">
+                    <PasswordBox.Resources>
                         <SolidColorBrush x:Key="TextControlBackgroundPointerOver" Color="Transparent" />
                         <SolidColorBrush x:Key="TextControlBackgroundFocused" Color="Transparent" />
                         <SolidColorBrush x:Key="TextControlBorderBrushFocused" Color="#ccd" />
-                    </TextBox.Resources>
-                </TextBox>
+                    </PasswordBox.Resources>
+                </PasswordBox>
 
                 <Button Grid.Row="3" Click="OnLogin" Style="{StaticResource LoginButton}">
                     <Button.Resources>
