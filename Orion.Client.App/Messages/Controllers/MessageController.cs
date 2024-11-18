@@ -36,6 +36,7 @@ namespace Orion.Client.App.Messages.Controllers
             {
                 MessageId = directMessageDTO.Message.MessageId,
                 Content = directMessageDTO.Message.Content,
+                LastUpdated = directMessageDTO.Message.LastUpdated,
                 SenderProfile = new UserProfile()
                 {
                     UserId = directMessageDTO.Message.SenderProfile.UserId,
