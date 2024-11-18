@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using Orion.Client.App.DirectCommunications.Models;
+using Orion.Client.App.DirectCommunications.ViewModels;
 using System.Collections.ObjectModel;
 
 namespace Orion.Client.App.Users.Models
@@ -11,6 +12,9 @@ namespace Orion.Client.App.Users.Models
 
         [ObservableProperty]
         private ObservableCollection<DirectCommunication> directCommunications;
+
+        [ObservableProperty]
+        private DirectCommunicationListViewModel directCommunicationListViewModel;
 
         public CurrentUser()
         {

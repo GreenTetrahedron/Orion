@@ -114,48 +114,17 @@ namespace Orion.Router
                     topicInterceptor.Invoke(serverTransmission.Response);
                 }
 
-                var broadcastList = serverTransmission.Response.AffectedUsers;
+                if (serverTransmission.Response != null)
+                    await ForwardServerTransmission(serverTransmission.Response);
 
-                if (broadcastList == null || broadcastList.Length == 0)
-                {
-                    if (serverTransmission.Response.RequestId == null)
-                        continue;
-
-                    bool wasRequested = _requestService.TryGetRequester(serverTransmission.Response.RequestId.Value, out var requester);
-
-                    if (wasRequested)
-                    {
-                        await ForwardServerResponse(serverTransmission.Response, requester);
-                    }
-
-                    continue;
-                }
-
-                bool isConnected = _connectionService.TryGetConnectionHandler(broadcastList[0], out var client);
-
-                if (isConnected)
-                {
-                    await ForwardServerResponse(serverTransmission.Response, client);
-                }
-
-                if (serverTransmission.Publish == null || serverTransmission.Publish.AffectedUsers == null || serverTransmission.Publish.AffectedUsers.Length == 0)
-                    continue;
-
-                foreach (var userId in serverTransmission.Response.AffectedUsers)
-                {
-                    isConnected = _connectionService.TryGetConnectionHandler(userId, out client);
-
-                    if (isConnected)
-                    {
-                        await ForwardServerResponse(serverTransmission.Publish, client);
-                    }
-                }
+                if (serverTransmission.Publish != null)
+                    await ForwardServerTransmission(serverTransmission.Publish);
             }
         }
 
         public async Task<string> ReceiveTransmission(Socket handler)
         {
-            var buffer = new byte[4096];
+            var buffer = new byte[16192];
 
             int transmissionBytesCount = await handler.ReceiveAsync(buffer, SocketFlags.None);
 
@@ -166,7 +135,7 @@ namespace Orion.Router
 
         public async Task<ServerTransmission?> ReceiveServerTransmission()
         {
-            var buffer = new byte[4096];
+            var buffer = new byte[16192];
 
             int transmissionBytesCount = await _server.ReceiveAsync(buffer, SocketFlags.None);
 
@@ -190,9 +159,36 @@ namespace Orion.Router
             return clientTransmission;
         }
 
+        public async Task<int> ForwardServerTransmission(ServerResponse serverResponse)
+        {
+            int result = 0;
+            Socket? client;
+
+            if (serverResponse.RequestId != null && _requestService.TryGetRequester(serverResponse.RequestId.Value, out client) && client != null)
+            {
+                result &= await ForwardServerResponse(serverResponse, client);
+            }
+
+            if (serverResponse.AffectedUsers == null)
+                return result;
+
+
+            foreach(var user in serverResponse.AffectedUsers)
+            {
+                if (_connectionService.TryGetConnectionHandler(user, out client) && client != null)
+                {
+                    result &= await ForwardServerResponse(serverResponse, client);
+                }
+            }
+
+            return result;
+        }
+
         public async Task<int> ForwardServerResponse(ServerResponse serverResponse, Socket client)
         {
             string responseJson = _jsonService.SerialiseObject(new ClientTransmission(serverResponse.Topic, serverResponse.ServerResult));
+
+            Console.WriteLine($"Transmitting new response of topic: {serverResponse.Topic}");
 
             byte[] transmissionBytes = Encoding.UTF8.GetBytes(responseJson);
 
