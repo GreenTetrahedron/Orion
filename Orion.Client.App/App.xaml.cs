@@ -63,10 +63,12 @@ namespace Orion.Client.App
 
             var configurationService = new ConfigurationService();
 
+            configurationService.AddSingleton<IConfigurationService>(configurationService);
+
             configurationService.AddSingleton<IJsonService, JsonService>();
 
             configurationService.AddSingleton<ISubscriptionService, SubscriptionService>();
-            configurationService.AddSingleton<App>(this);
+            configurationService.AddSingleton<App>(Current);
             configurationService.AddSingleton<ITopicHandlerService, TopicHandlerService>();
 
             var connectionService = new ConnectionService

@@ -48,6 +48,8 @@ namespace Orion.Client.App.Messages.Views
                 SenderId = App.Current.CurrentUser.UserProfile.UserId,
                 LastUpdated = DateTime.Now
             });
+
+            messageEntryTextEntry.Text = "";
         }
     }
 }
