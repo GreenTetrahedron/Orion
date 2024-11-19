@@ -34,6 +34,11 @@ namespace Orion.Server.Users.Repositories
             var getDataQueryResult = await getDataQuery
                 .SingleOrDefaultAsync();
 
+            // I dont like the repetition
+            if (getDataQueryResult == null)
+                return ServerTransmissionService.NewSuccessfulResponseServerTransmission("AuthenticateUserResult", AuthenticationMessages.INVALID_CREDENTIALS)
+                    .AddResponseOperationMessage("Invalid credentials entered");
+
             var user = new UserDTO()
             {
                 Username = getDataQueryResult.Username,
@@ -53,7 +58,7 @@ namespace Orion.Server.Users.Repositories
 
             return (user == null)
                 ? ServerTransmissionService.NewSuccessfulResponseServerTransmission("AuthenticateUserResult", AuthenticationMessages.INVALID_CREDENTIALS)
-                    .AddResponseOperationMessage("Invalid credentials entered")
+                    .AddResponseOperationMessage("Internal Server error")
                 : ServerTransmissionService.NewSuccessfulResponseServerTransmission("AuthenticateUserResult", AuthenticationMessages.VALID_CREDENTIALS, user)
                     .AddResponseAffectedUser(user.UserId)
                     .AddResponseOperationMessage("Valid credentials entered");
