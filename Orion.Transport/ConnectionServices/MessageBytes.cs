@@ -1,4 +1,4 @@
-﻿namespace Orion.Client.Transmissions
+﻿namespace Orion.Transport.ConnectionServices
 {
     public struct MessageBytes
     {

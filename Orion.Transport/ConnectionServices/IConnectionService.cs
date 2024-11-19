@@ -1,6 +1,6 @@
-﻿using Orion.Client.Transmissions;
+﻿using Orion.Transport.ConnectionServices;
 
-namespace Orion.Client.Connections
+namespace Orion.Transport.ConnectionServices
 {
     public interface IConnectionService
     {

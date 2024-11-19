@@ -1,9 +1,9 @@
-﻿using Orion.Client.Connections;
-using Orion.Client.Subscriptions;
+﻿using Orion.Client.Subscriptions;
 using Orion.Client.Subscriptions.Services;
 using Orion.Client.TopicHandlers;
 using Orion.JsonParser;
 using Orion.Models.ClientTransmissions;
+using Orion.Transport.ConnectionServices;
 using System.Text;
 
 namespace Orion.Client.Transmissions

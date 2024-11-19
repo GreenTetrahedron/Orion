@@ -1,8 +1,7 @@
-﻿using Orion.Client.Transmissions;
-using System.Net;
+﻿using System.Net;
 using System.Net.Sockets;
 
-namespace Orion.Client.Connections
+namespace Orion.Transport.ConnectionServices
 {
     public class ConnectionService : IConnectionService
     {
@@ -10,12 +9,16 @@ namespace Orion.Client.Connections
 
         private Socket _router;
 
-        public ConnectionService(IPEndPoint routerIpEndpoint)
+        private int _bufferSpace;
+
+        public ConnectionService(IPEndPoint routerIpEndpoint, int bufferSpace = 16192)
         {
             _router = new Socket(routerIpEndpoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
 
             _routerIpEndpoint = routerIpEndpoint;
             _router.ConnectAsync(_routerIpEndpoint);
+
+            _bufferSpace = bufferSpace;
         }
 
         public async Task<bool> SendMessage(byte[] data)
@@ -27,7 +30,7 @@ namespace Orion.Client.Connections
 
         public async Task<MessageBytes> ReceiveMessage()
         {
-            byte[] buffer = new byte[16192];
+            byte[] buffer = new byte[_bufferSpace];
             int receivedBytes = await _router.ReceiveAsync(buffer, SocketFlags.None);
 
             return new MessageBytes(buffer, receivedBytes);
