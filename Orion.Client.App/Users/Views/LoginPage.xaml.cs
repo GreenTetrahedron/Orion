@@ -21,7 +21,7 @@ namespace Orion.Client.App.Users.Views
     {
         private readonly IUserService _userService = App.Current.ConfigurationService.GetSingletonOfType<IUserService>();
 
-        private Visibility _visible;
+        private bool _isValid;
 
         public event PropertyChangedEventHandler PropertyChanged = delegate { };
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
@@ -29,12 +29,12 @@ namespace Orion.Client.App.Users.Views
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        public Visibility Visible
+        public bool IsValid
         {
-            get { return _visible; }
+            get { return _isValid; }
             set
             {
-                _visible = value;
+                _isValid = value;
                 OnPropertyChanged();
             }
         }
@@ -43,7 +43,7 @@ namespace Orion.Client.App.Users.Views
         public LoginPage()
         {
             InitializeComponent();
-            Visible = Visibility.Collapsed;
+            _isValid = true;
         }
 
         private async void OnLogin(object sender, RoutedEventArgs e)
@@ -53,6 +53,7 @@ namespace Orion.Client.App.Users.Views
             var credentials = new Credentials() { Username = enteredUsername, Password = enteredPassword };
 
             var subscriptable = await _userService.AuthenticateUser(credentials);
+            IsValid = true;
             subscriptable.Subscribe(OnAuthenticationResultReceived);
         }
 
@@ -60,11 +61,11 @@ namespace Orion.Client.App.Users.Views
         {
             if (result.OperationInformation.OperationMessageCode != AuthenticationMessages.VALID_CREDENTIALS)
             {
-                Visible = Visibility.Visible;
+                IsValid = false;
                 return;
             }
 
-            Visible = Visibility.Collapsed;
+            IsValid = true;
 
             var user = (UserDTO)result.Data;
 
