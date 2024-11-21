@@ -27,7 +27,7 @@ namespace Orion.Client.Transmissions
         {
             var messageBytes = await _connectionService.ReceiveMessage();
 
-            string transmissionJson = Encoding.UTF8.GetString(messageBytes.Data, 0, messageBytes.ReceivedBytes);
+            string transmissionJson = Encoding.UTF8.GetString(messageBytes.Data, 0, messageBytes.DataByteLength);
             var transmission = _jsonService.DeserialiseJson<ClientTransmission?>(transmissionJson);
 
             if (transmission == null)

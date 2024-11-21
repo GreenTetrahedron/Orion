@@ -3,12 +3,12 @@
     public struct MessageBytes
     {
         public byte[] Data;
-        public int ReceivedBytes;
+        public int DataByteLength;
 
-        public MessageBytes(byte[] data, int receivedBytes)
+        public MessageBytes(byte[] data, int dataByteLength)
         {
             Data = data;
-            ReceivedBytes = receivedBytes;
+            DataByteLength = dataByteLength;
         }
     }
 }

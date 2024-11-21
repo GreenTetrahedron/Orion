@@ -8,8 +8,7 @@ using Orion.Server.Users.Repositories;
 using System.Net;
 using Orion.Server.DirectCommunications.Repositories;
 using Orion.Cryptography.HashingServices;
-
-
+using Orion.Transport.ConnectionServices;
 
 var configurationService = new ConfigurationService();
 
@@ -17,6 +16,7 @@ configurationService.AddSingleton<IConfigurationService>(configurationService);
 
 configurationService.AddSingleton<IJsonService, JsonService>();
 configurationService.AddSingleton<IHashingService, HashingService>();
+
 
 configurationService.AddScoped<OrionDbContext, OrionDbContext>();
 configurationService.AddScoped<IUserRepository, UserRepository>();
@@ -39,10 +39,11 @@ int routerPort = Convert.ToInt32(50000);
 Console.WriteLine($"On IP address: {routerIPAddress} and port: {routerPort}");
 
 var routerIPEndPoint = new IPEndPoint(routerIPAddress, routerPort);
+configurationService.AddSingleton<IConnectionService>(new ConnectionService(routerIPEndPoint));
 
-var serverService = new ServerService(routerIPEndPoint,
-    configurationService.GetSingletonOfType<IJsonService>(),
-    configurationService.GetSingletonOfType<ITopicHandlerService>());
+configurationService.AddSingleton<ServerService, ServerService>();
+
+var serverService = configurationService.GetInstanceOfType<ServerService>();
 
 serverService.Run();
 

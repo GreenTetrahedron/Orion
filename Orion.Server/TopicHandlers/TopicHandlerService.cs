@@ -20,7 +20,8 @@ namespace Orion.Server.TopicHandlers
 
 
             var controllers =
-                from t in Assembly.GetCallingAssembly().GetTypes()
+                from a in AppDomain.CurrentDomain.GetAssemblies()
+                from t in a.GetTypes()
                 let attributes = t.GetCustomAttributes(typeof(ControllerAttribute), false)
                 where attributes != null && attributes.Length > 0
                 select t;

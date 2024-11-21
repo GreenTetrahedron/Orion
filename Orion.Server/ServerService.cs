@@ -2,6 +2,7 @@
 using Orion.Models.RouterTransmissions;
 using Orion.Models.ServerTransmissions;
 using Orion.Server.TopicHandlers;
+using Orion.Transport.ConnectionServices;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -12,29 +13,21 @@ namespace Orion.Server
     {
         private readonly IJsonService _jsonService;
         private readonly ITopicHandlerService _topicHandlerService;
-
-        private readonly IPEndPoint _routerIpEndpoint;
-
-        private Socket _router;
+        private readonly IConnectionService _connectionService;
 
         private const string IDENTIFIER = "SERVER";
 
-
-        public ServerService(IPEndPoint routerIpEndpoint, IJsonService jsonService, ITopicHandlerService topicHandlerService)
+        public ServerService(IJsonService jsonService, ITopicHandlerService topicHandlerService, IConnectionService connectionService)
         {
             _topicHandlerService = topicHandlerService;
 
-            _router = new Socket(routerIpEndpoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-
-            _routerIpEndpoint = routerIpEndpoint;
+            _connectionService = connectionService;
             _jsonService = jsonService;
         }
 
         public async Task Run()
         {
-            Console.WriteLine("Server running...");
-
-            await _router.ConnectAsync(_routerIpEndpoint);
+            //Console.WriteLine("Server running...");
 
             await TransmitData(IDENTIFIER);
 
@@ -43,7 +36,7 @@ namespace Orion.Server
                 while (true)
                 {
                     var request = await ReceiveRequest();
-                    Console.WriteLine($"New request of topic: {request.Topic}");
+                    //Console.WriteLine($"New request of topic: {request.Topic}");
 
                     if (request == null)
                         continue;
@@ -52,11 +45,11 @@ namespace Orion.Server
 
                     await TransmitData(response);
 
-                    Console.WriteLine($"Transmitted response to request of topic: {request.Topic}");
+                    //Console.WriteLine($"Transmitted response to request of topic: {request.Topic}");
                 }
             });
 
-            Console.ReadLine();
+            //Console.ReadLine();
         }
 
         private async Task<int> TransmitData(object data)
@@ -65,7 +58,7 @@ namespace Orion.Server
 
             var transmissionBytes = Encoding.UTF8.GetBytes(transmissionJson);
 
-            return await _router.SendAsync(transmissionBytes);
+            return await _connectionService.SendMessage(transmissionBytes) ? 1 : 0;
         }
 
         private async Task<ServerTransmission?> HandleRequest(ServerRequest request)
@@ -82,11 +75,9 @@ namespace Orion.Server
 
         private async Task<ServerRequest?> ReceiveRequest()
         {
-            byte[] buffer = new byte[16192];
+            var message = await _connectionService.ReceiveMessage();
 
-            int transmissionLength = await _router.ReceiveAsync(buffer);
-
-            string transmissionJson = Encoding.UTF8.GetString(buffer, 0, transmissionLength);
+            string transmissionJson = Encoding.UTF8.GetString(message.Data, 0, message.DataByteLength);
 
             ServerRequest? request = _jsonService.DeserialiseJson<ServerRequest>(transmissionJson);
 
