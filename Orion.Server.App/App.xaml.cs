@@ -9,6 +9,8 @@ using Microsoft.UI.Xaml.Shapes;
 using Orion.Configuration;
 using Orion.Cryptography.HashingServices;
 using Orion.JsonParser;
+using Orion.Logging.DataLayer;
+using Orion.Logging.LoggingServices;
 using Orion.Server.DataLayer;
 using Orion.Server.DirectCommunications.Repositories;
 using Orion.Server.Messages.Repositories;
@@ -55,9 +57,11 @@ namespace Orion.Server.App
 
             configurationService.AddSingleton<IConfigurationService>(configurationService);
 
+            configurationService.AddScoped<LoggingDbContext, LoggingDbContext>();
+            configurationService.AddScoped<LoggingService, DbLoggingService>();
+
             configurationService.AddSingleton<IJsonService, JsonService>();
             configurationService.AddSingleton<IHashingService, HashingService>();
-
 
             configurationService.AddScoped<OrionDbContext, OrionDbContext>();
             configurationService.AddScoped<IUserRepository, UserRepository>();

@@ -35,6 +35,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orion.Server.App", "Orion.S
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orion.Server.Console", "Orion.Server.Console\Orion.Server.Console.csproj", "{D47EF9C9-D05B-4BFD-AC19-32709786C7BB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orion.Logging", "Orion.Logging\Orion.Logging.csproj", "{2621BC97-1BFF-47AA-9D67-850CB77646E3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -319,6 +321,22 @@ Global
 		{D47EF9C9-D05B-4BFD-AC19-32709786C7BB}.Release|x64.Build.0 = Release|Any CPU
 		{D47EF9C9-D05B-4BFD-AC19-32709786C7BB}.Release|x86.ActiveCfg = Release|Any CPU
 		{D47EF9C9-D05B-4BFD-AC19-32709786C7BB}.Release|x86.Build.0 = Release|Any CPU
+		{2621BC97-1BFF-47AA-9D67-850CB77646E3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2621BC97-1BFF-47AA-9D67-850CB77646E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2621BC97-1BFF-47AA-9D67-850CB77646E3}.Debug|ARM64.ActiveCfg = Debug|Any CPU
+		{2621BC97-1BFF-47AA-9D67-850CB77646E3}.Debug|ARM64.Build.0 = Debug|Any CPU
+		{2621BC97-1BFF-47AA-9D67-850CB77646E3}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{2621BC97-1BFF-47AA-9D67-850CB77646E3}.Debug|x64.Build.0 = Debug|Any CPU
+		{2621BC97-1BFF-47AA-9D67-850CB77646E3}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{2621BC97-1BFF-47AA-9D67-850CB77646E3}.Debug|x86.Build.0 = Debug|Any CPU
+		{2621BC97-1BFF-47AA-9D67-850CB77646E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2621BC97-1BFF-47AA-9D67-850CB77646E3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2621BC97-1BFF-47AA-9D67-850CB77646E3}.Release|ARM64.ActiveCfg = Release|Any CPU
+		{2621BC97-1BFF-47AA-9D67-850CB77646E3}.Release|ARM64.Build.0 = Release|Any CPU
+		{2621BC97-1BFF-47AA-9D67-850CB77646E3}.Release|x64.ActiveCfg = Release|Any CPU
+		{2621BC97-1BFF-47AA-9D67-850CB77646E3}.Release|x64.Build.0 = Release|Any CPU
+		{2621BC97-1BFF-47AA-9D67-850CB77646E3}.Release|x86.ActiveCfg = Release|Any CPU
+		{2621BC97-1BFF-47AA-9D67-850CB77646E3}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
