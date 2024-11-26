@@ -1,12 +1,15 @@
 ﻿using Orion.Models.DirectCommunicationModels;
 using Orion.Models.UserModels;
 using Orion.Server.DirectCommuncations;
+using Orion.Server.Users;
 
 namespace Orion.Server.Users
 {
     public class User
     {
         public Guid UserId { get; set; }
+
+        public Roles Role { get; set; }
 
         public string Username { get; set; }
 
