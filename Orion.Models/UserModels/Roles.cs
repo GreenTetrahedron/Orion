@@ -8,8 +8,8 @@ namespace Orion.Models.UserModels
 {
     public enum Roles
     {
-        SUPERADMIN,
+        USER,
         ADMIN,
-        USER
+        SUPERADMIN
     }
 }

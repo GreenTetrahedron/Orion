@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Orion.Models.UserModels;
 using Orion.Server.DirectCommuncations;
 using Orion.Server.Messages;
 using Orion.Server.Users;

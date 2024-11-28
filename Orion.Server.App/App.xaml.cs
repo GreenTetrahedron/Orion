@@ -83,7 +83,7 @@ namespace Orion.Server.App
             var routerIPEndPoint = new IPEndPoint(routerIPAddress, routerPort);
             configurationService.AddSingleton<IConnectionService>(new ConnectionService(routerIPEndPoint));
 
-            configurationService.AddSingleton<ServerService, ServerService>();
+            configurationService.AddScoped<ServerService, ServerService>();
 
             var serverService = configurationService.GetInstanceOfType<ServerService>();
 

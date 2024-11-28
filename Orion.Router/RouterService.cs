@@ -94,7 +94,7 @@ namespace Orion.Router
 
                 var requestId = _requestService.AddRequest(handler);
 
-                SendServerRequest(_server, clientTransmission.Topic, clientTransmission.Data, requestId);
+                SendServerRequest(_server, clientTransmission.Topic, clientTransmission.Data, handler, requestId);
             }
         }
 
@@ -147,7 +147,7 @@ namespace Orion.Router
 
         public async Task<ClientTransmission?> ReceiveClientTransmission(Socket client)
         {
-            var buffer = new byte[2048];
+            var buffer = new byte[16192];
 
             int transmissionBytesCount = await client.ReceiveAsync(buffer, SocketFlags.None);
 
@@ -202,13 +202,19 @@ namespace Orion.Router
             return await _server.SendAsync(transmissionBytes);
         }
 
-        public async Task<int> SendServerRequest(Socket handler, string topic, object data, Guid? requestId = null)
+        public async Task<int> SendServerRequest(Socket serverHandler, string topic, object data, Socket clientHandler, Guid? requestId = null)
         {
-            var serverRequest = new ServerRequest(topic, data, requestId);
+            Guid requesterId;
+
+            bool hasConnection = _connectionService.TryGetRequesterId(clientHandler, out requesterId);
+
+            var serverRequest = hasConnection
+                ? new ServerRequest(topic, data, requestId, requesterId)
+                : new ServerRequest(topic, data, requestId);
 
             byte[] transmissionBytes = Encoding.UTF8.GetBytes(_jsonService.SerialiseObject(serverRequest));
 
-            return await handler.SendAsync(transmissionBytes);
+            return await serverHandler.SendAsync(transmissionBytes);
         }
     }
 }

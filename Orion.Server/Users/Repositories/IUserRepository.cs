@@ -12,5 +12,7 @@ namespace Orion.Server.Users.Repositories
         public Task<UserDTO?> GetUser(Guid userId);
 
         public Task<ServerTransmission> GetUserProfileByUsername(string username);
+
+        public Task<Roles?> GetRoleByUserId(Guid userId);
     }
 }

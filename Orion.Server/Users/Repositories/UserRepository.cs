@@ -123,5 +123,16 @@ namespace Orion.Server.Users.Repositories
                     .NewSuccessfulResponseServerTransmission("GetUserByUsernameResult", GetUserMessages.USER_FOUND, user)
                     .AddResponseOperationMessage($"User with username: {username} was found");
         }
+
+        public async Task<Roles?> GetRoleByUserId(Guid userId)
+        {
+            var role = await _database.Users
+                .Where(user => user.UserId == userId)
+                .Select(user => user.Role)
+                .SingleOrDefaultAsync();
+
+            return role;
+
+        }
     }
 }
