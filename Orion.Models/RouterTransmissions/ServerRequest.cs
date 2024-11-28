@@ -8,11 +8,14 @@
 
         public Guid? RequestId { get; set; }
 
-        public ServerRequest(string topic, object data, Guid? requestId = null)
+        public Guid? RequesterId { get; set; }
+
+        public ServerRequest(string topic, object data, Guid? requestId = null, Guid? requesterId = null)
         {
             Topic = topic;
             Data = data;
             RequestId = requestId;
+            RequesterId = requesterId;
         }
     }
 }

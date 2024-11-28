@@ -1,6 +1,7 @@
 ﻿using Orion.Logging.LoggingServices;
 using Orion.Models.MessageModels;
 using Orion.Models.ServerTransmissions;
+using Orion.Models.UserModels;
 using Orion.Server.Attributes;
 using Orion.Server.Messages.Repositories;
 

@@ -6,6 +6,8 @@ namespace Orion.Router.Connections
     {
         public bool TryAddConnection(Socket handler, Guid userId);
 
-        public bool TryGetConnectionHandler(Guid requestId, out Socket? handler);
+        public bool TryGetConnectionHandler(Guid userId, out Socket? handler);
+
+        public bool TryGetRequesterId(Socket handler, out Guid requesterId);
     }
 }

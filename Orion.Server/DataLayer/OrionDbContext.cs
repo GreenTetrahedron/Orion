@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Orion.Models.UserModels;
 using Orion.Server.DirectCommuncations;
 using Orion.Server.Messages;
 using Orion.Server.Users;
@@ -31,6 +32,10 @@ namespace Orion.Server.DataLayer
             modelBuilder.Entity<User>()
                 .HasIndex(e => e.Username)
                 .IsUnique();
+
+            modelBuilder.Entity<User>()
+                .Property(u => u.Role)
+                .HasConversion(v => v.ToString(), v => (Roles)Enum.Parse(typeof(Roles), v));
         }
     }
 }

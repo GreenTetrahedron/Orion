@@ -3,12 +3,15 @@ using Orion.Configuration;
 using System.Reflection;
 using Orion.Models.ServerTransmissions;
 using Newtonsoft.Json.Linq;
+using Orion.Models.UserModels;
+using System.Runtime.InteropServices;
 
 namespace Orion.Server.TopicHandlers
 {
     public class TopicHandlerService : ITopicHandlerService
     {
-        private readonly IDictionary<string, Type> topicToHandlerControllerType;
+        private readonly IDictionary<string, Type> _topicToHandlerControllerType;
+        private readonly IDictionary<string, Roles> _topicToHandlerRole;
 
         private readonly IConfigurationService _configurationService;
 
@@ -16,7 +19,8 @@ namespace Orion.Server.TopicHandlers
         {
             _configurationService = configurationService;
 
-            topicToHandlerControllerType = new Dictionary<string, Type>();
+            _topicToHandlerControllerType = new Dictionary<string, Type>();
+            _topicToHandlerRole = new Dictionary<string, Roles>();
 
 
             var controllers =
@@ -47,21 +51,33 @@ namespace Orion.Server.TopicHandlers
 
                 foreach (var handler in handlers)
                 {
-                    topicToHandlerControllerType.Add(handler.GetCustomAttribute<HandlerAttribute>().Topic, controller);
+                    _topicToHandlerControllerType.Add(handler.GetCustomAttribute<HandlerAttribute>().Topic, controller);
+
+                    Roles? role = handler.GetCustomAttribute<AuthoriseAttribute>()?.Role;
+
+                    if (role == null)
+                        role = Roles.USER;
+                    
+                    _topicToHandlerRole.Add(handler.GetCustomAttribute<HandlerAttribute>().Topic, role.Value);
                 }
             }
+        }
+
+        public Roles GetAuthorisedRoleByTopic(string topic)
+        {
+            return _topicToHandlerRole[topic];
         }
 
         public Func<object, Task<ServerTransmission>>? GetTopicHandler(string topic)
         {
             _configurationService.ResetScope();
 
-            bool topicIsKnown = topicToHandlerControllerType.ContainsKey(topic);
+            bool topicIsKnown = _topicToHandlerControllerType.ContainsKey(topic);
 
             if (!topicIsKnown)
                 throw new Exception($"Unknown topic: {topic})");
 
-            var constructorInfo = topicToHandlerControllerType[topic].GetConstructors().Single();
+            var constructorInfo = _topicToHandlerControllerType[topic].GetConstructors().Single();
 
             var parameters = constructorInfo.GetParameters();
             var arguments = new object[parameters.Length];
@@ -73,7 +89,7 @@ namespace Orion.Server.TopicHandlers
 
             var controllerInstance = constructorInfo.Invoke(arguments);
 
-            var handler = topicToHandlerControllerType[topic].GetMethods()
+            var handler = _topicToHandlerControllerType[topic].GetMethods()
                 .Where(m => m.GetCustomAttributes(typeof(HandlerAttribute), false) != null && m.GetCustomAttributes(typeof(HandlerAttribute), false).Length > 0)
                 .Where(m => m.GetCustomAttribute<HandlerAttribute>().Topic == topic)
                 .Single();
