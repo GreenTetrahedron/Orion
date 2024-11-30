@@ -14,15 +14,14 @@
 	<WindowsPackageType>None</WindowsPackageType>
 	<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
   </PropertyGroup>
-
   <ItemGroup>
-    <Content Include="Assets\SplashScreen.scale-200.png" />
-    <Content Include="Assets\LockScreenLogo.scale-200.png" />
-    <Content Include="Assets\Square150x150Logo.scale-200.png" />
-    <Content Include="Assets\Square44x44Logo.scale-200.png" />
-    <Content Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png" />
-    <Content Include="Assets\StoreLogo.png" />
-    <Content Include="Assets\Wide310x150Logo.scale-200.png" />
+    <Content Remove="Assets\AdminPortal.ico" />
+    <Content Remove="Assets\Assets\Logo\AdminPortal.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="MainPage.xaml" />
+    <None Remove="NavbarPage.xaml" />
+    <None Remove="Users\Views\LoginPage.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -47,6 +46,16 @@
     <ProjectReference Include="..\Orion.Models\Orion.Models.csproj" />
     <ProjectReference Include="..\Orion.Server\Orion.Server.csproj" />
     <ProjectReference Include="..\Orion.Transport\Orion.Transport.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="MainPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Users\Views\LoginPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
 
   <!--

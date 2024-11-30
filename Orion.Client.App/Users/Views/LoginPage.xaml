@@ -110,7 +110,7 @@
 
                 <Button Grid.Row="3" Click="OnLogin" Style="{StaticResource LoginButton}">
                     <Button.Resources>
-                        <Color x:Key="ButtonBackgroundPointerOver">#372ac2</Color>
+                        <SolidColorBrush x:Key="ButtonBackgroundPointerOver" Color="#2e2e32" />
                     </Button.Resources>
                     Sign in
                 </Button>

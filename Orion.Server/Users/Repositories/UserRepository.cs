@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Orion.Cryptography.HashingServices;
+using Orion.Logging.LoggingServices;
 using Orion.Models.DirectCommunicationModels;
 using Orion.Models.ServerTransmissions;
 using Orion.Models.ServerTransmissions.Results;
@@ -133,6 +134,32 @@ namespace Orion.Server.Users.Repositories
 
             return role;
 
+        }
+
+        public async Task<ServerResult> AuthenticateSuperadmin(Credentials credentials)
+        {
+            var passwordHash = _hashingService.Hash(Encoding.UTF8.GetBytes(credentials.Password));
+
+            var getDataQuery = _database.Users
+                .Where(user => user.Role == Roles.SUPERADMIN)
+                .Where(user => user.Username == credentials.Username && user.PasswordHash == passwordHash)
+                .Include(user => user.DirectCommunications)
+                .ThenInclude(d => d.Members);
+
+            var getDataQueryResult = await getDataQuery
+                .SingleOrDefaultAsync();
+
+            // I dont like the repetition
+            if (getDataQueryResult == null)
+                return new ServerResult(new OperationInformation<AuthenticationMessages>(Statuses.SUCCEEDED, AuthenticationMessages.INVALID_CREDENTIALS, "Invalid credentials entered..."));
+
+            var user = new UserDTO()
+            {
+                Username = getDataQueryResult.Username,
+                UserId = getDataQueryResult.UserId
+            };
+
+            return new ServerResult(new OperationInformation<AuthenticationMessages>(Statuses.SUCCEEDED, AuthenticationMessages.VALID_CREDENTIALS, "Valid credentials"), user);
         }
     }
 }

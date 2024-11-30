@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Orion.Logging.LoggingServices
 {
-    public class LoggingService
+    public abstract class LoggingService
     {
 		protected event Action<Log> OnLog = delegate { };
 		protected event Action<List<Log>> OnSessionEnd = delegate { };
@@ -20,8 +20,11 @@ namespace Orion.Logging.LoggingServices
 
 		~LoggingService()
 		{
-			SessionEnd();		
+            SessionEnd();
 		}
+
+        public abstract List<Log> GetLogsByDateTime(DateTime startDate, DateTime endDate);
+        public abstract List<Log> GetLogsByCount(int start, int end);
 
 		public int Log(string message)
 		{

@@ -11,6 +11,8 @@ using Orion.Cryptography.HashingServices;
 using Orion.JsonParser;
 using Orion.Logging.DataLayer;
 using Orion.Logging.LoggingServices;
+using Orion.Server.App.Users.Models;
+using Orion.Server.App.Users.Views;
 using Orion.Server.DataLayer;
 using Orion.Server.DirectCommunications.Repositories;
 using Orion.Server.Messages.Repositories;
@@ -19,9 +21,11 @@ using Orion.Server.Users.Repositories;
 using Orion.Transport.ConnectionServices;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
@@ -38,6 +42,14 @@ namespace Orion.Server.App
     /// </summary>
     public partial class App : Application
     {
+        public new static App Current = (App)Application.Current;
+
+        public CurrentUser CurrentUser { get; set; }
+
+        public IConfigurationService ConfigurationService { get; set; }
+
+        public Frame RootFrame { get; set; }
+
         /// <summary>
         /// Initializes the singleton application object.  This is the first line of authored code
         /// executed, and as such is the logical equivalent of main() or WinMain().
@@ -70,6 +82,8 @@ namespace Orion.Server.App
 
             configurationService.AddSingleton<ITopicHandlerService>(new TopicHandlerService(configurationService));
 
+            ConfigurationService = configurationService;
+
             //Console.WriteLine("SERVER");
 
             //Console.WriteLine("Router IP address: ");
@@ -89,13 +103,28 @@ namespace Orion.Server.App
 
             serverService.Run();
 
-            Console.ReadLine();
+            window = new MainWindow();
 
+            RootFrame = window.RootFrame;
 
-            m_window = new MainWindow();
-            m_window.Activate();
+            RootFrame.NavigationFailed += OnNavigationFailed;
+            RootFrame.Navigate(typeof(LoginPage), args.Arguments);
+
+            window.Activate();
         }
 
-        private Window m_window;
+        private void OnNavigationFailed(object sender, NavigationFailedEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private MainWindow window;
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
     }
 }

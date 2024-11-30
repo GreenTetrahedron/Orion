@@ -1,4 +1,5 @@
 ﻿using Orion.Models.ServerTransmissions;
+using Orion.Models.ServerTransmissions.Results;
 using Orion.Models.UserModels;
 
 namespace Orion.Server.Users.Repositories
@@ -14,5 +15,7 @@ namespace Orion.Server.Users.Repositories
         public Task<ServerTransmission> GetUserProfileByUsername(string username);
 
         public Task<Roles?> GetRoleByUserId(Guid userId);
+
+        public Task<ServerResult> AuthenticateSuperadmin(Credentials credentials);
     }
 }
