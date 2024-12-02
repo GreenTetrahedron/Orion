@@ -14,15 +14,18 @@
 	<WindowsPackageType>None</WindowsPackageType>
 	<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
   </PropertyGroup>
-
   <ItemGroup>
-    <Content Include="Assets\SplashScreen.scale-200.png" />
-    <Content Include="Assets\LockScreenLogo.scale-200.png" />
-    <Content Include="Assets\Square150x150Logo.scale-200.png" />
-    <Content Include="Assets\Square44x44Logo.scale-200.png" />
-    <Content Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png" />
-    <Content Include="Assets\StoreLogo.png" />
-    <Content Include="Assets\Wide310x150Logo.scale-200.png" />
+    <Content Remove="Assets\AdminPortal.ico" />
+    <Content Remove="Assets\Assets\Logo\AdminPortal.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Logging\Views\LogsListPage.xaml" />
+    <None Remove="Logging\Views\LogsPage.xaml" />
+    <None Remove="MainPage.xaml" />
+    <None Remove="NavbarPage.xaml" />
+    <None Remove="Users\Views\LoginPage.xaml" />
+    <None Remove="Users\Views\UserForm.xaml" />
+    <None Remove="Users\Views\UsersListPage.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -48,6 +51,26 @@
     <ProjectReference Include="..\Orion.Server\Orion.Server.csproj" />
     <ProjectReference Include="..\Orion.Transport\Orion.Transport.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Page Update="MainPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Users\Views\LoginPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Logging\Views\LogsPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Logging\Views\LogsListPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
 
   <!--
     Defining the "HasPackageAndPublishMenuAddedByProject" property here allows the Solution
@@ -57,4 +80,15 @@
   <PropertyGroup Condition="'$(DisableHasPackageAndPublishMenuAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
     <HasPackageAndPublishMenu>true</HasPackageAndPublishMenu>
   </PropertyGroup>
+  <ItemGroup>
+    <CustomAdditionalCompileInputs Remove="Users\Views\UsersListPage.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Remove="Users\Views\UsersListPage.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Users\Views\UserForm.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
 </Project>

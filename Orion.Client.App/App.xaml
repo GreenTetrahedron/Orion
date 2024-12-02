@@ -6,6 +6,10 @@
     xmlns:local="using:Orion.Client.App">
     <Application.Resources>
         <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
+            </ResourceDictionary.MergedDictionaries>
+
             <Style TargetType="TextBlock" x:Key="DefaultText">
                 <Setter Property="FontFamily" Value="\assets\assets\fonts\#Roboto" />
                 <Setter Property="FontSize" Value="14" />
@@ -30,13 +34,6 @@
                 <Setter Property="Padding" Value="10" />
                 <Setter Property="BorderThickness" Value="0" />
             </Style>
-
-            <ResourceDictionary.MergedDictionaries>
-                <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
-                <!--<ResourceDictionary Source="Resources/AppStyles.xaml" />
-                <ResourceDictionary Source="Resources/Defaults.xaml" />-->
-            </ResourceDictionary.MergedDictionaries>
-            <!-- Other app resources here -->
         </ResourceDictionary>
     </Application.Resources>
 </Application>

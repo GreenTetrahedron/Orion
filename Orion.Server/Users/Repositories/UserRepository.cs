@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Orion.Cryptography.HashingServices;
+using Orion.Logging.LoggingServices;
 using Orion.Models.DirectCommunicationModels;
 using Orion.Models.ServerTransmissions;
 using Orion.Models.ServerTransmissions.Results;
@@ -64,14 +65,15 @@ namespace Orion.Server.Users.Repositories
                     .AddResponseOperationMessage("Valid credentials entered");
         }
 
-        public async Task<UserDTO?> AddUser(Credentials credentials)
+        public async Task<UserDTO?> AddUser(UserInformation userInformation)
         {
-            var passwordHash = _hashingService.Hash(Encoding.UTF8.GetBytes(credentials.Password));
+            var passwordHash = _hashingService.Hash(Encoding.UTF8.GetBytes(userInformation.Password));
             var user = new User()
             {
                 UserId = Guid.NewGuid(),
-                Username = credentials.Username,
+                Username = userInformation.Username,
                 PasswordHash = passwordHash,
+                Role = userInformation.Role,
                 DirectCommunications = new List<DirectCommuncations.DirectCommunication>()
             };
 
@@ -133,6 +135,73 @@ namespace Orion.Server.Users.Repositories
 
             return role;
 
+        }
+
+        public async Task<ServerResult> AuthenticateSuperadmin(Credentials credentials)
+        {
+            var passwordHash = _hashingService.Hash(Encoding.UTF8.GetBytes(credentials.Password));
+
+            var getDataQuery = _database.Users
+                .Where(user => user.Role == Roles.SUPERADMIN)
+                .Where(user => user.Username == credentials.Username && user.PasswordHash == passwordHash)
+                .Include(user => user.DirectCommunications)
+                .ThenInclude(d => d.Members);
+
+            var getDataQueryResult = await getDataQuery
+                .SingleOrDefaultAsync();
+
+            // I dont like the repetition
+            if (getDataQueryResult == null)
+                return new ServerResult(new OperationInformation<AuthenticationMessages>(Statuses.SUCCEEDED, AuthenticationMessages.INVALID_CREDENTIALS, "Invalid credentials entered..."));
+
+            var user = new UserDTO()
+            {
+                Username = getDataQueryResult.Username,
+                UserId = getDataQueryResult.UserId
+            };
+
+            return new ServerResult(new OperationInformation<AuthenticationMessages>(Statuses.SUCCEEDED, AuthenticationMessages.VALID_CREDENTIALS, "Valid credentials"), user);
+        }
+
+        public async Task<int> UpdateUser(UserInformation newUserInformation)
+        {
+            _database.Users.Update(new User()
+            {
+                UserId = newUserInformation.UserId,
+                Username = newUserInformation.Username,
+                PasswordHash = _hashingService.Hash(Encoding.UTF8.GetBytes(newUserInformation.Password)),
+                Role = newUserInformation.Role
+            });
+
+            return await _database.SaveChangesAsync();
+        }
+
+        public async Task<UserInformation?> GetUserInformation(Guid userId)
+        {
+            var user = await _database.Users
+                .Where(user => user.UserId == userId)
+                .Select(user => new UserInformation()
+                {
+                    UserId = user.UserId,
+                    Username = user.Username,
+                    Role = user.Role
+                })
+                .SingleOrDefaultAsync();
+
+            return user;
+        }
+
+        public async Task<List<UserDTO>> GetAllUsers()
+        {
+            var users = await _database.Users
+                .Select(user => new UserDTO()
+                {
+                    UserId = user.UserId,
+                    Username = user.Username
+                })
+                .ToListAsync();
+
+            return users;
         }
     }
 }
