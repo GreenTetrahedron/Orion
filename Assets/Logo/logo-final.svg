@@ -101,7 +101,10 @@
        height="1200"
        id="page3"
        margin="0"
-       bleed="0" /></sodipodi:namedview><defs
+       bleed="0"
+       inkscape:export-filename="AdminPortal.png"
+       inkscape:export-xdpi="20.480001"
+       inkscape:export-ydpi="20.480001" /></sodipodi:namedview><defs
      id="defs1"><inkscape:path-effect
        effect="spiro"
        id="path-effect34"

@@ -19,6 +19,8 @@
     <Content Remove="Assets\Assets\Logo\AdminPortal.png" />
   </ItemGroup>
   <ItemGroup>
+    <None Remove="Logging\Views\LogsListPage.xaml" />
+    <None Remove="Logging\Views\LogsPage.xaml" />
     <None Remove="MainPage.xaml" />
     <None Remove="NavbarPage.xaml" />
     <None Remove="Users\Views\LoginPage.xaml" />
@@ -54,6 +56,16 @@
   </ItemGroup>
   <ItemGroup>
     <Page Update="Users\Views\LoginPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Logging\Views\LogsPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Logging\Views\LogsListPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>

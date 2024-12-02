@@ -6,12 +6,14 @@ using System.Threading.Tasks;
 
 namespace Orion.Logging.LoggingServices
 {
-    public abstract class LoggingService
+    public abstract class LoggingService : IDisposable
     {
-		protected event Action<Log> OnLog = delegate { };
-		protected event Action<List<Log>> OnSessionEnd = delegate { };
+		public event Action<Log> OnLog = delegate { };
+		public event Action<List<Log>> OnSessionEnd = delegate { };
 
 		private readonly List<Log> _currentSessionLogs = new();
+
+        private bool sessionDisposed = false;
 
 		public List<Log> CurrentSessionLogs
 		{
@@ -20,8 +22,16 @@ namespace Orion.Logging.LoggingServices
 
 		~LoggingService()
 		{
+            if (!sessionDisposed)
+                SessionEnd();
+
+            sessionDisposed = true;
+        }
+        public void Dispose()
+        {
             SessionEnd();
-		}
+            sessionDisposed = true;
+        }
 
         public abstract List<Log> GetLogsByDateTime(DateTime startDate, DateTime endDate);
         public abstract List<Log> GetLogsByCount(int start, int end);
@@ -51,7 +61,7 @@ namespace Orion.Logging.LoggingServices
             try
             {
                 _currentSessionLogs.Add(log);
-                OnLog.Invoke(log);
+                OnLog?.Invoke(log);
 
                 return 1;
             }
@@ -66,7 +76,7 @@ namespace Orion.Logging.LoggingServices
         {
             try
             {
-                OnSessionEnd.Invoke(_currentSessionLogs);
+                OnSessionEnd?.Invoke(_currentSessionLogs);
                 return 1;
             }
             catch

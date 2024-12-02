@@ -12,43 +12,20 @@ using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
-using Orion.Server.App.Logging.Views;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
 
-namespace Orion.Server.App
+namespace Orion.Server.App.Logging.Views
 {
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
-    public sealed partial class NavbarPage : Page
+    public sealed partial class LogsPage : Page
     {
-        private Frame contentFrame;
-
-        public NavbarPage()
+        public LogsPage()
         {
             this.InitializeComponent();
-        }
-
-        protected override void OnNavigatedTo(NavigationEventArgs e)
-        {
-            base.OnNavigatedTo(e);
-
-            if (e.Parameter.GetType() != typeof(Frame))
-                return;
-
-            contentFrame = (Frame)e.Parameter;
-        }
-
-        private async void LoadLogsPage(object sender , RoutedEventArgs e)
-        {
-            contentFrame.Navigate(typeof(LogsPage));
-        }
-
-        private async void LoadUsersPage(object sender , RoutedEventArgs e)
-        {
-
         }
     }
 }

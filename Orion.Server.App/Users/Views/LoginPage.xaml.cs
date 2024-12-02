@@ -30,9 +30,6 @@ namespace Orion.Server.App.Users.Views
     /// </summary>
     public partial class LoginPage : Page, INotifyPropertyChanged
     {
-        private readonly IUserRepository _userRepository;
-
-
         public event PropertyChangedEventHandler PropertyChanged = delegate { };
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
@@ -55,7 +52,6 @@ namespace Orion.Server.App.Users.Views
         {
             this.InitializeComponent();
 
-            _userRepository = App.Current.ConfigurationService.GetInstanceOfType<IUserRepository>();
             _isValid = true;
         }
 
@@ -68,7 +64,7 @@ namespace Orion.Server.App.Users.Views
 
             IsValid = true;
 
-            var result = await _userRepository.AuthenticateSuperadmin(credentials);
+            var result = await App.Current.ConfigurationService.GetInstanceOfType<IUserRepository>().AuthenticateSuperadmin(credentials);
             
             OnAuthenticationResultReceived(result);
         }

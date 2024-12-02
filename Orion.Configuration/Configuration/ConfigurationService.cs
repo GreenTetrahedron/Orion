@@ -68,16 +68,19 @@
 
         public T GetScopedOfType<T>()
         {
-            scopedInstances.TryGetValue(typeof(T), out var instance);
+            //scopedInstances.TryGetValue(typeof(T), out var instance);
 
-            return (T?)instance;
+            //return (T?)instance;
+
+            return (T)GetScopedOfType(typeof(T));
         }
 
         public object GetScopedOfType(Type type)
         {
-            scopedInstances.TryGetValue(type, out var instance);
+            if (!scopedInstances.ContainsKey(type))
+                return null;
 
-            return instance;
+            return scopedInstances[type];
         }
 
         public T? GetSingletonOfType<T>()
@@ -99,6 +102,8 @@
         {
             foreach(var type in scopedTypesOrder)
             {
+                var obj = GetScopedOfType(type);
+                
                 var constructorInfo = scopedTypes[type].GetConstructors().First();
 
                 var parameters = constructorInfo.GetParameters();
@@ -110,6 +115,11 @@
                 }
 
                 scopedInstances[type] = constructorInfo.Invoke(arguments);
+                
+                if (obj is IDisposable)
+                {
+                    ((IDisposable)obj).Dispose();
+                }
             }
         }
     }
