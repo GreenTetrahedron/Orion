@@ -13,6 +13,7 @@ using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using Orion.Server.App.Logging.Views;
+using Orion.Server.App.Users.Views;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -41,14 +42,14 @@ namespace Orion.Server.App
             contentFrame = (Frame)e.Parameter;
         }
 
-        private async void LoadLogsPage(object sender , RoutedEventArgs e)
+        private void LoadLogsPage(object sender , RoutedEventArgs e)
         {
             contentFrame.Navigate(typeof(LogsPage));
         }
 
-        private async void LoadUsersPage(object sender , RoutedEventArgs e)
+        private void LoadUsersPage(object sender , RoutedEventArgs e)
         {
-
+            contentFrame.Navigate(typeof(UsersListPage));
         }
     }
 }

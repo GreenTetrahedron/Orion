@@ -24,6 +24,8 @@
     <None Remove="MainPage.xaml" />
     <None Remove="NavbarPage.xaml" />
     <None Remove="Users\Views\LoginPage.xaml" />
+    <None Remove="Users\Views\UserForm.xaml" />
+    <None Remove="Users\Views\UsersListPage.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -78,4 +80,15 @@
   <PropertyGroup Condition="'$(DisableHasPackageAndPublishMenuAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
     <HasPackageAndPublishMenu>true</HasPackageAndPublishMenu>
   </PropertyGroup>
+  <ItemGroup>
+    <CustomAdditionalCompileInputs Remove="Users\Views\UsersListPage.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Remove="Users\Views\UsersListPage.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Users\Views\UserForm.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
 </Project>

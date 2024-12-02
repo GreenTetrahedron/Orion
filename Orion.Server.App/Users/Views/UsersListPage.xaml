@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="Orion.Server.App.Users.Views.UsersListPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Orion.Server.App.Users.Views"
+    xmlns:model="using:Orion.Server.App.Users.Models"
+    xmlns:viewmodel="using:Orion.Server.App.Users.ViewModels"
+    xmlns:converters="using:Orion.Server.App.Converters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Page.DataContext>
+        <viewmodel:UsersListViewModel x:Name="Model" />
+    </Page.DataContext>
+
+    <Page.Resources>
+        <converters:BoolToVisibilityConverter x:Name="BoolToVisibilityConverter" />
+    </Page.Resources>
+    
+    <StackPanel>
+        <Button Click="OnAddUser">Add User</Button>
+
+        <local:UserForm Visibility="{x:Bind Model.HideAddUserForm, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" OnSubmit="{x:Bind Model.AddUser}" />
+
+        <ItemsControl ItemsSource="{x:Bind Model.Users, Mode=OneWay}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <StackPanel />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+
+            <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="model:UserProfile">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{x:Bind UserId}" Width="400" />
+                        <TextBlock Text="|" />
+                        <TextBlock Text="{x:Bind Username}" />
+                    </StackPanel>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </StackPanel>
+</Page>

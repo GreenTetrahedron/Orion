@@ -8,9 +8,15 @@ namespace Orion.Server.Users.Repositories
     {
         public Task<ServerTransmission> AuthenticateUser(Credentials credentials);
 
-        public Task<UserDTO?> AddUser(Credentials credentials);
+        public Task<UserDTO?> AddUser(UserInformation userInformation);
 
         public Task<UserDTO?> GetUser(Guid userId);
+
+        public Task<UserInformation?> GetUserInformation(Guid userId);
+
+        public Task<int> UpdateUser(UserInformation newUserInformation);
+
+        public Task<List<UserDTO>> GetAllUsers();
 
         public Task<ServerTransmission> GetUserProfileByUsername(string username);
 
