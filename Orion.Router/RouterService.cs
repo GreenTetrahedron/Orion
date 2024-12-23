@@ -5,6 +5,7 @@ using Orion.Models.ServerTransmissions;
 using Orion.Router.Connections;
 using Orion.Router.Requests;
 using Orion.Router.TopicInterceptors;
+using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -88,14 +89,26 @@ namespace Orion.Router
                 return;
             }
 
-            while (true)
+            ClientTransmission? clientTransmission;
+
+            while (handler.Connected)
             {
-                var clientTransmission = await ReceiveClientTransmission(handler);
+                clientTransmission = await ReceiveClientTransmission(handler);
+
+                if (clientTransmission == null)
+                    break;
 
                 var requestId = _requestService.AddRequest(handler);
 
                 SendServerRequest(_server, clientTransmission.Topic, clientTransmission.Data, handler, requestId);
             }
+
+            Console.WriteLine("Client disconnecting...");
+
+            if (_connectionService.TerminateConnection(handler))
+                Console.WriteLine("Client disconnected");
+            else
+                Console.WriteLine("No handler found for client....");
         }
 
         public async Task ServerConnection(Socket serverHandler)
@@ -151,6 +164,9 @@ namespace Orion.Router
 
             int transmissionBytesCount = await client.ReceiveAsync(buffer, SocketFlags.None);
 
+            if (transmissionBytesCount == 0)
+                return null;
+
             string transmissionJson = Encoding.UTF8.GetString(buffer, 0, transmissionBytesCount);
             var clientTransmission = _jsonService.DeserialiseJson<ClientTransmission>(transmissionJson);
 
@@ -167,6 +183,7 @@ namespace Orion.Router
             if (serverResponse.RequestId != null && _requestService.TryGetRequester(serverResponse.RequestId.Value, out client) && client != null)
             {
                 result &= await ForwardServerResponse(serverResponse, client);
+                _requestService.RemoveRequest(serverResponse.RequestId.Value);
             }
 
             if (serverResponse.AffectedUsers == null)

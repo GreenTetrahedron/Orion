@@ -9,5 +9,8 @@ namespace Orion.Router.Connections
         public bool TryGetConnectionHandler(Guid userId, out Socket? handler);
 
         public bool TryGetRequesterId(Socket handler, out Guid requesterId);
+
+        public bool TerminateConnection(Socket handler);
+        public bool TerminateConnection(Guid userId);
     }
 }

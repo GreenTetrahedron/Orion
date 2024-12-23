@@ -19,6 +19,11 @@ namespace Orion.Router.Requests
             return requestId;
         }
 
+        public bool RemoveRequest(Guid requestId)
+        {
+            return _requestIdToRequester.TryRemove(requestId, out _);
+        }
+
         public bool TryAddRequest(Socket requester, Guid requestId)
         {
             return _requestIdToRequester.TryAdd(requestId, requester);

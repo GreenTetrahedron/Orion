@@ -3,13 +3,15 @@ using System.Net.Sockets;
 
 namespace Orion.Transport.ConnectionServices
 {
-    public class ConnectionService : IConnectionService
+    public class ConnectionService : IConnectionService, IDisposable
     {
         private readonly IPEndPoint _routerIpEndpoint;
 
         private Socket _router;
 
         private int _bufferSpace;
+
+        private bool _disposed;
 
         public ConnectionService(IPEndPoint routerIpEndpoint, int bufferSpace = 16192)
         {
@@ -19,6 +21,9 @@ namespace Orion.Transport.ConnectionServices
             _router.ConnectAsync(_routerIpEndpoint);
 
             _bufferSpace = bufferSpace;
+
+
+            _disposed = false;
         }
 
         public async Task<bool> SendMessage(byte[] data)
@@ -34,6 +39,24 @@ namespace Orion.Transport.ConnectionServices
             int receivedBytes = await _router.ReceiveAsync(buffer, SocketFlags.None);
 
             return new MessageBytes(buffer, receivedBytes);
+        }
+
+        ~ConnectionService()
+        {
+            Dispose();
+        }
+
+        public void Dispose()
+        {
+            if (_disposed)
+                return;
+
+            _router.Shutdown(SocketShutdown.Both);
+            _router.Disconnect(false);
+            _router.Close();
+            _router.Dispose();
+
+            _disposed = true;
         }
     }
 }

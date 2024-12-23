@@ -9,5 +9,7 @@ namespace Orion.Router.Requests
         public Guid AddRequest(Socket requester);
 
         public bool TryGetRequester(Guid requestId, out Socket? requester);
+
+        public bool RemoveRequest(Guid requestId);
     }
 }

@@ -14,6 +14,33 @@ namespace Orion.Router.Connections
             _handlerToUserId = new();
         }
 
+        public bool TerminateConnection(Socket handler)
+        {
+            var result = _handlerToUserId.TryRemove(handler, out var userId)
+                && _userIdToHandler.TryRemove(userId, out _);
+
+            handler?.Shutdown(SocketShutdown.Both);
+            handler?.Disconnect(false);
+            handler?.Close();
+            handler?.Dispose();
+
+            return result;
+        }
+
+        public bool TerminateConnection(Guid userId)
+        {
+            var result = _userIdToHandler.TryRemove(userId, out var handler)
+                && handler != null
+                && _handlerToUserId.TryRemove(handler, out _);
+
+            handler?.Shutdown(SocketShutdown.Both);
+            handler?.Disconnect(false);
+            handler?.Close();
+            handler?.Dispose();
+
+            return result;
+        }
+
         public bool TryAddConnection(Socket handler, Guid userId)
         {
             return _userIdToHandler.TryAdd(userId, handler) && _handlerToUserId.TryAdd(handler, userId);

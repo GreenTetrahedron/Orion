@@ -2,6 +2,9 @@ using Microsoft.UI;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Orion.Configuration;
+using Orion.Transport.ConnectionServices;
+using System;
 using Windows.UI;
 
 // To learn more about WinUI, the WinUI project structure,
@@ -23,6 +26,11 @@ namespace Orion.Client.App
             CustomiseTitleBar();
 
             AppWindow.SetIcon("C:\\__Kabushak\\_Programming\\_Applications\\Orion\\Orion\\Orion.Client.App\\Assets\\another_eJe_icon.ico");
+
+            AppWindow.Closing += (a, b) =>
+            {
+                (App.Current.ConfigurationService.GetInstanceOfType<IConnectionService>() as IDisposable).Dispose();
+            };
         }
 
         private void CustomiseTitleBar()
