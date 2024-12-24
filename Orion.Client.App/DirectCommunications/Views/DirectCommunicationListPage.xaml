@@ -7,12 +7,15 @@
     xmlns:viewmodel="using:Orion.Client.App.DirectCommunications.ViewModels"
     xmlns:model="using:Orion.Client.App.DirectCommunications.Models"
     xmlns:messageviews="using:Orion.Client.App.Messages.Views"
+    xmlns:converters="using:Orion.Client.App.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     Background="#1a1a19">
 
     <Page.Resources>
+        <converters:BoolToVisibilityConverter x:Name="BoolToVisibilityConverter" />
+
         <Style TargetType="Grid" x:Key="MainContentGrid">
             <Setter Property="CornerRadius" Value="8 0 0 0" />
             <Setter Property="Background" Value="Transparent" />
@@ -22,7 +25,25 @@
         <Style TargetType="TextBlock" BasedOn="{StaticResource DefaultText}" x:Key="DirectCommunicationProfileThing">
             <Setter Property="FontSize" Value="12" />
         </Style>
-        
+
+        <Style TargetType="TextBlock" BasedOn="{StaticResource DefaultText}" x:Key="UserProfileHeader">
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="CharacterSpacing" Value="10" />
+            <Setter Property="Foreground" Value="#ccc" />
+            <Setter Property="FontWeight" Value="Medium" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+
+        <Style TargetType="StackPanel" x:Key="Header">
+            <Setter Property="Orientation" Value="Horizontal" />
+            <Setter Property="Background" Value="#262626" />
+            <Setter Property="BorderBrush" Value="#404040" />
+            <Setter Property="BorderThickness" Value="0 0 0 0.5" />
+            <Setter Property="Height" Value="50" />
+            <Setter Property="Spacing" Value="10" />
+            <Setter Property="Padding" Value="10" />
+        </Style>
+
         <Style TargetType="ListView" x:Key="ListView">
             <Setter Property="Background" Value="#202020" />
             <Setter Property="FontSize" Value="14" />
@@ -47,9 +68,23 @@
             <ColumnDefinition Width="200" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
 
-        <ListView Grid.Column="0" Style="{StaticResource ListView}" ItemsSource="{x:Bind Model.Items, Mode=OneWay}" SelectedItem="{x:Bind Model.Selected, Mode=TwoWay}" />
+        <ListView Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" Style="{StaticResource ListView}" ItemsSource="{x:Bind Model.Items, Mode=OneWay}" SelectedItem="{x:Bind Model.Selected, Mode=TwoWay}" />
 
-        <messageviews:MessageListPage Grid.Column="1" Messages="{x:Bind Model.Messages, Mode=OneWay}" DirectCommunication="{x:Bind Model.Selected, Mode=OneWay}" />
+        <StackPanel Grid.Column="1" Grid.Row="0" Style="{StaticResource Header}" Visibility="{x:Bind Path=Model.HasSelected, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=ffasdf, Mode=OneWay}">
+            <Ellipse Height="25" Width="25">
+                <Ellipse.Fill>
+                    <ImageBrush Stretch="UniformToFill" ImageSource="/Assets/tim-stief-YFFGkE3y4F8-unsplash.jpg" />
+                </Ellipse.Fill>
+            </Ellipse>
+            
+            <TextBlock Style="{StaticResource UserProfileHeader}" Text="{x:Bind Model.Selected.ReceiverProfile.Username, Mode=OneWay}" />
+        </StackPanel>
+
+        <messageviews:MessageListPage  Visibility="{x:Bind Path=Model.HasSelected, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=true, Mode=OneWay}" Grid.Column="1" Grid.Row="1" Messages="{x:Bind Model.Messages, Mode=OneWay}" DirectCommunication="{x:Bind Model.Selected, Mode=OneWay}" />
     </Grid>
 </Page>
