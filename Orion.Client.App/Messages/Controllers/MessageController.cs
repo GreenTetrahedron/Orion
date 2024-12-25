@@ -32,7 +32,7 @@ namespace Orion.Client.App.Messages.Controllers
             if (!_app.CurrentUser.DirectCommunicationListViewModel.HasSelected || _app.CurrentUser.DirectCommunicationListViewModel.Selected.DirectCommunicationId != directMessageDTO.DirectCommunicationId)
                 return;
 
-            _app.CurrentUser.DirectCommunicationListViewModel.Messages.Add(new Message()
+            _app.CurrentUser.DirectCommunicationListViewModel.MessageListViewModel.AddMessage(new Message()
             {
                 MessageId = directMessageDTO.Message.MessageId,
                 Content = directMessageDTO.Message.Content,

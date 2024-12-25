@@ -9,6 +9,8 @@ using System.Collections.ObjectModel;
 using Orion.Client.Messages.Services;
 using System;
 using System.Linq;
+using Orion.Client.App.Messages.ViewModels;
+using Microsoft.UI.Xaml.Navigation;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -22,7 +24,19 @@ namespace Orion.Client.App.Messages.Views
     {
         public DirectCommunication DirectCommunication { get; set; }
 
-        public ObservableCollection<Message> Messages { get; set; }
+        private MessageListViewModel model;
+
+        public MessageListViewModel Model
+        {
+            get { return model; }
+            set
+            {
+                model = value;
+                OnPropertyChanged(nameof(Model));
+                model.OnMessageListChanged += ScrollToBottom;
+            }
+        }
+
 
         public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
@@ -36,7 +50,6 @@ namespace Orion.Client.App.Messages.Views
         {
             InitializeComponent();
             _messageService = App.Current.ConfigurationService.GetSingletonOfType<IMessageService>();
-
         }
 
         private void ScrollToBottom()
@@ -44,7 +57,7 @@ namespace Orion.Client.App.Messages.Views
             if (messageList.Items.Count == 0)
                 return;
 
-            messageList.ScrollIntoView(messageList.Items.Last());
+            messageList.ScrollIntoView(messageList.Items.Count - 1);
         }
 
         private void SendMessage(object sender, RoutedEventArgs e)

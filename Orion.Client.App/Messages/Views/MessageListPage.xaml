@@ -29,7 +29,7 @@
         <Style TargetType="TextBlock" BasedOn="{StaticResource DefaultText}" x:Key="MessageUserProfileDate">
             <Setter Property="FontSize" Value="10" />
             <Setter Property="VerticalAlignment" Value="Center" />
-            <Setter Property="Foreground" Value="#404040" />
+            <Setter Property="Foreground" Value="#464646" />
         </Style>
         <Style TargetType="TextBlock" BasedOn="{StaticResource DefaultText}" x:Key="MessageContent">
             <Setter Property="Foreground" Value="#ccc" />
@@ -44,6 +44,26 @@
             <Setter Property="Orientation" Value="Vertical" />
             <Setter Property="Spacing" Value="5" />
         </Style>
+
+        <Style TargetType="Grid" x:Key="MessageEntryBox">
+            <Setter Property="ColumnSpacing" Value="8" />
+            <Setter Property="Padding" Value="15 0 15 7" />
+        </Style>
+        <Style TargetType="TextBox" BasedOn="{StaticResource DefaultTextBox}" x:Key="MessageEntryTextBox">
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="CornerRadius" Value="2" />
+            <Setter Property="Padding" Value="10" />
+
+            <Setter Property="Foreground">
+                <Setter.Value>
+                    <SolidColorBrush Color="#ccc" />
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style TargetType="Button" BasedOn="{StaticResource DefaultButton}" x:Key="SendMessageButton">
+            <Setter Property="CornerRadius" Value="2" />
+            <Setter Property="Padding" Value="12" />
+        </Style>
     </Page.Resources>
 
     <Grid Background="#262626" Padding="15">
@@ -52,10 +72,10 @@
             <RowDefinition Height="50px" />
         </Grid.RowDefinitions>
 
-        <ListView x:Name="messageList" SelectionMode="None" Grid.Row="0" ItemsSource="{x:Bind Messages, Mode=OneWay}">
+        <ListView x:Name="messageList" SelectionMode="None" Grid.Row="0" ItemsSource="{x:Bind Model.Messages, Mode=OneWay}">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <StackPanel Spacing="20" Padding="0 0 0 50" />
+                    <StackPanel Spacing="30" Padding="0 0 0 50" />
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
@@ -80,14 +100,25 @@
             </ItemsControl.ItemTemplate>
         </ListView>
 
-        <Grid Grid.Row="1">
+        <Grid Grid.Row="1" Style="{StaticResource MessageEntryBox}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="auto" />
             </Grid.ColumnDefinitions>
 
-            <TextBox Grid.Column="0" x:Name="messageEntryTextEntry" />
-            <Button Grid.Column="1" Click="SendMessage">Send</Button>
+            <TextBox Grid.Column="0" x:Name="messageEntryTextEntry" Style="{StaticResource MessageEntryTextBox}">
+                <TextBox.Resources>
+                    <SolidColorBrush x:Key="TextControlBackgroundPointerOver" Color="#303030" />
+                    <SolidColorBrush x:Key="TextControlBackgroundFocused" Color="#303030" />
+                </TextBox.Resources>
+            </TextBox>
+            <Button Grid.Column="1" Click="SendMessage" Style="{StaticResource SendMessageButton}">
+                <Button.Resources>
+                    <SolidColorBrush x:Key="ButtonBackgroundPointerOver" Color="#2e2e32" />
+                </Button.Resources>
+                
+                <Image Stretch="UniformToFill" Source="/Assets/paper-plane-solid.svg" />
+            </Button>
         </Grid>
     </Grid>
 </Page>

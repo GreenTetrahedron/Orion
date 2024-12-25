@@ -85,6 +85,6 @@
             <TextBlock Style="{StaticResource UserProfileHeader}" Text="{x:Bind Model.Selected.ReceiverProfile.Username, Mode=OneWay}" />
         </StackPanel>
 
-        <messageviews:MessageListPage  Visibility="{x:Bind Path=Model.HasSelected, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=true, Mode=OneWay}" Grid.Column="1" Grid.Row="1" Messages="{x:Bind Model.Messages, Mode=OneWay}" DirectCommunication="{x:Bind Model.Selected, Mode=OneWay}" />
+        <messageviews:MessageListPage  Visibility="{x:Bind Path=Model.HasSelected, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=true, Mode=OneWay}" Grid.Column="1" Grid.Row="1" Model="{x:Bind Model.MessageListViewModel, Mode=OneWay}" DirectCommunication="{x:Bind Model.Selected, Mode=OneWay}" />
     </Grid>
 </Page>

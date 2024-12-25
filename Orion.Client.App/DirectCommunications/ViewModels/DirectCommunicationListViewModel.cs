@@ -1,5 +1,6 @@
 ﻿using Orion.Client.App.DirectCommunications.Models;
 using Orion.Client.App.Messages.Models;
+using Orion.Client.App.Messages.ViewModels;
 using Orion.Client.App.Users.Models;
 using Orion.Client.DirectCommunications.Services;
 using Orion.Models.MessageModels;
@@ -13,13 +14,13 @@ namespace Orion.Client.App.DirectCommunications.ViewModels
 {
     public partial class DirectCommunicationListViewModel : MasterDetailViewModel<DirectCommunication>
     {
-        private ObservableCollection<Message> messages;
+        private MessageListViewModel messageListViewModel;
 
-        public ObservableCollection<Message> Messages
+        public MessageListViewModel MessageListViewModel
         {
-            get { return messages; }
-            private set { SetProperty(ref messages, value); }
+            get { return messageListViewModel; }
         }
+
 
         private IDirectCommunicationService _directCommunicationService;
 
@@ -28,7 +29,7 @@ namespace Orion.Client.App.DirectCommunications.ViewModels
             _directCommunicationService = App.Current.ConfigurationService.GetSingletonOfType<IDirectCommunicationService>();
 
             App.Current.CurrentUser.DirectCommunications.ToList().ForEach(directCommunication => AddItem(directCommunication));
-            Messages = new ObservableCollection<Message>();
+            messageListViewModel = new();
 
             OnSelectedChanged += StartToPopulateMessages;
         }
@@ -48,13 +49,13 @@ namespace Orion.Client.App.DirectCommunications.ViewModels
 
             var retrievedMessages = (List<MessageDTO>)result.Data;
 
-            Messages.Clear();
+            MessageListViewModel.ClearMessages();
             retrievedMessages.ForEach(AddMessageToMessages);
         }
 
         private void AddMessageToMessages(MessageDTO message)
         {
-            Messages.Add(new Message()
+            MessageListViewModel.AddMessage(new Message()
             {
                 MessageId = message.MessageId,
                 Content = message.Content,
