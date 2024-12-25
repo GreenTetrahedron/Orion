@@ -16,7 +16,7 @@ namespace Orion.Client.App.Converters
 
             if (!string.IsNullOrEmpty(formatString) )
             {
-                return string.Format(new CultureInfo(language), formatString);
+                return ((DateTime)value).ToString(formatString);
             }
 
             return value.ToString();

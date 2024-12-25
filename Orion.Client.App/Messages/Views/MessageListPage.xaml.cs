@@ -8,6 +8,7 @@ using Orion.Client.App.Messages.Models;
 using System.Collections.ObjectModel;
 using Orion.Client.Messages.Services;
 using System;
+using System.Linq;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -35,6 +36,15 @@ namespace Orion.Client.App.Messages.Views
         {
             InitializeComponent();
             _messageService = App.Current.ConfigurationService.GetSingletonOfType<IMessageService>();
+
+        }
+
+        private void ScrollToBottom()
+        {
+            if (messageList.Items.Count == 0)
+                return;
+
+            messageList.ScrollIntoView(messageList.Items.Last());
         }
 
         private void SendMessage(object sender, RoutedEventArgs e)
