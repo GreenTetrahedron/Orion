@@ -13,9 +13,9 @@
     <EnableMsixTooling>true</EnableMsixTooling>
 	<WindowsPackageType>None</WindowsPackageType>
 	<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+	<ApplicationIcon>Assets\AdminPortal.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Content Remove="Assets\AdminPortal.ico" />
     <Content Remove="Assets\Assets\Logo\AdminPortal.png" />
   </ItemGroup>
   <ItemGroup>

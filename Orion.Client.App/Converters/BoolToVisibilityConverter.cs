@@ -14,10 +14,16 @@ namespace Orion.Client.App.Converters
         public object Convert(object value, Type targetType, object parameter, string language)
         {
             bool theBool = (bool)value;
+            bool reverse = parameter != null;
+
+            if (!reverse)
+                return theBool
+                    ? Visibility.Collapsed
+                    : Visibility.Visible;
 
             return theBool
-                ? Visibility.Collapsed
-                : Visibility.Visible;
+                ? Visibility.Visible
+                : Visibility.Collapsed;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)

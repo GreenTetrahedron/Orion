@@ -14,42 +14,111 @@
 
     <Page.Resources>
         <converters:DateTimeToStringConverter x:Name="DateTimeToStringConverter" />
+        <converters:BoolToVisibilityConverter x:Name="BoolToVisibilityConverter" />
+
+        <Style TargetType="StackPanel" x:Key="MessageUserProfile">
+            <Setter Property="Orientation" Value="Horizontal" />
+            <Setter Property="Spacing" Value="5" />
+        </Style>
+        <Style TargetType="TextBlock" BasedOn="{StaticResource DefaultText}" x:Key="MessageUserProfileUsername">
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Foreground" Value="#fff" />
+        </Style>
+        <Style TargetType="TextBlock" BasedOn="{StaticResource DefaultText}" x:Key="MessageUserProfileDate">
+            <Setter Property="FontSize" Value="10" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Foreground" Value="#464646" />
+        </Style>
+        <Style TargetType="TextBlock" BasedOn="{StaticResource DefaultText}" x:Key="MessageContent">
+            <Setter Property="Foreground" Value="#ccc" />
+            <Setter Property="FontSize" Value="12" />
+        </Style>
+
+        <Style TargetType="StackPanel" x:Key="MessageContainer">
+            <Setter Property="Orientation" Value="Horizontal" />
+            <Setter Property="Spacing" Value="10" />
+        </Style>
+        <Style TargetType="StackPanel" x:Key="Message">
+            <Setter Property="Orientation" Value="Vertical" />
+            <Setter Property="Spacing" Value="5" />
+        </Style>
+
+        <Style TargetType="Grid" x:Key="MessageEntryBox">
+            <Setter Property="ColumnSpacing" Value="8" />
+            <Setter Property="Padding" Value="15 0 15 7" />
+        </Style>
+        <Style TargetType="TextBox" BasedOn="{StaticResource DefaultTextBox}" x:Key="MessageEntryTextBox">
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="CornerRadius" Value="2" />
+            <Setter Property="Padding" Value="10" />
+
+            <Setter Property="Foreground">
+                <Setter.Value>
+                    <SolidColorBrush Color="#ccc" />
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style TargetType="Button" BasedOn="{StaticResource DefaultButton}" x:Key="SendMessageButton">
+            <Setter Property="CornerRadius" Value="2" />
+            <Setter Property="Padding" Value="12" />
+        </Style>
     </Page.Resources>
-    
+
     <Grid Background="#262626" Padding="15">
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="50px" />
         </Grid.RowDefinitions>
-    
-        <ItemsControl Grid.Row="0" Grid.RowSpan="2" ItemsSource="{x:Bind Messages, Mode=OneWay}">
+
+        <ListView x:Name="messageList" SelectionMode="None" Grid.Row="0" ItemsSource="{x:Bind Model.Messages, Mode=OneWay}">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <StackPanel />
+                    <StackPanel Spacing="25" Padding="0 0 0 50" />
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
                 <DataTemplate x:DataType="model:Message">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="From: " />
-                        <TextBlock Text="{x:Bind SenderProfile.Username}" />
-                        <TextBlock Text="Content: " />
-                        <TextBlock Text="{x:Bind Content}" />
-                        <TextBlock Text="Last Updated: " />
-                        <TextBlock Text="{x:Bind Path=LastUpdated, Converter={StaticResource DateTimeToStringConverter}  }" />
+                    <StackPanel Style="{StaticResource MessageContainer}">
+                        <Ellipse Width="40" Height="40">
+                            <Ellipse.Fill>
+                                <ImageBrush Stretch="UniformToFill" ImageSource="/Assets/tim-stief-YFFGkE3y4F8-unsplash.jpg" />
+                            </Ellipse.Fill>
+                        </Ellipse>
+                        
+                        <StackPanel Style="{StaticResource Message}">
+                            <StackPanel Style="{StaticResource MessageUserProfile}" >
+                                <TextBlock Style="{StaticResource MessageUserProfileUsername}" Text="{x:Bind SenderProfile.Username, Mode=OneWay}" />
+                                <TextBlock Style="{StaticResource MessageUserProfileDate}" Text="{x:Bind LastUpdated, Mode=OneWay, Converter={StaticResource DateTimeToStringConverter}, ConverterParameter='dd/mm/yyyy HH:mm'}" />
+                            </StackPanel>
+
+                            <TextBlock Style="{StaticResource MessageContent}" Text="{x:Bind Content, Mode=OneWay}" />
+                        </StackPanel>
                     </StackPanel>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
-        </ItemsControl>
+        </ListView>
 
-        <Grid Grid.Row="1">
+        <Grid Grid.Row="1" Style="{StaticResource MessageEntryBox}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="auto" />
             </Grid.ColumnDefinitions>
 
-            <TextBox Grid.Column="0" x:Name="messageEntryTextEntry" />
-            <Button Grid.Column="1" Click="SendMessage">Send</Button>
+            <TextBox Grid.Column="0" x:Name="messageEntryTextEntry" Style="{StaticResource MessageEntryTextBox}">
+                <TextBox.Resources>
+                    <SolidColorBrush x:Key="TextControlBackgroundPointerOver" Color="#303030" />
+                    <SolidColorBrush x:Key="TextControlBackgroundFocused" Color="#303030" />
+                </TextBox.Resources>
+            </TextBox>
+            <Button Grid.Column="1" Click="SendMessage" Style="{StaticResource SendMessageButton}">
+                <Button.Resources>
+                    <SolidColorBrush x:Key="ButtonBackgroundPointerOver" Color="#2e2e32" />
+                </Button.Resources>
+                
+                <Image Stretch="UniformToFill" Source="/Assets/paper-plane-solid.svg" />
+            </Button>
         </Grid>
     </Grid>
 </Page>

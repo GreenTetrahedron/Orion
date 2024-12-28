@@ -13,13 +13,15 @@
     <EnableMsixTooling>true</EnableMsixTooling>
 	<WindowsPackageType>None</WindowsPackageType>
 	<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+	<ApplicationIcon>another_eJe_icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Content Remove="Assets\Assets\Fonts\Roboto-Black.ttf" />
     <Content Remove="Assets\Assets\Fonts\Roboto-Bold.ttf" />
     <Content Remove="Assets\Assets\Fonts\Roboto-Medium.ttf" />
     <Content Remove="Assets\Assets\Fonts\Roboto-Regular.ttf" />
-    <Content Remove="Assets\tim-stief-YFFGkE3y4F8-unsplash.jpg" />
+    <Content Remove="Assets\Assets\Logo\purple.png" />
+    <Content Remove="Assets\CircleBackgroundAdmin.png" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Defaults.xaml" />
@@ -31,8 +33,12 @@
     <None Remove="NavbarPage.xaml" />
     <None Remove="Users\Views\LoginPage.xaml" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\Assets\Logo\purple.png" />
+  </ItemGroup>
 
   <ItemGroup>
+    <Content Include="another_eJe_icon.ico" />
     <Content Include="Assets\SplashScreen.scale-200.png" />
     <Content Include="Assets\LockScreenLogo.scale-200.png" />
     <Content Include="Assets\Square150x150Logo.scale-200.png" />
@@ -112,9 +118,12 @@
     <Resource Include="Assets\Assets\Fonts\Roboto-Bold.ttf" />
     <Resource Include="Assets\Assets\Fonts\Roboto-Medium.ttf" />
     <Resource Include="Assets\Assets\Fonts\Roboto-Regular.ttf" />
-    <Resource Include="Assets\tim-stief-YFFGkE3y4F8-unsplash.jpg">
+    <Resource Include="Assets\CircleBackgroundAdmin.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Update="Assets\tim-stief-YFFGkE3y4F8-unsplash.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
+    </Content>
   </ItemGroup>
 
   <!--
