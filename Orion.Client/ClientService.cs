@@ -4,31 +4,50 @@ using Orion.Client.TopicHandlers;
 using Orion.JsonParser;
 using Orion.Models.ClientTransmissions;
 using Orion.Transport.ConnectionServices;
+using Orion.Transport.TransmissionServices;
 using System.Text;
 
-namespace Orion.Client.Transmissions
+namespace Orion.Client
 {
-    public class TransmissionService : ITransmissionService
+    public class ClientService : IClientService
     {
-        private readonly IConnectionService _connectionService;
+        private readonly ITransmissionService _transmissionService;
         private readonly IJsonService _jsonService;
         private readonly ISubscriptionService _subscriptionService;
         private readonly ITopicHandlerService _topicHandlerService;
 
-        public TransmissionService(IConnectionService connectionService, IJsonService jsonService, ISubscriptionService subscriptionService, ITopicHandlerService topicHandlerService)
+        private bool _running;
+
+        public ClientService(ITransmissionService transmissionService, IJsonService jsonService, ISubscriptionService subscriptionService, ITopicHandlerService topicHandlerService)
         {
-            _connectionService = connectionService;
+            _transmissionService = transmissionService;
             _jsonService = jsonService;
             _subscriptionService = subscriptionService;
             _topicHandlerService = topicHandlerService;
+
+            _running = false;
         }
 
-        public async Task<ClientTransmission?> ReceiveData()
+        public async Task RunClient()
         {
-            var messageBytes = await _connectionService.ReceiveMessage();
+            _running = true;
+            await InitialiseRouterConnection();
 
-            string transmissionJson = Encoding.UTF8.GetString(messageBytes.Data, 0, messageBytes.DataByteLength);
-            var transmission = _jsonService.DeserialiseJson<ClientTransmission?>(transmissionJson);
+
+            while (_running)
+            {
+                await ReceiveData();
+            }
+        }
+
+        public async Task StopClient()
+        {
+            _running = false;
+        }
+
+        private async Task<ClientTransmission?> ReceiveData()
+        {
+            var transmission = await _transmissionService.ReceiveTransmission<ClientTransmission>();
 
             if (transmission == null)
                 return transmission;
@@ -36,8 +55,7 @@ namespace Orion.Client.Transmissions
             _subscriptionService.TryPublishDataForTopic(transmission.Topic, transmission.Data);
             var handler = _topicHandlerService.GetTopicHandler(transmission.Topic);
 
-            if (handler != null)
-                handler.Invoke(transmission.Data);
+            handler?.Invoke(transmission.Data);
 
             return transmission;
         }
@@ -45,22 +63,17 @@ namespace Orion.Client.Transmissions
         public async Task<Subscriptable<T>> TransmitDataOfTopic<T>(object? data, string topic) where T : Enum
         {
             var transmission = new ClientTransmission(topic, data);
-            var transmissionJson = _jsonService.SerialiseObject(transmission);
-            var transmissionBytes = Encoding.UTF8.GetBytes(transmissionJson);
 
             var subscriptable = _subscriptionService.GetOrCreateSubscriptableForTopic<T>(topic + "Result");
 
-            _connectionService.SendMessage(transmissionBytes);
+            _transmissionService.SendTransmission(transmission);
 
             return subscriptable;
         }
 
         public async Task InitialiseRouterConnection()
         {
-            var initialiseMessage = _jsonService.SerialiseObject("CLIENT");
-            var initialiseMessageBytes = Encoding.UTF8.GetBytes(initialiseMessage);
-
-            await _connectionService.SendMessage(initialiseMessageBytes);
+            await _transmissionService.SendTransmission("CLIENT");
         }
     }
 }

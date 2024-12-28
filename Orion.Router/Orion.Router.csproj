@@ -11,6 +11,7 @@
     <ProjectReference Include="..\Orion.Configuration\Orion.Configuration.csproj" />
     <ProjectReference Include="..\Orion.JsonParser\Orion.JsonParser.csproj" />
     <ProjectReference Include="..\Orion.Models\Orion.Models.csproj" />
+    <ProjectReference Include="..\Orion.Transport\Orion.Transport.csproj" />
   </ItemGroup>
 
 </Project>

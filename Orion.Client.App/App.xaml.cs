@@ -8,11 +8,11 @@ using Orion.Client.DirectCommunications.Services;
 using Orion.Client.Messages.Services;
 using Orion.Client.Subscriptions.Services;
 using Orion.Client.TopicHandlers;
-using Orion.Client.Transmissions;
 using Orion.Client.Users.Services;
 using Orion.Configuration;
 using Orion.JsonParser;
 using Orion.Transport.ConnectionServices;
+using Orion.Transport.TransmissionServices;
 using System;
 using System.ComponentModel;
 using System.Net;
@@ -80,6 +80,8 @@ namespace Orion.Client.App
 
             configurationService.AddSingleton<ITransmissionService, TransmissionService>();
 
+            configurationService.AddSingleton<IClientService, ClientService>();
+
             configurationService.AddSingleton<IUserService, UserService>();
 
             configurationService.AddSingleton<IMessageService, MessageService>();
@@ -88,20 +90,20 @@ namespace Orion.Client.App
 
             ConfigurationService = configurationService;
 
-            var transmissionService = ConfigurationService.GetSingletonOfType<ITransmissionService>();
-
-            transmissionService.InitialiseRouterConnection();
+            var clientService = ConfigurationService.GetSingletonOfType<IClientService>();
 
             DispatcherQueueTimer d = DispatcherQueue.GetForCurrentThread().CreateTimer();
 
-            d.Interval = TimeSpan.Zero;
+            //d.Interval = TimeSpan.Zero;
 
-            d.Tick += (s, e) =>
-            {
-                transmissionService.ReceiveData();
-            };
+            //d.Tick += (s, e) =>
+            //{
+            //    clientService.ReceiveData();
+            //};
 
-            d.Start();
+            //d.Start();
+
+            clientService.RunClient();
 
             window = new MainWindow();
 

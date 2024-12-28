@@ -1,8 +1,8 @@
 ﻿using System.Net.Sockets;
 
-namespace Orion.Router.Connections
+namespace Orion.Router.Clients
 {
-    public interface IConnectionService
+    public interface IClientService
     {
         public bool TryAddConnection(Socket handler, Guid userId);
 

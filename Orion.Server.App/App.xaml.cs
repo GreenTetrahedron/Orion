@@ -19,6 +19,7 @@ using Orion.Server.Messages.Repositories;
 using Orion.Server.TopicHandlers;
 using Orion.Server.Users.Repositories;
 using Orion.Transport.ConnectionServices;
+using Orion.Transport.TransmissionServices;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -96,6 +97,7 @@ namespace Orion.Server.App
 
             var routerIPEndPoint = new IPEndPoint(routerIPAddress, routerPort);
             configurationService.AddSingleton<IConnectionService>(new ConnectionService(routerIPEndPoint));
+            configurationService.AddSingleton<ITransmissionService, TransmissionService>();
 
             configurationService.AddScoped<ServerService, ServerService>();
 

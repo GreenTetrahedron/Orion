@@ -1,14 +1,14 @@
 ﻿using Orion.Client.Subscriptions;
 using Orion.Models.ClientTransmissions;
 
-namespace Orion.Client.Transmissions
+namespace Orion.Client
 {
-    public interface ITransmissionService
+    public interface IClientService
     {
         public Task<Subscriptable<T>> TransmitDataOfTopic<T>(object? data, string topic) where T : Enum;
 
-        public Task<ClientTransmission?> ReceiveData();
+        public Task RunClient();
 
-        public Task InitialiseRouterConnection();
+        public Task StopClient();
     }
 }

@@ -1,14 +1,14 @@
 ﻿using System.Collections.Concurrent;
 using System.Net.Sockets;
 
-namespace Orion.Router.Connections
+namespace Orion.Router.Clients
 {
-    public class ConnectionService : IConnectionService
+    public class ClientService : IClientService
     {
         private ConcurrentDictionary<Guid, Socket> _userIdToHandler;
         private ConcurrentDictionary<Socket, Guid> _handlerToUserId;
 
-        public ConnectionService()
+        public ClientService()
         {
             _userIdToHandler = new();
             _handlerToUserId = new();

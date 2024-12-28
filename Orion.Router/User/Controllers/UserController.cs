@@ -1,7 +1,7 @@
 ﻿using Orion.Models.ServerTransmissions;
 using Orion.Models.ServerTransmissions.Results;
 using Orion.Router.Attributes;
-using Orion.Router.Connections;
+using Orion.Router.Clients;
 using Orion.Router.Requests;
 
 namespace Orion.Router.User.Controllers
@@ -10,9 +10,9 @@ namespace Orion.Router.User.Controllers
     public class UserController
     {
         private readonly IRequestService _requestService;
-        private readonly IConnectionService _connectionService;
+        private readonly IClientService _connectionService;
 
-        public UserController(IRequestService requestService, IConnectionService connectionService)
+        public UserController(IRequestService requestService, IClientService connectionService)
         {
             _requestService = requestService;
             _connectionService = connectionService;

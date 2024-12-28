@@ -1,17 +1,21 @@
 ﻿using Orion.JsonParser;
 using Orion.Router;
 using Orion.Configuration;
-using Orion.Router.Connections;
+using Orion.Router.Clients;
 using Orion.Router.Requests;
 using Orion.Router.TopicInterceptors;
 using System.Net;
+using Orion.Transport.TransmissionServices;
+using Orion.Transport.ConnectionServices;
 
 var configurationService = new ConfigurationService();
 
 configurationService.AddSingleton<IJsonService>(new JsonService());
 
-configurationService.AddSingleton<IConnectionService>(new ConnectionService());
+configurationService.AddSingleton<IClientService>(new ClientService());
 configurationService.AddSingleton<IRequestService>(new RequestService());
+
+configurationService.AddSingleton<ITransmissionService>(new TransmissionService(configurationService.GetSingletonOfType<IJsonService>()));
 
 configurationService.AddSingleton<ITopicInterceptorService>(new TopicInterceptorService(configurationService));
 
@@ -25,9 +29,9 @@ Console.WriteLine($"On IP address: {ipAddress} and port: {port}");
 
 var routerService = new RouterService(new IPEndPoint(ipAddress, port),
     configurationService.GetSingletonOfType<ITopicInterceptorService>(),
-    configurationService.GetSingletonOfType<IConnectionService>(),
+    configurationService.GetSingletonOfType<IClientService>(),
     configurationService.GetSingletonOfType<IRequestService>(),
-    configurationService.GetSingletonOfType<IJsonService>());
+    configurationService.GetSingletonOfType<ITransmissionService>());
 
 Console.WriteLine("Running broker...");
 routerService.Run();
