@@ -75,7 +75,7 @@
         <ListView x:Name="messageList" SelectionMode="None" Grid.Row="0" ItemsSource="{x:Bind Model.Messages, Mode=OneWay}">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <StackPanel Spacing="30" Padding="0 0 0 50" />
+                    <StackPanel Spacing="25" Padding="0 0 0 50" />
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>

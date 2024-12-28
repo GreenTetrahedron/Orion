@@ -40,8 +40,8 @@
             <Setter Property="BorderBrush" Value="#404040" />
             <Setter Property="BorderThickness" Value="0 0 0 0.5" />
             <Setter Property="Height" Value="50" />
-            <Setter Property="Spacing" Value="10" />
-            <Setter Property="Padding" Value="10" />
+            <Setter Property="Spacing" Value="5" />
+            <Setter Property="Padding" Value="10 0" />
         </Style>
 
         <Style TargetType="ListView" x:Key="ListView">
@@ -76,9 +76,9 @@
         <ListView Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" Style="{StaticResource ListView}" ItemsSource="{x:Bind Model.Items, Mode=OneWay}" SelectedItem="{x:Bind Model.Selected, Mode=TwoWay}" />
 
         <StackPanel Grid.Column="1" Grid.Row="0" Style="{StaticResource Header}" Visibility="{x:Bind Path=Model.HasSelected, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=ffasdf, Mode=OneWay}">
-            <Ellipse Height="25" Width="25">
+            <Ellipse Height="30" Width="30">
                 <Ellipse.Fill>
-                    <ImageBrush Stretch="UniformToFill" ImageSource="/Assets/tim-stief-YFFGkE3y4F8-unsplash.jpg" />
+                    <ImageBrush Stretch="UniformToFill" ImageSource="/Assets/zach-lezniewicz-BH2QtVjBedg-unsplash (1).jpg" />
                 </Ellipse.Fill>
             </Ellipse>
             
