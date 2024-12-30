@@ -6,6 +6,7 @@ using Orion.Models.UserModels;
 using Orion.Server.TopicHandlers;
 using Orion.Server.Users.Repositories;
 using Orion.Transport.ConnectionServices;
+using Orion.Transport.TransmissionServices;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -18,15 +19,15 @@ namespace Orion.Server
 
         private readonly IJsonService _jsonService;
         private readonly ITopicHandlerService _topicHandlerService;
-        private readonly IConnectionService _connectionService;
+        private readonly ITransmissionService _transmissionService;
 
         private const string IDENTIFIER = "SERVER";
 
-        public ServerService(IJsonService jsonService, IUserRepository userRepository, ITopicHandlerService topicHandlerService, IConnectionService connectionService)
+        public ServerService(IJsonService jsonService, IUserRepository userRepository, ITopicHandlerService topicHandlerService, ITransmissionService transmissionService)
         {
             _topicHandlerService = topicHandlerService;
 
-            _connectionService = connectionService;
+            _transmissionService = transmissionService;
             _jsonService = jsonService;
 
             _userRepository = userRepository;
@@ -61,11 +62,7 @@ namespace Orion.Server
 
         private async Task<int> TransmitData(object data)
         {
-            string transmissionJson = _jsonService.SerialiseObject(data);
-
-            var transmissionBytes = Encoding.UTF8.GetBytes(transmissionJson);
-
-            return await _connectionService.SendMessage(transmissionBytes) ? 1 : 0;
+            return await _transmissionService.SendTransmission(data);
         }
 
         private async Task<ServerTransmission?> HandleRequest(ServerRequest request)
@@ -94,13 +91,7 @@ namespace Orion.Server
 
         private async Task<ServerRequest?> ReceiveRequest()
         {
-            var message = await _connectionService.ReceiveMessage();
-
-            string transmissionJson = Encoding.UTF8.GetString(message.Data, 0, message.DataByteLength);
-
-            ServerRequest? request = _jsonService.DeserialiseJson<ServerRequest>(transmissionJson);
-
-            return request;
+            return await _transmissionService.ReceiveTransmission<ServerRequest>();
         }
     }
 }

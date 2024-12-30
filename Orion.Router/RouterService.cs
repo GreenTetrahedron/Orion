@@ -2,9 +2,11 @@
 using Orion.Models.ClientTransmissions;
 using Orion.Models.RouterTransmissions;
 using Orion.Models.ServerTransmissions;
-using Orion.Router.Connections;
+using Orion.Router.Clients;
 using Orion.Router.Requests;
 using Orion.Router.TopicInterceptors;
+using Orion.Transport.ConnectionServices;
+using Orion.Transport.TransmissionServices;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Net.Sockets;
@@ -18,20 +20,22 @@ namespace Orion.Router
         private Socket _server;
 
         private IRequestService _requestService;
-        private IConnectionService _connectionService;
+        private IClientService _clientService;
         private ITopicInterceptorService _topicInterceptorService;
 
-        private readonly IJsonService _jsonService;
+        private readonly ConnectionService _connectionService;
+        private readonly ITransmissionService _transmissionService;
 
-        public RouterService(IPEndPoint iPEndPoint, ITopicInterceptorService topicInterceptorService, IConnectionService connectionService, IRequestService requestService, IJsonService jsonService)
+        public RouterService(IPEndPoint iPEndPoint, ITopicInterceptorService topicInterceptorService, IClientService clientService, IRequestService requestService, ITransmissionService transmissionService)
         {
             _iPEndPoint = iPEndPoint;
 
             _topicInterceptorService = topicInterceptorService;
-            _connectionService = connectionService;
+            _clientService = clientService;
             _requestService = requestService;
 
-            _jsonService = jsonService;
+            _connectionService = new();
+            _transmissionService = transmissionService;
         }
 
         public async Task Run()
@@ -67,7 +71,7 @@ namespace Orion.Router
         {
             Console.WriteLine("Handling new connection...");
 
-            string message = _jsonService.DeserialiseJson<string>(await ReceiveTransmission(handler));
+            string message = await _transmissionService.ReceiveTransmission<string>(async () => await _connectionService.ReceiveMessage(handler));
 
             switch (message)
             {
@@ -105,7 +109,7 @@ namespace Orion.Router
 
             Console.WriteLine("Client disconnecting...");
 
-            if (_connectionService.TerminateConnection(handler))
+            if (_clientService.TerminateConnection(handler))
                 Console.WriteLine("Client disconnected");
             else
                 Console.WriteLine("No handler found for client....");
@@ -135,40 +139,19 @@ namespace Orion.Router
             }
         }
 
-        public async Task<string> ReceiveTransmission(Socket handler)
-        {
-            var buffer = new byte[16192];
-
-            int transmissionBytesCount = await handler.ReceiveAsync(buffer, SocketFlags.None);
-
-            string transmission = Encoding.UTF8.GetString(buffer, 0, transmissionBytesCount);
-
-            return transmission;
-        }
-
         public async Task<ServerTransmission?> ReceiveServerTransmission()
         {
-            var buffer = new byte[16192];
-
-            int transmissionBytesCount = await _server.ReceiveAsync(buffer, SocketFlags.None);
-
-            string transmissionJson = Encoding.UTF8.GetString(buffer, 0, transmissionBytesCount);
-            ServerTransmission? serverTransmission = _jsonService.DeserialiseJson<ServerTransmission?>(transmissionJson);
+            ServerTransmission? serverTransmission = await _transmissionService.ReceiveTransmission<ServerTransmission>(async () => await _connectionService.ReceiveMessage(_server));
 
             return serverTransmission;
         }
 
         public async Task<ClientTransmission?> ReceiveClientTransmission(Socket client)
         {
-            var buffer = new byte[16192];
+            var clientTransmission = await _transmissionService.ReceiveTransmission<ClientTransmission>(async () => await _connectionService.ReceiveMessage(client));
 
-            int transmissionBytesCount = await client.ReceiveAsync(buffer, SocketFlags.None);
-
-            if (transmissionBytesCount == 0)
-                return null;
-
-            string transmissionJson = Encoding.UTF8.GetString(buffer, 0, transmissionBytesCount);
-            var clientTransmission = _jsonService.DeserialiseJson<ClientTransmission>(transmissionJson);
+            if (clientTransmission == null)
+                return clientTransmission;
 
             Console.WriteLine($"New client transmission of topic: {clientTransmission.Topic}");
 
@@ -192,7 +175,7 @@ namespace Orion.Router
 
             foreach(var user in serverResponse.AffectedUsers)
             {
-                if (_connectionService.TryGetConnectionHandler(user, out client) && client != null)
+                if (_clientService.TryGetConnectionHandler(user, out client) && client != null)
                 {
                     result &= await ForwardServerResponse(serverResponse, client);
                 }
@@ -203,35 +186,29 @@ namespace Orion.Router
 
         public async Task<int> ForwardServerResponse(ServerResponse serverResponse, Socket client)
         {
-            string responseJson = _jsonService.SerialiseObject(new ClientTransmission(serverResponse.Topic, serverResponse.ServerResult));
+            var transmission = new ClientTransmission(serverResponse.Topic, serverResponse.ServerResult);
 
             Console.WriteLine($"Transmitting new response of topic: {serverResponse.Topic}");
 
-            byte[] transmissionBytes = Encoding.UTF8.GetBytes(responseJson);
-
-            return await client.SendAsync(transmissionBytes);
+            return await _transmissionService.SendTransmission(transmission, async (data) => await _connectionService.SendMessage(data, client));
         }
 
         public async Task<int> SendServerRequest(ServerRequest serverRequest)
         {
-            byte[] transmissionBytes = Encoding.UTF8.GetBytes(_jsonService.SerialiseObject(serverRequest));
-
-            return await _server.SendAsync(transmissionBytes);
+            return await _transmissionService.SendTransmission(serverRequest, async (data) => await _connectionService.SendMessage(data, _server));
         }
 
         public async Task<int> SendServerRequest(Socket serverHandler, string topic, object data, Socket clientHandler, Guid? requestId = null)
         {
             Guid requesterId;
 
-            bool hasConnection = _connectionService.TryGetRequesterId(clientHandler, out requesterId);
+            bool hasConnection = _clientService.TryGetRequesterId(clientHandler, out requesterId);
 
             var serverRequest = hasConnection
                 ? new ServerRequest(topic, data, requestId, requesterId)
                 : new ServerRequest(topic, data, requestId);
 
-            byte[] transmissionBytes = Encoding.UTF8.GetBytes(_jsonService.SerialiseObject(serverRequest));
-
-            return await serverHandler.SendAsync(transmissionBytes);
+            return await SendServerRequest(serverRequest);
         }
     }
 }

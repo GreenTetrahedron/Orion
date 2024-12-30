@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Orion.JsonParser\Orion.JsonParser.csproj" />
+  </ItemGroup>
+
 </Project>
