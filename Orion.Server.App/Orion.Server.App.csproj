@@ -91,4 +91,7 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Groups\Views\" />
+  </ItemGroup>
 </Project>

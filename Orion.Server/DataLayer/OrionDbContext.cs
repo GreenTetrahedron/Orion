@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Orion.Models.UserModels;
 using Orion.Server.DirectCommuncations;
+using Orion.Server.Groups;
 using Orion.Server.Messages;
 using Orion.Server.Users;
 using System.Configuration;
@@ -12,6 +13,7 @@ namespace Orion.Server.DataLayer
         public DbSet<User> Users { get; set; }
         public DbSet<DirectCommunication> DirectCommunications { get; set; }
         public DbSet<Message> Messages { get; set; }
+        public DbSet<Group> Groups { get; set; }
 
         private string _connectionString;
 

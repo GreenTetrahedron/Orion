@@ -2,6 +2,7 @@
 using Orion.Cryptography.HashingServices;
 using Orion.Logging.LoggingServices;
 using Orion.Models.DirectCommunicationModels;
+using Orion.Models.GroupModels;
 using Orion.Models.ServerTransmissions;
 using Orion.Models.ServerTransmissions.Results;
 using Orion.Models.ServerTransmissions.Results.Messages;
@@ -29,6 +30,7 @@ namespace Orion.Server.Users.Repositories
 
             var getDataQuery = _database.Users
                 .Where(user => user.Username == credentials.Username && user.PasswordHash == passwordHash)
+                .Include(user => user.Groups)
                 .Include(user => user.DirectCommunications)
                 .ThenInclude(d => d.Members);
 
@@ -54,6 +56,11 @@ namespace Orion.Server.Users.Repositories
                                 UserId = member.UserId,
                                 Username = member.Username
                             }).ToList()
+                    }).ToList(),
+                GroupProfiles = getDataQueryResult.Groups
+                    .Select(group => new GroupProfile()
+                    {
+                        GroupId = group.GroupId
                     }).ToList()
             };
 

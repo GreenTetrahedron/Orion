@@ -1,4 +1,5 @@
 ﻿using Orion.Models.DirectCommunicationModels;
+using Orion.Models.GroupModels;
 
 namespace Orion.Models.UserModels
 {
@@ -8,5 +9,6 @@ namespace Orion.Models.UserModels
         public string Username { get; set; }
 
         public List<DirectCommunicationProfile> DirectCommunicationProfiles { get; set; }
+        public List<GroupProfile> GroupProfiles { get; set; }
     }
 }
