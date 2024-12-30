@@ -13,10 +13,14 @@ namespace Orion.Transport.TransmissionServices
         private readonly IConnectionService? _connectionService;
         private readonly IJsonService _jsonService;
 
-        public TransmissionService(IJsonService jsonService, IConnectionService? connectionService = null)
+        private readonly int _bufferLength;
+
+        public TransmissionService(IJsonService jsonService, IConnectionService? connectionService = null, int bufferLength = 100)
         {
             _connectionService = connectionService;
             _jsonService = jsonService;
+
+            _bufferLength = bufferLength;
         }
 
         public async Task<T> ReceiveTransmission<T>() where T : class
@@ -29,9 +33,9 @@ namespace Orion.Transport.TransmissionServices
 
         public async Task<T> ReceiveTransmission<T>(Func<Task<MessageBytes>> receiveFunction) where T : class
         {
-            var messageBytes = await receiveFunction.Invoke();
+            var transmissionBytes = await receiveFunction.Invoke();
 
-            string json = Encoding.UTF8.GetString(messageBytes.Data, 0, messageBytes.DataByteLength);
+            string json = Encoding.UTF8.GetString(transmissionBytes.Data, 0, transmissionBytes.DataByteLength);
 
             return _jsonService.DeserialiseJson<T>(json);
         }
@@ -49,18 +53,7 @@ namespace Orion.Transport.TransmissionServices
             string transmissionJson = _jsonService.SerialiseObject(transmission);
             byte[] transmissionJsonBytes = Encoding.UTF8.GetBytes(transmissionJson);
 
-            int sentBytes = await sendFunction.Invoke(transmissionJsonBytes);
-
-            byte[] currentTransmissionJsonBytes = transmissionJsonBytes;
-
-            while (sentBytes < transmissionJsonBytes.Length)
-            {
-                Array.Copy(currentTransmissionJsonBytes, sentBytes - 1, currentTransmissionJsonBytes, 0, currentTransmissionJsonBytes.Length - sentBytes);
-
-                sentBytes += await sendFunction.Invoke(currentTransmissionJsonBytes);
-            }
-
-            return sentBytes;
+            return await sendFunction.Invoke(transmissionJsonBytes);
         }
     }
 }

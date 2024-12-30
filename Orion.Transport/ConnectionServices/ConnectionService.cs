@@ -9,14 +9,14 @@ namespace Orion.Transport.ConnectionServices
 
         private Socket? _router;
 
-        private int _bufferSpace;
+        private int _bufferLength;
 
         private bool _disposed;
 
-        public ConnectionService(IPEndPoint? routerIpEndpoint = null, int bufferSpace = 16192)
+        public ConnectionService(IPEndPoint? routerIpEndpoint = null, int bufferLength = 16192)
         {
             _routerIpEndpoint = routerIpEndpoint;
-            _bufferSpace = bufferSpace;
+            _bufferLength = bufferLength;
             _disposed = false;
             _router = null;
             
@@ -26,6 +26,8 @@ namespace Orion.Transport.ConnectionServices
             _router = new Socket(_routerIpEndpoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
 
             _router.ConnectAsync(_routerIpEndpoint);
+            _router.SendBufferSize = Math.Max(_bufferLength, _router.SendBufferSize);
+            _router.ReceiveBufferSize = Math.Max(_bufferLength, _router.ReceiveBufferSize);
         }
 
         public async Task<int> SendMessage(byte[] data)
@@ -38,7 +40,25 @@ namespace Orion.Transport.ConnectionServices
 
         public async Task<int> SendMessage(byte[] data, Socket socket)
         {
-            int sentBytes = await socket.SendAsync(data, SocketFlags.None);
+            byte[] finalTransmission = new byte[4 + data.Length];
+
+            Buffer.BlockCopy(BitConverter.GetBytes(data.Length), 0, finalTransmission, 0, 4);
+            Buffer.BlockCopy(data, 0, finalTransmission, 4, data.Length);
+
+            int sentBytes = 0;
+
+            byte[] sendBuffer = new byte[_bufferLength];
+
+            do
+            {
+                if (finalTransmission.Length - sentBytes < _bufferLength)
+                    sendBuffer = new byte[finalTransmission.Length - sentBytes];
+
+                Buffer.BlockCopy(finalTransmission, sentBytes, sendBuffer, 0, sendBuffer.Length);
+             
+                sentBytes += await socket.SendAsync(sendBuffer, SocketFlags.None);
+            }
+            while (sentBytes < finalTransmission.Length);
 
             return sentBytes;
         }
@@ -53,10 +73,36 @@ namespace Orion.Transport.ConnectionServices
 
         public async Task<MessageBytes> ReceiveMessage(Socket socket)
         {
-            byte[] buffer = new byte[_bufferSpace];
-            int receivedBytes = await socket.ReceiveAsync(buffer, SocketFlags.None);
+            byte[] receiveBuffer = new byte[_bufferLength];
 
-            return new MessageBytes(buffer, receivedBytes);
+            int previousReceivedBytes = 0;
+            int receivedBytes = 0;
+            int transmissionLength = 4;
+            byte[] lengthBuffer = new byte[4];
+            int someRandomNumber = 0;
+
+            while (receivedBytes < transmissionLength)
+            {
+                previousReceivedBytes = await socket.ReceiveAsync(receiveBuffer, SocketFlags.None);
+                someRandomNumber = Math.Min(Math.Max(4 - receivedBytes, 0), receiveBuffer.Length);
+                Buffer.BlockCopy(receiveBuffer, 0, lengthBuffer, receivedBytes, someRandomNumber);
+                receivedBytes += previousReceivedBytes;
+            }
+
+            transmissionLength = BitConverter.ToInt32(lengthBuffer);
+            byte[] finalBuffer = new byte[transmissionLength];
+            receivedBytes -= 4;
+
+            Buffer.BlockCopy(receiveBuffer, someRandomNumber, finalBuffer, 0, receivedBytes);
+
+            while (receivedBytes < transmissionLength)
+            {
+                previousReceivedBytes = await socket.ReceiveAsync(receiveBuffer, SocketFlags.None);
+                Buffer.BlockCopy(receiveBuffer, 0, finalBuffer, receivedBytes, Math.Min(receiveBuffer.Length, transmissionLength - receivedBytes));
+                receivedBytes += previousReceivedBytes;
+            }
+
+            return new MessageBytes(finalBuffer, finalBuffer.Length);
         }
 
         ~ConnectionService()

@@ -78,7 +78,7 @@ namespace Orion.Client.App
 
             configurationService.AddSingleton<IConnectionService>(connectionService);
 
-            configurationService.AddSingleton<ITransmissionService, TransmissionService>();
+            configurationService.AddSingleton<ITransmissionService>(new TransmissionService(configurationService.GetSingletonOfType<IJsonService>(), configurationService.GetSingletonOfType<IConnectionService>()));
 
             configurationService.AddSingleton<IClientService, ClientService>();
 
