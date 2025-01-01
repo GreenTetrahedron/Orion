@@ -1,4 +1,5 @@
-﻿using Orion.Models.DirectCommunicationModels;
+﻿using Microsoft.EntityFrameworkCore.SqlServer.Query.Internal;
+using Orion.Models.DirectCommunicationModels;
 using Orion.Models.GroupModels;
 using Orion.Models.MessageModels;
 using Orion.Models.ServerTransmissions;
@@ -12,9 +13,11 @@ namespace Orion.Server.Groups.Repositories
 {
     public interface IGroupRepository
     {
-        public Task AddGroup(GroupInformation groupInformation);
+        public Task<bool> AddGroup(GroupInformation groupInformation);
 
         public Task<GroupDTO?> GetGroupById(Guid id);
+
+        public Task<List<GroupDTO>> GetAllGroups();
 
         public Task<ServerTransmission?> GetGroupMessagesByGroupId(GroupId id);
 

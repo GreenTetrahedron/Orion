@@ -16,5 +16,8 @@
         <Button Click="LoadUsersPage">
             Users
         </Button>
+        <Button Click="LoadGroupsPage">
+            Groups
+        </Button>
     </StackPanel>
 </Page>

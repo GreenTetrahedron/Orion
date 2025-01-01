@@ -113,7 +113,7 @@ namespace Orion.Server.Users.Repositories
                 .SingleOrDefaultAsync();
         }
 
-        public async Task<ServerTransmission> GetUserProfileByUsername(string username)
+        public async Task<ServerResult<GetUserMessages>> GetUserProfileByUsername(string username)
         {
             var user = await _database.Users
                 .Where(user => user.Username == username)
@@ -128,9 +128,13 @@ namespace Orion.Server.Users.Repositories
                 ? ServerTransmissionService
                     .NewSuccessfulResponseServerTransmission("GetUserByUsernameResult", GetUserMessages.USER_NOT_FOUND)
                     .AddResponseOperationMessage($"No user found with username: {username}")
+                    .Response
+                    .ServerResult
                 : ServerTransmissionService
                     .NewSuccessfulResponseServerTransmission("GetUserByUsernameResult", GetUserMessages.USER_FOUND, user)
-                    .AddResponseOperationMessage($"User with username: {username} was found");
+                    .AddResponseOperationMessage($"User with username: {username} was found")
+                    .Response
+                    .ServerResult;
         }
 
         public async Task<Roles?> GetRoleByUserId(Guid userId)

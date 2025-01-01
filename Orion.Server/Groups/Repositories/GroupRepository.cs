@@ -27,7 +27,7 @@ namespace Orion.Server.Groups.Repositories
             _database = database;
         }
 
-        public async Task AddGroup(GroupInformation groupInformation)
+        public async Task<bool> AddGroup(GroupInformation groupInformation)
         {
             List<User> members = new();
 
@@ -46,15 +46,48 @@ namespace Orion.Server.Groups.Repositories
             Group group = new Group()
             {
                 GroupId = Guid.NewGuid(),
+                GroupName = groupInformation.Name,
                 Members = members
             };
 
             await _database.Groups.AddAsync(group);
+
+            return await _database.SaveChangesAsync() > 0;
         }
 
-        public Task<GroupDTO?> GetGroupById(Guid id)
+        public async Task<List<GroupDTO>> GetAllGroups()
         {
-            throw new NotImplementedException();
+            return await _database.Groups
+                .Select(group => new GroupDTO()
+                {
+                    GroupId = group.GroupId,
+                    Name = group.GroupName,
+                    MemberProfiles = group.Members
+                        .Select(member => new Models.UserModels.UserProfile()
+                        {
+                            UserId = member.UserId,
+                            Username = member.Username
+                        }).ToList()
+                })
+                .ToListAsync();
+        }
+
+        public async Task<GroupDTO?> GetGroupById(Guid id)
+        {
+            return await _database.Groups
+                .Where(group => group.GroupId == id)
+                .Select(group => new GroupDTO()
+                {
+                    GroupId = group.GroupId,
+                    Name = group.GroupName,
+                    MemberProfiles = group.Members
+                        .Select(member => new Models.UserModels.UserProfile()
+                        {
+                            UserId = member.UserId,
+                            Username = member.Username
+                        }).ToList()
+                })
+                .SingleOrDefaultAsync();
         }
 
         public async Task<ServerTransmission?> GetGroupMessagesByGroupId(GroupId id)

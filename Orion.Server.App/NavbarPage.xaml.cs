@@ -14,6 +14,7 @@ using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using Orion.Server.App.Logging.Views;
 using Orion.Server.App.Users.Views;
+using Orion.Server.App.Groups.Views;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -50,6 +51,11 @@ namespace Orion.Server.App
         private void LoadUsersPage(object sender , RoutedEventArgs e)
         {
             contentFrame.Navigate(typeof(UsersListPage));
+        }
+
+        private void LoadGroupsPage(object sender, RoutedEventArgs e)
+        {
+            contentFrame.Navigate(typeof(GroupsListPage));
         }
     }
 }

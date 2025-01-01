@@ -1,5 +1,6 @@
 ﻿using Orion.Models.ServerTransmissions;
 using Orion.Models.ServerTransmissions.Results;
+using Orion.Models.ServerTransmissions.Results.Messages;
 using Orion.Models.UserModels;
 
 namespace Orion.Server.Users.Repositories
@@ -18,7 +19,7 @@ namespace Orion.Server.Users.Repositories
 
         public Task<List<UserDTO>> GetAllUsers();
 
-        public Task<ServerTransmission> GetUserProfileByUsername(string username);
+        public Task<ServerResult<GetUserMessages>> GetUserProfileByUsername(string username);
 
         public Task<Roles?> GetRoleByUserId(Guid userId);
 

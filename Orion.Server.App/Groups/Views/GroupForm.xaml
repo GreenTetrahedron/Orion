@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="Orion.Server.App.Groups.Views.GroupForm"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Orion.Server.App.Groups.Views"
+    xmlns:converters="using:Orion.Server.App.Converters"
+    xmlns:model="using:Orion.Server.App.Groups.Models"
+    xmlns:usermodel="using:Orion.Server.App.Users.Models"
+    xmlns:viewmodel="using:Orion.Server.App.Groups.ViewModels"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Page.DataContext>
+        <viewmodel:GroupFormViewModel x:Name="Model" />
+    </Page.DataContext>
+
+    <Page.Resources>
+        <converters:BoolToVisibilityConverter x:Name="BoolToVisibilityConverter" />
+    </Page.Resources>
+    
+    <StackPanel>
+        <TextBlock Text="Group name" />
+        <TextBox x:Name="groupNameTextEntry" Text="{x:Bind Model.Group.GroupName, Mode=TwoWay}" />
+
+        <TextBlock Text="Members" />
+
+        <ListView ItemsSource="{x:Bind Model.Group.MemberProfiles, Mode=OneWay}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <StackPanel />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+
+            <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="usermodel:UserProfile">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{x:Bind Username}" />
+                    </StackPanel>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ListView>
+
+        <TextBlock Text="User not found!" Visibility="{x:Bind Model.UserExists, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" />
+        <StackPanel Orientation="Horizontal">
+            <TextBox x:Name="memberUsernameTextEntry" PlaceholderText="Username" />
+            <Button Click="OnAddMember">Add Member</Button>
+        </StackPanel>
+
+        <Button Click="OnSubmitClicked">Submit</Button>
+    </StackPanel>
+</Page>

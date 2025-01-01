@@ -11,6 +11,8 @@ namespace Orion.Models.GroupModels
     {
         public Guid GroupId { get; set; }
 
+        public string Name { get; set; }
+
         public List<UserProfile> MemberProfiles { get; set; }
     }
 }

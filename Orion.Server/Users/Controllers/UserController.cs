@@ -25,13 +25,5 @@ namespace Orion.Server.Users.Controllers
 
             return await _userRepository.AuthenticateUser(credentials);
         }
-
-        [Handler("GetUserByUsername")]
-        public async Task<ServerTransmission> GetUserByUsername(string username)
-        {
-            _loggingService.Log($"Getting user by username: {username}", DateTime.Now);
-
-            return await _userRepository.GetUserProfileByUsername(username);
-        }
     }
 }

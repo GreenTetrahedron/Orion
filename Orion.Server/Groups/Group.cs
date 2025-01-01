@@ -12,6 +12,8 @@ namespace Orion.Server.Groups
     {
         public Guid GroupId { get; set; }
 
+        public string GroupName { get; set; }
+
         public List<User> Members { get; set; }
 
         public List<Message> Messages { get; set; }
