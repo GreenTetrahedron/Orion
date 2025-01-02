@@ -6,6 +6,5 @@ namespace Orion.Server.Users.Controllers
     public interface IUserController
     {
         public Task<ServerTransmission> AuthenticateUser(Credentials credentials);
-        public Task<ServerTransmission> GetUserByUsername(string username);
     }
 }

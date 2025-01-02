@@ -15,6 +15,7 @@ using Orion.Server.App.Users.Models;
 using Orion.Server.App.Users.Views;
 using Orion.Server.DataLayer;
 using Orion.Server.DirectCommunications.Repositories;
+using Orion.Server.Groups.Repositories;
 using Orion.Server.Messages.Repositories;
 using Orion.Server.TopicHandlers;
 using Orion.Server.Users.Repositories;
@@ -80,6 +81,7 @@ namespace Orion.Server.App
             configurationService.AddScoped<IUserRepository, UserRepository>();
             configurationService.AddScoped<IDirectCommunicationRepository, DirectCommunicationRepository>();
             configurationService.AddScoped<IMessageRepository, MessageRepository>();
+            configurationService.AddScoped<IGroupRepository, GroupRepository>();
 
             configurationService.AddSingleton<ITopicHandlerService>(new TopicHandlerService(configurationService));
 

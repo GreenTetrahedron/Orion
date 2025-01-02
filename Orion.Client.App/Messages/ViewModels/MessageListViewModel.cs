@@ -1,11 +1,16 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using Orion.Client.App.Messages.Models;
+using Orion.Models.MessageModels;
+using Orion.Models.ServerTransmissions.Results.Messages;
+using Orion.Models.ServerTransmissions.Results;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Orion.Client.App.Users.Models;
+using System.Reflection.Metadata.Ecma335;
 
 namespace Orion.Client.App.Messages.ViewModels
 {
@@ -30,14 +35,35 @@ namespace Orion.Client.App.Messages.ViewModels
             Messages = new();
         }
 
-        public void ClearMessages()
+        public void PopulateMessages(ServerResult<GetMessageMessages> result)
         {
-            Messages.Clear();
+            if (result.OperationInformation.OperationMessageCode != GetMessageMessages.SUCCESSFULLY_RETRIEVED_MESSAGE)
+            {
+                return;
+            }
+
+            PopulateMessages(result.Data as List<MessageDTO>);
         }
 
-        public void AddMessage(Message message)
+        public void PopulateMessages(List<MessageDTO> messages)
         {
-            Messages.Add(message);
+            Messages.Clear();
+            messages.ForEach(AddMessageToMessages);
+        }
+
+        private void AddMessageToMessages(MessageDTO message)
+        {
+            Messages.Add(new Message()
+            {
+                MessageId = message.MessageId,
+                Content = message.Content,
+                SenderProfile = new UserProfile()
+                {
+                    UserId = message.SenderProfile.UserId,
+                    Username = message.SenderProfile.Username
+                },
+                LastUpdated = message.LastUpdated
+            });
         }
     }
 }

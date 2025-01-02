@@ -27,6 +27,8 @@
     <None Remove="Defaults.xaml" />
     <None Remove="DirectCommunications\Views\AddDirectCommunicationPage.xaml" />
     <None Remove="DirectCommunications\Views\DirectCommunicationListPage.xaml" />
+    <None Remove="Groups\Views\GroupPage.xaml" />
+    <None Remove="Groups\Views\GroupsListPage.xaml" />
     <None Remove="Login.xaml" />
     <None Remove="MainPage.xaml" />
     <None Remove="Messages\Views\MessageListPage.xaml" />
@@ -124,6 +126,16 @@
     <Content Update="Assets\tim-stief-YFFGkE3y4F8-unsplash.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Groups\Views\GroupPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Groups\Views\GroupsListPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
 
   <!--

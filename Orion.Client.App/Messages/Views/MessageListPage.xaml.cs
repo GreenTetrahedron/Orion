@@ -22,7 +22,7 @@ namespace Orion.Client.App.Messages.Views
     /// </summary>
     public partial class MessageListPage : Page, INotifyPropertyChanged
     {
-        public DirectCommunication DirectCommunication { get; set; }
+        public event Action<string> OnSendMessage = delegate { };
 
         private MessageListViewModel model;
 
@@ -64,13 +64,7 @@ namespace Orion.Client.App.Messages.Views
         {
             var content = messageEntryTextEntry.Text;
 
-            var subscriptable = _messageService.SendDirectMessage(new NewDirectMessage()
-            {
-                Content = content,
-                DirectCommunicationId = DirectCommunication.DirectCommunicationId,
-                SenderId = App.Current.CurrentUser.UserProfile.UserId,
-                LastUpdated = DateTime.Now
-            });
+            OnSendMessage.Invoke(content);
 
             messageEntryTextEntry.Text = "";
         }

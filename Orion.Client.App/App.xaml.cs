@@ -5,6 +5,7 @@ using Microsoft.UI.Xaml.Navigation;
 using Orion.Client.App.Users.Models;
 using Orion.Client.App.Users.Views;
 using Orion.Client.DirectCommunications.Services;
+using Orion.Client.Groups.Services;
 using Orion.Client.Messages.Services;
 using Orion.Client.Subscriptions.Services;
 using Orion.Client.TopicHandlers;
@@ -85,6 +86,8 @@ namespace Orion.Client.App
             configurationService.AddSingleton<IUserService, UserService>();
 
             configurationService.AddSingleton<IMessageService, MessageService>();
+
+            configurationService.AddSingleton<IGroupService, GroupService>();
 
             configurationService.AddSingleton<IDirectCommunicationService, DirectCommunicationService>();
 

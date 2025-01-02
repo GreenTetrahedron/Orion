@@ -17,5 +17,10 @@ namespace Orion.Client.Messages.Services
         {
             return await _clientService.TransmitDataOfTopic<NewMessageMessages>(newDirectMessage, "AddDirectMessage");
         }
+
+        public async Task<Subscriptable<NewMessageMessages>> SendGroupMessage(NewGroupMessage newGroupMessage)
+        {
+            return await _clientService.TransmitDataOfTopic<NewMessageMessages>(newGroupMessage, "AddGroupMessage");
+        }
     }
 }

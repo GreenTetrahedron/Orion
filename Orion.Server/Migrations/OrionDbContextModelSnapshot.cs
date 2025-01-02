@@ -37,6 +37,21 @@ namespace Orion.Server.Migrations
                     b.ToTable("DirectCommunicationUser");
                 });
 
+            modelBuilder.Entity("GroupUser", b =>
+                {
+                    b.Property<Guid>("GroupsGroupId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("MembersUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("GroupsGroupId", "MembersUserId");
+
+                    b.HasIndex("MembersUserId");
+
+                    b.ToTable("GroupUser");
+                });
+
             modelBuilder.Entity("Orion.Server.DirectCommuncations.DirectCommunication", b =>
                 {
                     b.Property<Guid>("DirectCommunicationId")
@@ -46,6 +61,21 @@ namespace Orion.Server.Migrations
                     b.HasKey("DirectCommunicationId");
 
                     b.ToTable("DirectCommunications");
+                });
+
+            modelBuilder.Entity("Orion.Server.Groups.Group", b =>
+                {
+                    b.Property<Guid>("GroupId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("GroupName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("GroupId");
+
+                    b.ToTable("Groups");
                 });
 
             modelBuilder.Entity("Orion.Server.Messages.Message", b =>
@@ -61,6 +91,9 @@ namespace Orion.Server.Migrations
                     b.Property<Guid?>("DirectCommunicationId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("GroupId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime>("LastUpdated")
                         .HasColumnType("datetime2");
 
@@ -70,6 +103,8 @@ namespace Orion.Server.Migrations
                     b.HasKey("MessageId");
 
                     b.HasIndex("DirectCommunicationId");
+
+                    b.HasIndex("GroupId");
 
                     b.HasIndex("SenderId");
 
@@ -117,11 +152,30 @@ namespace Orion.Server.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("GroupUser", b =>
+                {
+                    b.HasOne("Orion.Server.Groups.Group", null)
+                        .WithMany()
+                        .HasForeignKey("GroupsGroupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Orion.Server.Users.User", null)
+                        .WithMany()
+                        .HasForeignKey("MembersUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Orion.Server.Messages.Message", b =>
                 {
                     b.HasOne("Orion.Server.DirectCommuncations.DirectCommunication", null)
                         .WithMany("Messages")
                         .HasForeignKey("DirectCommunicationId");
+
+                    b.HasOne("Orion.Server.Groups.Group", null)
+                        .WithMany("Messages")
+                        .HasForeignKey("GroupId");
 
                     b.HasOne("Orion.Server.Users.User", "Sender")
                         .WithMany()
@@ -133,6 +187,11 @@ namespace Orion.Server.Migrations
                 });
 
             modelBuilder.Entity("Orion.Server.DirectCommuncations.DirectCommunication", b =>
+                {
+                    b.Navigation("Messages");
+                });
+
+            modelBuilder.Entity("Orion.Server.Groups.Group", b =>
                 {
                     b.Navigation("Messages");
                 });

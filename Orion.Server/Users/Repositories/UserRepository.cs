@@ -2,6 +2,7 @@
 using Orion.Cryptography.HashingServices;
 using Orion.Logging.LoggingServices;
 using Orion.Models.DirectCommunicationModels;
+using Orion.Models.GroupModels;
 using Orion.Models.ServerTransmissions;
 using Orion.Models.ServerTransmissions.Results;
 using Orion.Models.ServerTransmissions.Results.Messages;
@@ -29,6 +30,7 @@ namespace Orion.Server.Users.Repositories
 
             var getDataQuery = _database.Users
                 .Where(user => user.Username == credentials.Username && user.PasswordHash == passwordHash)
+                .Include(user => user.Groups)
                 .Include(user => user.DirectCommunications)
                 .ThenInclude(d => d.Members);
 
@@ -54,6 +56,12 @@ namespace Orion.Server.Users.Repositories
                                 UserId = member.UserId,
                                 Username = member.Username
                             }).ToList()
+                    }).ToList(),
+                GroupProfiles = getDataQueryResult.Groups
+                    .Select(group => new GroupProfile()
+                    {
+                        GroupId = group.GroupId,
+                        GroupName = group.GroupName
                     }).ToList()
             };
 
@@ -106,7 +114,7 @@ namespace Orion.Server.Users.Repositories
                 .SingleOrDefaultAsync();
         }
 
-        public async Task<ServerTransmission> GetUserProfileByUsername(string username)
+        public async Task<ServerResult<GetUserMessages>> GetUserProfileByUsername(string username)
         {
             var user = await _database.Users
                 .Where(user => user.Username == username)
@@ -121,9 +129,13 @@ namespace Orion.Server.Users.Repositories
                 ? ServerTransmissionService
                     .NewSuccessfulResponseServerTransmission("GetUserByUsernameResult", GetUserMessages.USER_NOT_FOUND)
                     .AddResponseOperationMessage($"No user found with username: {username}")
+                    .Response
+                    .ServerResult
                 : ServerTransmissionService
                     .NewSuccessfulResponseServerTransmission("GetUserByUsernameResult", GetUserMessages.USER_FOUND, user)
-                    .AddResponseOperationMessage($"User with username: {username} was found");
+                    .AddResponseOperationMessage($"User with username: {username} was found")
+                    .Response
+                    .ServerResult;
         }
 
         public async Task<Roles?> GetRoleByUserId(Guid userId)

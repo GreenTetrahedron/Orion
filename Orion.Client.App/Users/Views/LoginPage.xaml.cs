@@ -8,6 +8,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Orion.Client.App.Users.Models;
 using Orion.Client.App.DirectCommunications.Models;
+using Orion.Client.App.Groups.Models;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -89,6 +90,14 @@ namespace Orion.Client.App.Users.Views
             }).ToList();
 
             directCommunications.ForEach(App.Current.CurrentUser.DirectCommunications.Add);
+
+            var groups = user.GroupProfiles.Select(group => new GroupProfile()
+            {
+                GroupId = group.GroupId,
+                GroupName = group.GroupName
+            }).ToList();
+
+            groups.ForEach(App.Current.CurrentUser.Groups.Add);
 
 
             App.Current.RootFrame.Navigate(typeof(MainPage));

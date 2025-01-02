@@ -19,6 +19,8 @@
     <Content Remove="Assets\Assets\Logo\AdminPortal.png" />
   </ItemGroup>
   <ItemGroup>
+    <None Remove="Groups\Views\GroupForm.xaml" />
+    <None Remove="Groups\Views\GroupsListPage.xaml" />
     <None Remove="Logging\Views\LogsListPage.xaml" />
     <None Remove="Logging\Views\LogsPage.xaml" />
     <None Remove="MainPage.xaml" />
@@ -87,7 +89,17 @@
     <Resource Remove="Users\Views\UsersListPage.xaml" />
   </ItemGroup>
   <ItemGroup>
+    <Page Update="Groups\Views\GroupForm.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
     <Page Update="Users\Views\UserForm.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Groups\Views\GroupsListPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>

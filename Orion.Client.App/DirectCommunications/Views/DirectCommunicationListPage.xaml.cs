@@ -17,8 +17,10 @@ namespace Orion.Client.App.DirectCommunications.Views
             App.Current.CurrentUser.DirectCommunicationListViewModel = Model;
         }
 
-        private void OnNavigatedTo(NavigationEventArgs navigationEventArgs)
+        protected override void OnNavigatedFrom(NavigationEventArgs navigationEventArgs)
         {
+            Model.Selected = null;
+            App.Current.CurrentUser.DirectCommunicationListViewModel = Model;
         }
     }
 }

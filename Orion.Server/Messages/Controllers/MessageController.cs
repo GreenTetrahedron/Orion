@@ -27,5 +27,13 @@ namespace Orion.Server.Messages.Controllers
 
             return await _messageRepository.AddDirectMessage(newDirectMessage);
         }
+
+        [Handler("AddGroupMessage")]
+        public async Task<ServerTransmission> AddGroupMessage(NewGroupMessage newGroupMessage)
+        {
+            _loggingService.Log($"New group message from user {newGroupMessage.SenderId} to group {newGroupMessage.GroupId}", DateTime.Now);
+
+            return await _messageRepository.AddGroupMessage(newGroupMessage);
+        }
     }
 }
