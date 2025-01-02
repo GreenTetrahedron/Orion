@@ -29,7 +29,7 @@ namespace Orion.Client.App.Messages.Controllers
 
             var directMessageDTO = (DirectMessageDTO)result.Data;
 
-            if (!_app.CurrentUser.DirectCommunicationListViewModel.HasSelected || _app.CurrentUser.DirectCommunicationListViewModel.Selected.DirectCommunicationId != directMessageDTO.DirectCommunicationId)
+            if (_app.CurrentUser.DirectCommunicationListViewModel == null || !_app.CurrentUser.DirectCommunicationListViewModel.HasSelected || _app.CurrentUser.DirectCommunicationListViewModel.Selected.DirectCommunicationId != directMessageDTO.DirectCommunicationId)
                 return;
 
             _app.CurrentUser.DirectCommunicationListViewModel.MessageListViewModel.Messages.Add(new Message()
@@ -53,7 +53,7 @@ namespace Orion.Client.App.Messages.Controllers
 
             var groupMessageDTO = (GroupMessageDTO)result.Data;
 
-            if (!_app.CurrentUser.GroupListViewModel.HasSelected || _app.CurrentUser.GroupListViewModel.Selected.GroupId != groupMessageDTO.GroupId)
+            if (_app.CurrentUser.GroupListViewModel == null || !_app.CurrentUser.GroupListViewModel.HasSelected || _app.CurrentUser.GroupListViewModel.Selected.GroupId != groupMessageDTO.GroupId)
                 return;
 
             _app.CurrentUser.GroupListViewModel.MessageListViewModel.Messages.Add(new Message()
