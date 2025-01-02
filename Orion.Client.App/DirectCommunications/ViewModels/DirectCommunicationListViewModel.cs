@@ -1,11 +1,14 @@
-﻿using Orion.Client.App.DirectCommunications.Models;
+﻿using Microsoft.UI.Xaml;
+using Orion.Client.App.DirectCommunications.Models;
 using Orion.Client.App.Messages.Models;
 using Orion.Client.App.Messages.ViewModels;
 using Orion.Client.App.Users.Models;
 using Orion.Client.DirectCommunications.Services;
+using Orion.Client.Messages.Services;
 using Orion.Models.MessageModels;
 using Orion.Models.ServerTransmissions.Results;
 using Orion.Models.ServerTransmissions.Results.Messages;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -22,11 +25,14 @@ namespace Orion.Client.App.DirectCommunications.ViewModels
         }
 
 
-        private IDirectCommunicationService _directCommunicationService;
+        private readonly IDirectCommunicationService _directCommunicationService;
+        private readonly IMessageService _messageService;
+
 
         public DirectCommunicationListViewModel()
         {
             _directCommunicationService = App.Current.ConfigurationService.GetSingletonOfType<IDirectCommunicationService>();
+            _messageService = App.Current.ConfigurationService.GetSingletonOfType<IMessageService>();
 
             App.Current.CurrentUser.DirectCommunications.ToList().ForEach(directCommunication => AddItem(directCommunication));
             messageListViewModel = new();
@@ -36,37 +42,22 @@ namespace Orion.Client.App.DirectCommunications.ViewModels
 
         private async void StartToPopulateMessages(DirectCommunication directCommunication)
         {
-            var subscriptable = await _directCommunicationService.GetMessagesByDirectCommunicationId(directCommunication.DirectCommunicationId);
-            subscriptable.Subscribe(PopulateMessages);
-        }
-
-        private void PopulateMessages(ServerResult<GetMessageMessages> result)
-        {
-            if (result.OperationInformation.OperationMessageCode != GetMessageMessages.SUCCESSFULLY_RETRIEVED_MESSAGE)
-            {
+            if (directCommunication == null)
                 return;
-            }
 
-            var retrievedMessages = (List<MessageDTO>)result.Data;
-
-            MessageListViewModel.ClearMessages();
-            retrievedMessages.ForEach(AddMessageToMessages);
+            var subscriptable = await _directCommunicationService.GetMessagesByDirectCommunicationId(directCommunication.DirectCommunicationId);
+            subscriptable.Subscribe(MessageListViewModel.PopulateMessages);
         }
 
-        private void AddMessageToMessages(MessageDTO message)
+        public void SendMessage(string content)
         {
-            MessageListViewModel.AddMessage(new Message()
+            var subscriptable = _messageService.SendDirectMessage(new NewDirectMessage()
             {
-                MessageId = message.MessageId,
-                Content = message.Content,
-                SenderProfile = new UserProfile()
-                {
-                    UserId = message.SenderProfile.UserId,
-                    Username = message.SenderProfile.Username
-                },
-                LastUpdated = message.LastUpdated
+                Content = content,
+                DirectCommunicationId = Selected.DirectCommunicationId,
+                SenderId = App.Current.CurrentUser.UserProfile.UserId,
+                LastUpdated = DateTime.Now
             });
-
         }
     }
 }

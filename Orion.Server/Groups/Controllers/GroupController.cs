@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 
 namespace Orion.Server.Groups.Controllers
 {
+    [Controller]
     public class GroupController : IGroupController
     {
         private readonly IGroupRepository _groupRepository;

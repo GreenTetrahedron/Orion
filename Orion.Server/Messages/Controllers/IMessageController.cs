@@ -6,5 +6,6 @@ namespace Orion.Server.Messages.Controllers
     public interface IMessageController
     {
         public Task<ServerTransmission> AddDirectMessage(NewDirectMessage newDirectMessage);
+        public Task<ServerTransmission> AddGroupMessage(NewGroupMessage newGroupMessage);
     }
 }

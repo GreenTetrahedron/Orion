@@ -60,7 +60,8 @@ namespace Orion.Server.Users.Repositories
                 GroupProfiles = getDataQueryResult.Groups
                     .Select(group => new GroupProfile()
                     {
-                        GroupId = group.GroupId
+                        GroupId = group.GroupId,
+                        GroupName = group.GroupName
                     }).ToList()
             };
 

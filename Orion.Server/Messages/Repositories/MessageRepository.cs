@@ -21,12 +21,8 @@ namespace Orion.Server.Messages.Repositories
         {
             var directCommunication = await _database.DirectCommunications
                 .Where(directCommunication => directCommunication.DirectCommunicationId == newMessage.DirectCommunicationId)
-                .Select(directCommuncication => new DirectCommunication()
-                {
-                    DirectCommunicationId = directCommuncication.DirectCommunicationId,
-                    Messages = directCommuncication.Messages,
-                    Members = directCommuncication.Members
-                })
+                .Include(directCommunication => directCommunication.Messages)
+                .Include(directCommunication => directCommunication.Members)
                 .SingleAsync();
 
             var message = new Message()
@@ -60,6 +56,43 @@ namespace Orion.Server.Messages.Repositories
                         DirectCommunicationId = newMessage.DirectCommunicationId
                     }, directCommunication.Members.Select(member => member.UserId).ToArray());
 
+        }
+
+        public async Task<ServerTransmission?> AddGroupMessage(NewGroupMessage newMessage)
+        {
+            var group = await _database.Groups
+                .Where(group => group.GroupId == newMessage.GroupId)
+                .Include(group => group.Messages)
+                .Include(group => group.Members)
+                .SingleAsync();
+
+            var message = new Message()
+            {
+                MessageId = Guid.NewGuid(),
+                Content = newMessage.Content,
+                SenderId = newMessage.SenderId,
+                LastUpdated = newMessage.LastUpdated
+            };
+
+            _database.Attach(group);
+            group.Messages.Add(message);
+
+            _database.Messages.Add(message);
+
+            bool wasSuccessful = await _database.SaveChangesAsync() > 0;
+
+            return !wasSuccessful
+                ? ServerTransmissionService
+                    .NewSuccessfulResponseServerTransmission("AddGroupMessageResult", NewMessageMessages.MESSAGE_CREATION_FAILED)
+                    .AddResponseOperationMessage("Failed to add new message to database")
+                : ServerTransmissionService
+                    .NewSuccessfulResponseServerTransmission("AddGroupMessageResult", NewMessageMessages.MESSAGE_CREATED_SUCCESSFULLY)
+                    .AddResponseOperationMessage("Successfully added new message to database")
+                    .AddPublish("NewGroupMessage", new GroupMessageDTO()
+                    {
+                        Message = (MessageDTO)message,
+                        GroupId = newMessage.GroupId,
+                    }, group.Members.Select(member => member.UserId).ToArray());
         }
 
         public async Task<ServerTransmission?> GetMessage(Guid messageId)
