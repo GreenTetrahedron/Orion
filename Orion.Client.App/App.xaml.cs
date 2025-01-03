@@ -106,6 +106,8 @@ namespace Orion.Client.App
 
             //d.Start();
 
+            UnhandledException += (a, b) => (configurationService.GetInstanceOfType<IConnectionService>() as IDisposable).Dispose();
+
             clientService.RunClient();
 
             window = new MainWindow();

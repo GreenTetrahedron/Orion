@@ -27,10 +27,12 @@ namespace Orion.Client.App
 
             AppWindow.SetIcon("C:\\__Kabushak\\_Programming\\_Applications\\Orion\\Orion\\Orion.Client.App\\Assets\\another_eJe_icon.ico");
 
-            AppWindow.Closing += (a, b) =>
-            {
-                (App.Current.ConfigurationService.GetInstanceOfType<IConnectionService>() as IDisposable).Dispose();
-            };
+            AppWindow.Closing += OnClose;
+        }
+
+        private void OnClose(AppWindow appWindow, AppWindowClosingEventArgs e)
+        {
+            (App.Current.ConfigurationService.GetInstanceOfType<IConnectionService>() as IDisposable).Dispose();
         }
 
         private void CustomiseTitleBar()

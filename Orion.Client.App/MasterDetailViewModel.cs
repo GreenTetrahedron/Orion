@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 
 namespace Orion.Client.App
 {
-    public abstract partial class MasterDetailViewModel<T> : ObservableObject
+    public abstract partial class MasterDetailViewModel<T> : ObservableObject where T : class
     {
         private readonly ObservableCollection<T> items = [];
 
@@ -22,6 +22,9 @@ namespace Orion.Client.App
             get => selected;
             set
             {
+                if (selected == value)
+                    return;
+
                 OnSelectedChanged?.Invoke(value);
                 SetProperty(ref selected, value);
                 OnPropertyChanged(nameof(HasSelected));
