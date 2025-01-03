@@ -122,7 +122,10 @@ namespace Orion.Router
 
             while (true)
             {
-                ServerTransmission serverTransmission = await ReceiveServerTransmission();
+                ServerTransmission? serverTransmission = await ReceiveServerTransmission();
+
+                if (serverTransmission == null)
+                    break;
 
                 bool topicHasInterceptor = _topicInterceptorService.TryGetTopicInterceptor(serverTransmission.Response.Topic, out var topicInterceptor);
 
@@ -160,24 +163,31 @@ namespace Orion.Router
 
         public async Task<int> ForwardServerTransmission(ServerResponse serverResponse)
         {
+            bool hasRequester = false;
             int result = 0;
-            Socket? client;
 
-            if (serverResponse.RequestId != null && _requestService.TryGetRequester(serverResponse.RequestId.Value, out client) && client != null)
+            Guid requesterId = new();
+
+            if (serverResponse.RequestId != null && _requestService.TryGetRequester(serverResponse.RequestId.Value, out Socket? client) && client != null)
             {
-                result &= await ForwardServerResponse(serverResponse, client);
+                result += await ForwardServerResponse(serverResponse, client);
                 _requestService.RemoveRequest(serverResponse.RequestId.Value);
+
+                hasRequester = _clientService.TryGetRequesterId(client, out requesterId);
             }
 
             if (serverResponse.AffectedUsers == null)
                 return result;
 
 
-            foreach(var user in serverResponse.AffectedUsers)
+            foreach(var userId in serverResponse.AffectedUsers)
             {
-                if (_clientService.TryGetConnectionHandler(user, out client) && client != null)
+                if (hasRequester && requesterId == userId)
+                    continue;
+
+                if (_clientService.TryGetConnectionHandler(userId, out client) && client != null)
                 {
-                    result &= await ForwardServerResponse(serverResponse, client);
+                    result += await ForwardServerResponse(serverResponse, client);
                 }
             }
 
@@ -190,12 +200,17 @@ namespace Orion.Router
 
             Console.WriteLine($"Transmitting new response of topic: {serverResponse.Topic}");
 
-            return await _transmissionService.SendTransmission(transmission, async (data) => await _connectionService.SendMessage(data, client));
+            return await SendTransmission(transmission, client);
         }
 
         public async Task<int> SendServerRequest(ServerRequest serverRequest)
         {
-            return await _transmissionService.SendTransmission(serverRequest, async (data) => await _connectionService.SendMessage(data, _server));
+            return await SendTransmission(serverRequest, _server);
+        }
+
+        private async Task<int> SendTransmission(object transmission, Socket socket)
+        {
+            return await _transmissionService.SendTransmission(transmission, async data => await _connectionService.SendMessage(data, socket));
         }
 
         public async Task<int> SendServerRequest(Socket serverHandler, string topic, object data, Socket clientHandler, Guid? requestId = null)

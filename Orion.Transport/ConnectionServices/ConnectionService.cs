@@ -84,6 +84,10 @@ namespace Orion.Transport.ConnectionServices
             while (receivedBytes < transmissionLength)
             {
                 previousReceivedBytes = await socket.ReceiveAsync(receiveBuffer, SocketFlags.None);
+
+                if (previousReceivedBytes == 0)
+                    return new MessageBytes(lengthBuffer, receivedBytes);
+
                 someRandomNumber = Math.Min(Math.Max(4 - receivedBytes, 0), receiveBuffer.Length);
                 Buffer.BlockCopy(receiveBuffer, 0, lengthBuffer, receivedBytes, someRandomNumber);
                 receivedBytes += previousReceivedBytes;
@@ -98,6 +102,10 @@ namespace Orion.Transport.ConnectionServices
             while (receivedBytes < transmissionLength)
             {
                 previousReceivedBytes = await socket.ReceiveAsync(receiveBuffer, SocketFlags.None);
+
+                if (previousReceivedBytes == 0)
+                    return new MessageBytes(finalBuffer, receivedBytes);
+
                 Buffer.BlockCopy(receiveBuffer, 0, finalBuffer, receivedBytes, Math.Min(receiveBuffer.Length, transmissionLength - receivedBytes));
                 receivedBytes += previousReceivedBytes;
             }
@@ -117,7 +125,9 @@ namespace Orion.Transport.ConnectionServices
 
             if (_router != null)
             {
-                _router.Shutdown(SocketShutdown.Both);
+                if (_router.Connected)
+                    _router.Shutdown(SocketShutdown.Both);
+                
                 _router.Disconnect(false);
                 _router.Close();
                 _router.Dispose();
