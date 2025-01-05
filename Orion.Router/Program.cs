@@ -12,10 +12,8 @@ var configurationService = new ConfigurationService();
 
 configurationService.AddSingleton<IJsonService>(new JsonService());
 
-configurationService.AddSingleton<IClientService>(new ClientService());
+configurationService.AddSingleton<IClientService, ClientService>();
 configurationService.AddSingleton<IRequestService>(new RequestService());
-
-configurationService.AddSingleton<ITransmissionService>(new TransmissionService(configurationService.GetSingletonOfType<IJsonService>()));
 
 configurationService.AddSingleton<ITopicInterceptorService>(new TopicInterceptorService(configurationService));
 
@@ -30,8 +28,7 @@ Console.WriteLine($"On IP address: {ipAddress} and port: {port}");
 var routerService = new RouterService(new IPEndPoint(ipAddress, port),
     configurationService.GetSingletonOfType<ITopicInterceptorService>(),
     configurationService.GetSingletonOfType<IClientService>(),
-    configurationService.GetSingletonOfType<IRequestService>(),
-    configurationService.GetSingletonOfType<ITransmissionService>());
+    configurationService.GetSingletonOfType<IRequestService>());
 
 Console.WriteLine("Running broker...");
 routerService.Run();

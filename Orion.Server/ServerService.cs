@@ -35,6 +35,7 @@ namespace Orion.Server
 
         public async Task Run()
         {
+            await _transmissionService.InitialiseConnection();
             //Console.WriteLine("Server running...");
 
             await TransmitData(IDENTIFIER);

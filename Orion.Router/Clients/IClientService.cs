@@ -1,16 +1,15 @@
-﻿using System.Net.Sockets;
+﻿using Orion.Router.Models;
+using Orion.Transport.TransmissionServices;
+using System.Net.Sockets;
 
 namespace Orion.Router.Clients
 {
     public interface IClientService
     {
-        public bool TryAddConnection(Socket handler, Guid userId);
+        public Task<LifeSupport> InstantiateConnection(Socket socket);
 
-        public bool TryGetConnectionHandler(Guid userId, out Socket? handler);
+        public bool TryGetClientConnection(Guid userId, out LifeSupport connection);
 
-        public bool TryGetRequesterId(Socket handler, out Guid requesterId);
-
-        public bool TerminateConnection(Socket handler);
-        public bool TerminateConnection(Guid userId);
+        public bool TerminateConnection(ref LifeSupport connection);
     }
 }

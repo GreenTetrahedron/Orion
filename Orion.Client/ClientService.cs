@@ -73,6 +73,8 @@ namespace Orion.Client
 
         public async Task InitialiseRouterConnection()
         {
+            await _transmissionService.InitialiseConnection();
+
             await _transmissionService.SendTransmission("CLIENT");
         }
     }

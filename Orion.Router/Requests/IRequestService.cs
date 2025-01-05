@@ -1,15 +1,14 @@
-﻿using System.Net.Sockets;
+﻿using Orion.Router.Models;
+using System.Net.Sockets;
 
 namespace Orion.Router.Requests
 {
     public interface IRequestService
     {
-        public bool TryAddRequest(Socket requester, Guid requestId);
+        public bool NewRequest(ref LifeSupport connection, out Guid requestId);
+        
+        public bool TryGetRequestConnection(Guid requestId, out LifeSupport connection);
 
-        public Guid AddRequest(Socket requester);
-
-        public bool TryGetRequester(Guid requestId, out Socket? requester);
-
-        public bool RemoveRequest(Guid requestId);
+        public bool TryEndRequest(Guid requestId, out LifeSupport connection);
     }
 }

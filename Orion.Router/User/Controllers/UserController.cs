@@ -27,7 +27,7 @@ namespace Orion.Router.User.Controllers
             if (authenticationResponse.RequestId == null)
                 throw new ArgumentNullException(nameof(authenticationResponse.RequestId));
 
-            bool requestIsValid = _requestService.TryGetRequester(authenticationResponse.RequestId.Value, out var client);
+            bool requestIsValid = _requestService.TryGetRequestConnection(authenticationResponse.RequestId.Value, out var connection);
 
             if (!requestIsValid)
                 throw new Exception($"Request, {authenticationResponse.RequestId}, not found");
@@ -37,7 +37,7 @@ namespace Orion.Router.User.Controllers
 
             var userId = authenticationResponse.AffectedUsers[0];
 
-            _connectionService.TryAddConnection(client, userId);
+            connection.LogIn(userId);
         }
     }
 }

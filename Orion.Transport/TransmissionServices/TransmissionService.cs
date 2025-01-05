@@ -10,30 +10,32 @@ namespace Orion.Transport.TransmissionServices
 {
     public class TransmissionService : ITransmissionService
     {
-        private readonly IConnectionService? _connectionService;
+        private readonly IConnectionService _connectionService;
         private readonly IJsonService _jsonService;
 
-        private readonly int _bufferLength;
+        private bool _initialised;
 
-        public TransmissionService(IJsonService jsonService, IConnectionService? connectionService = null, int bufferLength = 100)
+        public bool Initialised => _initialised;
+
+        public TransmissionService(IJsonService jsonService, IConnectionService connectionService)
         {
             _connectionService = connectionService;
             _jsonService = jsonService;
+        }
 
-            _bufferLength = bufferLength;
+        public async Task<bool> InitialiseConnection()
+        {
+            _initialised = true;
+
+            return true;
         }
 
         public async Task<T> ReceiveTransmission<T>() where T : class
         {
-            if (_connectionService == null)
-                throw new Exception("connectionService was null...");
+            if (!Initialised)
+                throw new Exception("Not initialised...");
 
-            return await ReceiveTransmission<T>(_connectionService.ReceiveMessage);
-        }
-
-        public async Task<T> ReceiveTransmission<T>(Func<Task<MessageBytes>> receiveFunction) where T : class
-        {
-            var transmissionBytes = await receiveFunction.Invoke();
+            var transmissionBytes = await _connectionService.ReceiveMessage();
 
             string json = Encoding.UTF8.GetString(transmissionBytes.Data, 0, transmissionBytes.DataByteLength);
 
@@ -42,18 +44,13 @@ namespace Orion.Transport.TransmissionServices
 
         public async Task<int> SendTransmission(object transmission)
         {
-            if (_connectionService == null)
-                throw new Exception("connectionService was null...");
+            if (!Initialised)
+                throw new Exception("Not initialised...");
 
-            return await SendTransmission(transmission, _connectionService.SendMessage);
-        }
-
-        public async Task<int> SendTransmission(object transmission, Func<byte[], Task<int>> sendFunction)
-        {
             string transmissionJson = _jsonService.SerialiseObject(transmission);
             byte[] transmissionJsonBytes = Encoding.UTF8.GetBytes(transmissionJson);
 
-            return await sendFunction.Invoke(transmissionJsonBytes);
+            return await _connectionService.SendMessage(transmissionJsonBytes);
         }
     }
 }
