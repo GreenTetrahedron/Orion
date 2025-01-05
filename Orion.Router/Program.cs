@@ -7,10 +7,15 @@ using Orion.Router.TopicInterceptors;
 using System.Net;
 using Orion.Transport.TransmissionServices;
 using Orion.Transport.ConnectionServices;
+using Orion.Cryptography.EncryptionServices;
+using Orion.Cryptography.KeyExchangers;
 
 var configurationService = new ConfigurationService();
 
-configurationService.AddSingleton<IJsonService>(new JsonService());
+configurationService.AddSingleton<IEncryptionService, AesEncryptionService>();
+configurationService.AddSingleton<IKeyExchanger, DiffieHellmanKeyExchanger>();
+
+configurationService.AddSingleton<IJsonService, JsonService>();
 
 configurationService.AddSingleton<IClientService, ClientService>();
 configurationService.AddSingleton<IRequestService>(new RequestService());

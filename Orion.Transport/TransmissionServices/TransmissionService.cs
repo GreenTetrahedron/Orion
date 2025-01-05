@@ -1,4 +1,6 @@
-﻿using Orion.JsonParser;
+﻿using Orion.Cryptography.EncryptionServices;
+using Orion.Cryptography.KeyExchangers;
+using Orion.JsonParser;
 using Orion.Transport.ConnectionServices;
 using System;
 using System.Collections.Generic;
@@ -10,24 +12,51 @@ namespace Orion.Transport.TransmissionServices
 {
     public class TransmissionService : ITransmissionService
     {
-        private readonly IConnectionService _connectionService;
+        private readonly IEncryptionService _encryptionService;
+        private readonly IKeyExchanger _keyExchanger;
+
         private readonly IJsonService _jsonService;
+        private readonly IConnectionService _connectionService;
 
         private bool _initialised;
+        private byte[] _encryptionKey;
 
         public bool Initialised => _initialised;
 
-        public TransmissionService(IJsonService jsonService, IConnectionService connectionService)
+        public TransmissionService(IJsonService jsonService, IEncryptionService encryptionService, IKeyExchanger keyExchanger, IConnectionService connectionService)
         {
-            _connectionService = connectionService;
+            _encryptionService = encryptionService;
+            _keyExchanger = keyExchanger;
+
             _jsonService = jsonService;
+            _connectionService = connectionService;
         }
 
         public async Task<bool> InitialiseConnection()
         {
-            _initialised = true;
+            if (_initialised)
+                return true;
 
-            return true;
+            try
+            {
+                _keyExchanger.GeneratePublicPrivateKeyPair(out var privateKey, out var publicKey);
+                
+                await _connectionService.SendMessage(publicKey);
+
+                var messageBytes = await _connectionService.ReceiveMessage();
+
+                var otherPublicKey = messageBytes.Data;
+
+                _encryptionKey = _keyExchanger.CombineKeys(otherPublicKey, privateKey, publicKey);
+
+                _initialised = true;
+            }
+            catch
+            {
+
+            }
+
+            return _initialised;
         }
 
         public async Task<T> ReceiveTransmission<T>() where T : class
@@ -37,7 +66,15 @@ namespace Orion.Transport.TransmissionServices
 
             var transmissionBytes = await _connectionService.ReceiveMessage();
 
-            string json = Encoding.UTF8.GetString(transmissionBytes.Data, 0, transmissionBytes.DataByteLength);
+            byte[] iv = new byte[_encryptionService.IVSize];
+            byte[] cipherText = new byte[transmissionBytes.DataByteLength - iv.Length];
+
+            Buffer.BlockCopy(transmissionBytes.Data, 0, iv, 0, iv.Length);
+            Buffer.BlockCopy(transmissionBytes.Data, iv.Length, cipherText, 0, cipherText.Length);
+
+            byte[] plainText = _encryptionService.Decrypt(cipherText, _encryptionKey, iv);
+
+            string json = Encoding.UTF8.GetString(plainText, 0, plainText.Length);
 
             return _jsonService.DeserialiseJson<T>(json);
         }
@@ -50,7 +87,13 @@ namespace Orion.Transport.TransmissionServices
             string transmissionJson = _jsonService.SerialiseObject(transmission);
             byte[] transmissionJsonBytes = Encoding.UTF8.GetBytes(transmissionJson);
 
-            return await _connectionService.SendMessage(transmissionJsonBytes);
+            byte[] cipherText = _encryptionService.Encrypt(transmissionJsonBytes, _encryptionKey, out byte[] iv);
+            byte[] finalTransmission = new byte[cipherText.Length + iv.Length];
+
+            Buffer.BlockCopy(iv, 0, finalTransmission, 0, iv.Length);
+            Buffer.BlockCopy(cipherText, 0, finalTransmission, iv.Length, cipherText.Length);
+
+            return await _connectionService.SendMessage(finalTransmission);
         }
     }
 }

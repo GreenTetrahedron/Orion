@@ -1,4 +1,6 @@
-﻿using Orion.JsonParser;
+﻿using Orion.Cryptography.EncryptionServices;
+using Orion.Cryptography.KeyExchangers;
+using Orion.JsonParser;
 using Orion.Router.Models;
 using Orion.Transport.ConnectionServices;
 using Orion.Transport.TransmissionServices;
@@ -9,19 +11,24 @@ namespace Orion.Router.Clients
 {
     public class ClientService : IClientService
     {
+        private readonly IEncryptionService _encryptionService;
+        private readonly IKeyExchanger _keyExchanger;
         private readonly IJsonService _jsonService;
 
         private readonly ConcurrentDictionary<Guid, LifeSupport> _userIdToLifeSupport;
 
-        public ClientService(IJsonService jsonService)
+        public ClientService(IJsonService jsonService, IEncryptionService encryptionService, IKeyExchanger keyExchanger)
         {
+            _encryptionService = encryptionService;
+            _keyExchanger = keyExchanger;
             _jsonService = jsonService;
+
             _userIdToLifeSupport = new();
         }
 
         public async Task<LifeSupport> InstantiateConnection(Socket socket)
         {
-            var lifeSupport = new LifeSupport(socket, _jsonService);
+            var lifeSupport = new LifeSupport(socket, _jsonService, _encryptionService, _keyExchanger);
 
             await lifeSupport.InitialiseConnection();
             

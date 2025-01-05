@@ -1,4 +1,6 @@
-﻿using Orion.JsonParser;
+﻿using Orion.Cryptography.EncryptionServices;
+using Orion.Cryptography.KeyExchangers;
+using Orion.JsonParser;
 using Orion.Transport.ConnectionServices;
 using Orion.Transport.TransmissionServices;
 using System;
@@ -32,9 +34,9 @@ namespace Orion.Router.Models
             _isLoggedIn = false;
         }
 
-        public LifeSupport(Socket socket, IJsonService jsonService, int bufferLength = 16192) : this()
+        public LifeSupport(Socket socket, IJsonService jsonService, IEncryptionService encryptionService, IKeyExchanger keyExchanger, int bufferLength = 16192) : this()
         {
-            _transmissionService = new TransmissionService(jsonService, new ConnectionService(socket, bufferLength));
+            _transmissionService = new TransmissionService(jsonService, encryptionService, keyExchanger, new ConnectionService(socket, bufferLength));
         }
 
         public LifeSupport(ITransmissionService transmissionService) : this()
