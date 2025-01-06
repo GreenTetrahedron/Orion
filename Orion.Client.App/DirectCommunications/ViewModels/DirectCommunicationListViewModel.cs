@@ -1,4 +1,5 @@
-﻿using Microsoft.UI.Xaml;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using Microsoft.UI.Xaml;
 using Orion.Client.App.DirectCommunications.Models;
 using Orion.Client.App.Messages.Models;
 using Orion.Client.App.Messages.ViewModels;
@@ -17,13 +18,8 @@ namespace Orion.Client.App.DirectCommunications.ViewModels
 {
     public partial class DirectCommunicationListViewModel : MasterDetailViewModel<DirectCommunication>
     {
-        private MessageListViewModel messageListViewModel;
-
-        public MessageListViewModel MessageListViewModel
-        {
-            get { return messageListViewModel; }
-        }
-
+        [ObservableProperty]
+        private MessageListViewModel _messageListViewModel;
 
         private readonly IDirectCommunicationService _directCommunicationService;
         private readonly IMessageService _messageService;
@@ -35,7 +31,7 @@ namespace Orion.Client.App.DirectCommunications.ViewModels
             _messageService = App.Current.ConfigurationService.GetSingletonOfType<IMessageService>();
 
             App.Current.CurrentUser.DirectCommunications.ToList().ForEach(directCommunication => AddItem(directCommunication));
-            messageListViewModel = new();
+            MessageListViewModel = new();
 
             OnSelectedChanged += StartToPopulateMessages;
         }

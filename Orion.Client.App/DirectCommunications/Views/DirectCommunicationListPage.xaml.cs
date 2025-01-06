@@ -14,7 +14,7 @@ namespace Orion.Client.App.DirectCommunications.Views
     {
         public DirectCommunicationListPage()
         {
-            this.InitializeComponent();
+            InitializeComponent();
             App.Current.CurrentUser.DirectCommunicationListViewModel = Model;
         }
 

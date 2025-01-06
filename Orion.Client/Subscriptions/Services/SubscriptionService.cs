@@ -1,20 +1,19 @@
 ﻿using Orion.Models.ServerTransmissions.Results;
+using System.Collections.Concurrent;
 
 namespace Orion.Client.Subscriptions.Services
 {
     public class SubscriptionService : ISubscriptionService
     {
         private readonly HashSet<string> _topics;
-        private readonly Dictionary<string, Type> _topicToOperationMessageCodeType;
-        private readonly Dictionary<string, Action<object?>> _topicToHandler;
-        private readonly Dictionary<string, Subscriptable<Enum>> _topicToSubscriptable;
+        private readonly ConcurrentDictionary<string, Action<object?>> _topicToHandler;
+        private readonly ConcurrentDictionary<string, Subscriptable<Enum>> _topicToSubscriptable;
 
         public SubscriptionService()
         {
             _topics = new HashSet<string>();
-            _topicToOperationMessageCodeType = new Dictionary<string, Type>();
-            _topicToHandler = new Dictionary<string, Action<object?>>();
-            _topicToSubscriptable = new Dictionary<string, Subscriptable<Enum>>();
+            _topicToHandler = new ConcurrentDictionary<string, Action<object?>>();
+            _topicToSubscriptable = new ConcurrentDictionary<string, Subscriptable<Enum>>();
         }
 
         public Subscriptable<T> GetOrCreateSubscriptableForTopic<T>(string topic) where T : Enum
@@ -25,7 +24,6 @@ namespace Orion.Client.Subscriptions.Services
             var subscriptable = new Subscriptable<T>();
 
             _topics.Add(topic);
-            _topicToOperationMessageCodeType[topic] = typeof(T);
             _topicToSubscriptable[topic] = subscriptable;
             _topicToHandler[topic] = data =>
             {
@@ -43,6 +41,10 @@ namespace Orion.Client.Subscriptions.Services
                 return false;
 
             _topicToHandler[topic].Invoke(data);
+            _topicToHandler.TryRemove(topic, out _);
+            _topicToSubscriptable.TryRemove(topic, out _);
+            _topics.Remove(topic);
+
             return true;
         }
     }
