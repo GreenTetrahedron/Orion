@@ -1,4 +1,6 @@
-﻿using Orion.JsonParser;
+﻿using Orion.Cryptography.EncryptionServices;
+using Orion.Cryptography.KeyExchangers;
+using Orion.JsonParser;
 using Orion.Transport.ConnectionServices;
 using System;
 using System.Collections.Generic;
@@ -10,50 +12,88 @@ namespace Orion.Transport.TransmissionServices
 {
     public class TransmissionService : ITransmissionService
     {
-        private readonly IConnectionService? _connectionService;
+        private readonly IEncryptionService _encryptionService;
+        private readonly IKeyExchanger _keyExchanger;
+
         private readonly IJsonService _jsonService;
+        private readonly IConnectionService _connectionService;
 
-        private readonly int _bufferLength;
+        private bool _initialised;
+        private byte[] _encryptionKey;
 
-        public TransmissionService(IJsonService jsonService, IConnectionService? connectionService = null, int bufferLength = 100)
+        public bool Initialised => _initialised;
+
+        public TransmissionService(IJsonService jsonService, IEncryptionService encryptionService, IKeyExchanger keyExchanger, IConnectionService connectionService)
         {
-            _connectionService = connectionService;
-            _jsonService = jsonService;
+            _encryptionService = encryptionService;
+            _keyExchanger = keyExchanger;
 
-            _bufferLength = bufferLength;
+            _jsonService = jsonService;
+            _connectionService = connectionService;
+        }
+
+        public async Task<bool> InitialiseConnection()
+        {
+            if (_initialised)
+                return true;
+
+            try
+            {
+                _keyExchanger.GeneratePublicPrivateKeyPair(out var privateKey, out var publicKey);
+                
+                await _connectionService.SendMessage(publicKey);
+
+                var messageBytes = await _connectionService.ReceiveMessage();
+
+                var otherPublicKey = messageBytes.Data;
+
+                _encryptionKey = _keyExchanger.CombineKeys(otherPublicKey, privateKey, publicKey);
+
+                _initialised = true;
+            }
+            catch
+            {
+
+            }
+
+            return _initialised;
         }
 
         public async Task<T> ReceiveTransmission<T>() where T : class
         {
-            if (_connectionService == null)
-                throw new Exception("connectionService was null...");
+            if (!Initialised)
+                throw new Exception("Not initialised...");
 
-            return await ReceiveTransmission<T>(_connectionService.ReceiveMessage);
-        }
+            var transmissionBytes = await _connectionService.ReceiveMessage();
 
-        public async Task<T> ReceiveTransmission<T>(Func<Task<MessageBytes>> receiveFunction) where T : class
-        {
-            var transmissionBytes = await receiveFunction.Invoke();
+            byte[] iv = new byte[_encryptionService.IVSize];
+            byte[] cipherText = new byte[transmissionBytes.DataByteLength - iv.Length];
 
-            string json = Encoding.UTF8.GetString(transmissionBytes.Data, 0, transmissionBytes.DataByteLength);
+            Buffer.BlockCopy(transmissionBytes.Data, 0, iv, 0, iv.Length);
+            Buffer.BlockCopy(transmissionBytes.Data, iv.Length, cipherText, 0, cipherText.Length);
+
+            byte[] plainText = _encryptionService.Decrypt(cipherText, _encryptionKey, iv);
+
+            string json = Encoding.UTF8.GetString(plainText, 0, plainText.Length);
 
             return _jsonService.DeserialiseJson<T>(json);
         }
 
         public async Task<int> SendTransmission(object transmission)
         {
-            if (_connectionService == null)
-                throw new Exception("connectionService was null...");
+            if (!Initialised)
+                throw new Exception("Not initialised...");
 
-            return await SendTransmission(transmission, _connectionService.SendMessage);
-        }
-
-        public async Task<int> SendTransmission(object transmission, Func<byte[], Task<int>> sendFunction)
-        {
             string transmissionJson = _jsonService.SerialiseObject(transmission);
             byte[] transmissionJsonBytes = Encoding.UTF8.GetBytes(transmissionJson);
 
-            return await sendFunction.Invoke(transmissionJsonBytes);
+            byte[] cipherText = _encryptionService.Encrypt(transmissionJsonBytes, _encryptionKey, out byte[] iv);
+            byte[] finalTransmission = new byte[cipherText.Length + iv.Length];
+
+            Buffer.BlockCopy(iv, 0, finalTransmission, 0, iv.Length);
+            Buffer.BlockCopy(cipherText, 0, finalTransmission, iv.Length, cipherText.Length);
+
+            return await _connectionService.SendMessage(finalTransmission);
         }
     }
 }

@@ -1,59 +1,50 @@
-﻿using System.Collections.Concurrent;
+﻿using Orion.Cryptography.EncryptionServices;
+using Orion.Cryptography.KeyExchangers;
+using Orion.JsonParser;
+using Orion.Router.Models;
+using Orion.Transport.ConnectionServices;
+using Orion.Transport.TransmissionServices;
+using System.Collections.Concurrent;
 using System.Net.Sockets;
 
 namespace Orion.Router.Clients
 {
     public class ClientService : IClientService
     {
-        private ConcurrentDictionary<Guid, Socket> _userIdToHandler;
-        private ConcurrentDictionary<Socket, Guid> _handlerToUserId;
+        private readonly IEncryptionService _encryptionService;
+        private readonly IKeyExchanger _keyExchanger;
+        private readonly IJsonService _jsonService;
 
-        public ClientService()
+        private readonly ConcurrentDictionary<Guid, LifeSupport> _userIdToLifeSupport;
+
+        public ClientService(IJsonService jsonService, IEncryptionService encryptionService, IKeyExchanger keyExchanger)
         {
-            _userIdToHandler = new();
-            _handlerToUserId = new();
+            _encryptionService = encryptionService;
+            _keyExchanger = keyExchanger;
+            _jsonService = jsonService;
+
+            _userIdToLifeSupport = new();
         }
 
-        public bool TerminateConnection(Socket handler)
+        public async Task<LifeSupport> InstantiateConnection(Socket socket)
         {
-            var result = _handlerToUserId.TryRemove(handler, out var userId)
-                && _userIdToHandler.TryRemove(userId, out _);
+            var lifeSupport = new LifeSupport(socket, _jsonService, _encryptionService, _keyExchanger);
 
-            handler?.Shutdown(SocketShutdown.Both);
-            handler?.Disconnect(false);
-            handler?.Close();
-            handler?.Dispose();
+            await lifeSupport.InitialiseConnection();
+            
+            lifeSupport.OnLogIn += userId => _userIdToLifeSupport.TryAdd(userId, lifeSupport);
 
-            return result;
+            return lifeSupport;
         }
 
-        public bool TerminateConnection(Guid userId)
+        public bool TerminateConnection(ref LifeSupport connection)
         {
-            var result = _userIdToHandler.TryRemove(userId, out var handler)
-                && handler != null
-                && _handlerToUserId.TryRemove(handler, out _);
-
-            handler?.Shutdown(SocketShutdown.Both);
-            handler?.Disconnect(false);
-            handler?.Close();
-            handler?.Dispose();
-
-            return result;
+            return _userIdToLifeSupport.TryRemove(connection.UserId, out _);
         }
 
-        public bool TryAddConnection(Socket handler, Guid userId)
+        public bool TryGetClientConnection(Guid userId, out LifeSupport connection)
         {
-            return _userIdToHandler.TryAdd(userId, handler) && _handlerToUserId.TryAdd(handler, userId);
-        }
-
-        public bool TryGetConnectionHandler(Guid userId, out Socket? handler)
-        {
-            return _userIdToHandler.TryGetValue(userId, out handler);
-        }
-
-        public bool TryGetRequesterId(Socket handler, out Guid requesterId)
-        {
-            return _handlerToUserId.TryGetValue(handler, out requesterId);
+            return _userIdToLifeSupport.TryGetValue(userId, out connection);
         }
     }
 }

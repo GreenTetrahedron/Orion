@@ -3,6 +3,7 @@ using Orion.Models.ClientTransmissions;
 using Orion.Models.RouterTransmissions;
 using Orion.Models.ServerTransmissions;
 using Orion.Router.Clients;
+using Orion.Router.Models;
 using Orion.Router.Requests;
 using Orion.Router.TopicInterceptors;
 using Orion.Transport.ConnectionServices;
@@ -10,6 +11,7 @@ using Orion.Transport.TransmissionServices;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Net.Sockets;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace Orion.Router
@@ -17,16 +19,15 @@ namespace Orion.Router
     public class RouterService
     {
         private IPEndPoint _iPEndPoint;
-        private Socket _server;
+        private LifeSupport? _serverConnection;
 
         private IRequestService _requestService;
         private IClientService _clientService;
         private ITopicInterceptorService _topicInterceptorService;
 
         private readonly ConnectionService _connectionService;
-        private readonly ITransmissionService _transmissionService;
 
-        public RouterService(IPEndPoint iPEndPoint, ITopicInterceptorService topicInterceptorService, IClientService clientService, IRequestService requestService, ITransmissionService transmissionService)
+        public RouterService(IPEndPoint iPEndPoint, ITopicInterceptorService topicInterceptorService, IClientService clientService, IRequestService requestService)
         {
             _iPEndPoint = iPEndPoint;
 
@@ -35,7 +36,6 @@ namespace Orion.Router
             _requestService = requestService;
 
             _connectionService = new();
-            _transmissionService = transmissionService;
         }
 
         public async Task Run()
@@ -71,23 +71,25 @@ namespace Orion.Router
         {
             Console.WriteLine("Handling new connection...");
 
-            string message = await _transmissionService.ReceiveTransmission<string>(async () => await _connectionService.ReceiveMessage(handler));
+            var connection = await _clientService.InstantiateConnection(handler);
+
+            string message = await connection.ReceiveTransmission<string>();
 
             switch (message)
             {
                 case "SERVER":
-                    ServerConnection(handler);
+                    ServerConnection(connection);
                     break;
                 default:
-                    NewClientConnection(handler);
+                    NewClientConnection(connection);
                     break;
             }
             Console.WriteLine("Connection handled...");
         }
 
-        public async Task NewClientConnection(Socket handler)
+        public async Task NewClientConnection(LifeSupport connection)
         {
-            if (_server == null)
+            if (_serverConnection == null)
             {
                 Console.WriteLine("No server... Cannot connect client...");
                 return;
@@ -95,29 +97,35 @@ namespace Orion.Router
 
             ClientTransmission? clientTransmission;
 
-            while (handler.Connected)
+            while (true)
             {
-                clientTransmission = await ReceiveClientTransmission(handler);
+                clientTransmission = await ReceiveClientTransmission(connection);
 
                 if (clientTransmission == null)
                     break;
 
-                var requestId = _requestService.AddRequest(handler);
+                bool successful = _requestService.NewRequest(ref connection, out Guid requestId);
 
-                SendServerRequest(_server, clientTransmission.Topic, clientTransmission.Data, handler, requestId);
+                if (!successful)
+                    throw new Exception("Could not add request...");
+
+                SendServerRequest(clientTransmission.Topic, clientTransmission.Data, connection, requestId);
             }
 
             Console.WriteLine("Client disconnecting...");
 
-            if (_clientService.TerminateConnection(handler))
+            if (_clientService.TerminateConnection(ref connection))
                 Console.WriteLine("Client disconnected");
             else
                 Console.WriteLine("No handler found for client....");
         }
 
-        public async Task ServerConnection(Socket serverHandler)
+        public async Task ServerConnection(LifeSupport connection)
         {
-            _server = serverHandler;
+            if (_serverConnection != null)
+                throw new InvalidOperationException("Server already connected...");
+
+            _serverConnection = connection;
             Console.WriteLine("Server connected...");
 
             while (true)
@@ -144,14 +152,14 @@ namespace Orion.Router
 
         public async Task<ServerTransmission?> ReceiveServerTransmission()
         {
-            ServerTransmission? serverTransmission = await _transmissionService.ReceiveTransmission<ServerTransmission>(async () => await _connectionService.ReceiveMessage(_server));
+            ServerTransmission? serverTransmission = await _serverConnection.ReceiveTransmission<ServerTransmission>();
 
             return serverTransmission;
         }
 
-        public async Task<ClientTransmission?> ReceiveClientTransmission(Socket client)
+        public async Task<ClientTransmission?> ReceiveClientTransmission(LifeSupport connection)
         {
-            var clientTransmission = await _transmissionService.ReceiveTransmission<ClientTransmission>(async () => await _connectionService.ReceiveMessage(client));
+            var clientTransmission = await connection.ReceiveTransmission<ClientTransmission>();
 
             if (clientTransmission == null)
                 return clientTransmission;
@@ -163,17 +171,14 @@ namespace Orion.Router
 
         public async Task<int> ForwardServerTransmission(ServerResponse serverResponse)
         {
-            bool hasRequester = false;
+            LifeSupport? requesterConnection = null;
             int result = 0;
 
-            Guid requesterId = new();
 
-            if (serverResponse.RequestId != null && _requestService.TryGetRequester(serverResponse.RequestId.Value, out Socket? client) && client != null)
+            if (serverResponse.RequestId != null && _requestService.TryGetRequestConnection(serverResponse.RequestId.Value, out requesterConnection) && requesterConnection != null)
             {
-                result += await ForwardServerResponse(serverResponse, client);
-                _requestService.RemoveRequest(serverResponse.RequestId.Value);
-
-                hasRequester = _clientService.TryGetRequesterId(client, out requesterId);
+                result += await ForwardServerResponse(serverResponse, requesterConnection);
+                _requestService.TryEndRequest(serverResponse.RequestId.Value, out _);
             }
 
             if (serverResponse.AffectedUsers == null)
@@ -182,42 +187,37 @@ namespace Orion.Router
 
             foreach(var userId in serverResponse.AffectedUsers)
             {
-                if (hasRequester && requesterId == userId)
+                if (requesterConnection != null && requesterConnection.IsLoggedIn && requesterConnection.UserId == userId)
                     continue;
 
-                if (_clientService.TryGetConnectionHandler(userId, out client) && client != null)
+                if (_clientService.TryGetClientConnection(userId, out LifeSupport? connection) && connection != null)
                 {
-                    result += await ForwardServerResponse(serverResponse, client);
+                    result += await ForwardServerResponse(serverResponse, connection);
                 }
             }
 
             return result;
         }
 
-        public async Task<int> ForwardServerResponse(ServerResponse serverResponse, Socket client)
+        public async Task<int> ForwardServerResponse(ServerResponse serverResponse, LifeSupport clientConnection)
         {
             var transmission = new ClientTransmission(serverResponse.Topic, serverResponse.ServerResult);
 
             Console.WriteLine($"Transmitting new response of topic: {serverResponse.Topic}");
 
-            return await SendTransmission(transmission, client);
+            return await clientConnection.SendTransmission(transmission);
         }
 
         public async Task<int> SendServerRequest(ServerRequest serverRequest)
         {
-            return await SendTransmission(serverRequest, _server);
+            return await _serverConnection.SendTransmission(serverRequest);
         }
 
-        private async Task<int> SendTransmission(object transmission, Socket socket)
+        public async Task<int> SendServerRequest(string topic, object data, LifeSupport clientConnection, Guid? requestId = null)
         {
-            return await _transmissionService.SendTransmission(transmission, async data => await _connectionService.SendMessage(data, socket));
-        }
-
-        public async Task<int> SendServerRequest(Socket serverHandler, string topic, object data, Socket clientHandler, Guid? requestId = null)
-        {
-            Guid requesterId;
-
-            bool hasConnection = _clientService.TryGetRequesterId(clientHandler, out requesterId);
+            bool hasConnection = clientConnection.IsLoggedIn;
+         
+            Guid requesterId = clientConnection.UserId;
 
             var serverRequest = hasConnection
                 ? new ServerRequest(topic, data, requestId, requesterId)

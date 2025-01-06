@@ -1,37 +1,33 @@
-﻿using System.Collections.Concurrent;
+﻿using Orion.Router.Models;
+using System.Collections.Concurrent;
 using System.Net.Sockets;
 
 namespace Orion.Router.Requests
 {
     public class RequestService : IRequestService
     {
-        private ConcurrentDictionary<Guid, Socket> _requestIdToRequester;
+        private readonly ConcurrentDictionary<Guid, LifeSupport> _requestIdToRequester;
 
         public RequestService()
         {
-            _requestIdToRequester = new ConcurrentDictionary<Guid, Socket>();
-        }
-        public Guid AddRequest(Socket requester)
-        {
-            var requestId = Guid.NewGuid();
-            _requestIdToRequester[requestId] = requester;
-
-            return requestId;
+            _requestIdToRequester = new ConcurrentDictionary<Guid, LifeSupport>();
         }
 
-        public bool RemoveRequest(Guid requestId)
+        public bool TryEndRequest(Guid requestId, out LifeSupport connection)
         {
-            return _requestIdToRequester.TryRemove(requestId, out _);
+            return _requestIdToRequester.Remove(requestId, out connection);
         }
 
-        public bool TryAddRequest(Socket requester, Guid requestId)
+        public bool TryGetRequestConnection(Guid requestId, out LifeSupport connection)
         {
-            return _requestIdToRequester.TryAdd(requestId, requester);
+            return _requestIdToRequester.TryGetValue(requestId, out connection);
         }
 
-        public bool TryGetRequester(Guid requestId, out Socket? requester)
+        public bool NewRequest(ref LifeSupport connection, out Guid requestId)
         {
-            return _requestIdToRequester.TryGetValue(requestId, out requester);
+            requestId = Guid.NewGuid();
+
+            return _requestIdToRequester.TryAdd(requestId, connection);
         }
     }
 }

@@ -11,6 +11,8 @@ using Orion.Client.Subscriptions.Services;
 using Orion.Client.TopicHandlers;
 using Orion.Client.Users.Services;
 using Orion.Configuration;
+using Orion.Cryptography.EncryptionServices;
+using Orion.Cryptography.KeyExchangers;
 using Orion.JsonParser;
 using Orion.Transport.ConnectionServices;
 using Orion.Transport.TransmissionServices;
@@ -79,7 +81,10 @@ namespace Orion.Client.App
 
             configurationService.AddSingleton<IConnectionService>(connectionService);
 
-            configurationService.AddSingleton<ITransmissionService>(new TransmissionService(configurationService.GetSingletonOfType<IJsonService>(), configurationService.GetSingletonOfType<IConnectionService>()));
+            configurationService.AddSingleton<IEncryptionService, AesEncryptionService>();
+            configurationService.AddSingleton<IKeyExchanger, DiffieHellmanKeyExchanger>();
+
+            configurationService.AddSingleton<ITransmissionService, TransmissionService>();
 
             configurationService.AddSingleton<IClientService, ClientService>();
 

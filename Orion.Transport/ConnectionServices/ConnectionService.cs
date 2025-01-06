@@ -7,9 +7,9 @@ namespace Orion.Transport.ConnectionServices
     {
         private readonly IPEndPoint? _routerIpEndpoint;
 
-        private Socket? _router;
+        private readonly Socket? _socket;
 
-        private int _bufferLength;
+        private readonly int _bufferLength;
 
         private bool _disposed;
 
@@ -18,28 +18,37 @@ namespace Orion.Transport.ConnectionServices
             _routerIpEndpoint = routerIpEndpoint;
             _bufferLength = bufferLength;
             _disposed = false;
-            _router = null;
+            _socket = null;
             
             if (_routerIpEndpoint == null)
                 return;
 
-            _router = new Socket(_routerIpEndpoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+            _socket = new Socket(_routerIpEndpoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
 
-            _router.ConnectAsync(_routerIpEndpoint);
-            _router.SendBufferSize = Math.Max(_bufferLength, _router.SendBufferSize);
-            _router.ReceiveBufferSize = Math.Max(_bufferLength, _router.ReceiveBufferSize);
+            SetupSocket();
+
+            _socket.ConnectAsync(_routerIpEndpoint);
+        }
+
+        public ConnectionService(Socket socket, int bufferLength = 16192)
+        {
+            _socket = socket;
+            _bufferLength = bufferLength;
+
+            SetupSocket();
+        }
+
+        private void SetupSocket()
+        {
+            _socket.SendBufferSize = Math.Max(_bufferLength, _socket.SendBufferSize);
+            _socket.ReceiveBufferSize = Math.Max(_bufferLength, _socket.ReceiveBufferSize);
         }
 
         public async Task<int> SendMessage(byte[] data)
         {
-            if (_router == null)
-                throw new Exception("router was null...");
+            if (_socket == null)
+                throw new Exception("socket was null...");
 
-            return await SendMessage(data, _router);
-        }
-
-        public async Task<int> SendMessage(byte[] data, Socket socket)
-        {
             byte[] finalTransmission = new byte[4 + data.Length];
 
             Buffer.BlockCopy(BitConverter.GetBytes(data.Length), 0, finalTransmission, 0, 4);
@@ -56,7 +65,7 @@ namespace Orion.Transport.ConnectionServices
 
                 Buffer.BlockCopy(finalTransmission, sentBytes, sendBuffer, 0, sendBuffer.Length);
              
-                sentBytes += await socket.SendAsync(sendBuffer, SocketFlags.None);
+                sentBytes += await _socket.SendAsync(sendBuffer, SocketFlags.None);
             }
             while (sentBytes < finalTransmission.Length);
 
@@ -65,14 +74,9 @@ namespace Orion.Transport.ConnectionServices
 
         public async Task<MessageBytes> ReceiveMessage()
         {
-            if (_router == null)
+            if (_socket == null)
                 throw new Exception("router was null...");
 
-            return await ReceiveMessage(_router);
-        }
-
-        public async Task<MessageBytes> ReceiveMessage(Socket socket)
-        {
             byte[] receiveBuffer = new byte[_bufferLength];
 
             int previousReceivedBytes = 0;
@@ -83,7 +87,7 @@ namespace Orion.Transport.ConnectionServices
 
             while (receivedBytes < transmissionLength)
             {
-                previousReceivedBytes = await socket.ReceiveAsync(receiveBuffer, SocketFlags.None);
+                previousReceivedBytes = await _socket.ReceiveAsync(receiveBuffer, SocketFlags.None);
 
                 if (previousReceivedBytes == 0)
                     return new MessageBytes(lengthBuffer, receivedBytes);
@@ -101,7 +105,7 @@ namespace Orion.Transport.ConnectionServices
 
             while (receivedBytes < transmissionLength)
             {
-                previousReceivedBytes = await socket.ReceiveAsync(receiveBuffer, SocketFlags.None);
+                previousReceivedBytes = await _socket.ReceiveAsync(receiveBuffer, SocketFlags.None);
 
                 if (previousReceivedBytes == 0)
                     return new MessageBytes(finalBuffer, receivedBytes);
@@ -123,14 +127,14 @@ namespace Orion.Transport.ConnectionServices
             if (_disposed)
                 return;
 
-            if (_router != null)
+            if (_socket != null)
             {
-                if (_router.Connected)
-                    _router.Shutdown(SocketShutdown.Both);
+                if (_socket.Connected)
+                    _socket.Shutdown(SocketShutdown.Both);
                 
-                _router.Disconnect(false);
-                _router.Close();
-                _router.Dispose();
+                _socket.Disconnect(false);
+                _socket.Close();
+                _socket.Dispose();
             }
 
             _disposed = true;

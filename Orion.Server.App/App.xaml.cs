@@ -7,7 +7,9 @@ using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using Microsoft.UI.Xaml.Shapes;
 using Orion.Configuration;
+using Orion.Cryptography.EncryptionServices;
 using Orion.Cryptography.HashingServices;
+using Orion.Cryptography.KeyExchangers;
 using Orion.JsonParser;
 using Orion.Logging.DataLayer;
 using Orion.Logging.LoggingServices;
@@ -98,8 +100,12 @@ namespace Orion.Server.App
             //Console.WriteLine($"On IP address: {routerIPAddress} and port: {routerPort}");
 
             var routerIPEndPoint = new IPEndPoint(routerIPAddress, routerPort);
+
+            configurationService.AddSingleton<IEncryptionService, AesEncryptionService>();
+            configurationService.AddSingleton<IKeyExchanger, DiffieHellmanKeyExchanger>();
+
             configurationService.AddSingleton<IConnectionService>(new ConnectionService(routerIPEndPoint));
-            configurationService.AddSingleton<ITransmissionService>(new TransmissionService(configurationService.GetSingletonOfType<IJsonService>(), configurationService.GetSingletonOfType<IConnectionService>()));
+            configurationService.AddSingleton<ITransmissionService, TransmissionService>();
 
             configurationService.AddScoped<ServerService, ServerService>();
 
