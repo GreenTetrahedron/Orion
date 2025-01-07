@@ -54,6 +54,9 @@ namespace Orion.Server.App.Users.Views
         {
             this.InitializeComponent();
 
+            if (User == null)
+                User = new();
+
             Roles =
             [
                 Orion.Models.UserModels.Roles.USER,
