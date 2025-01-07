@@ -50,7 +50,20 @@ namespace Orion.Server.App
 
         public CurrentUser CurrentUser { get; set; }
 
-        public IConfigurationService ConfigurationService { get; set; }
+        private IConfigurationService _configurationService;
+
+        public IConfigurationService ConfigurationService
+        {
+            get
+            {
+                _configurationService.ResetScope();
+                return _configurationService;
+            }
+            private set
+            {
+                _configurationService = value;
+            }
+        }
 
         public Frame RootFrame { get; set; }
 

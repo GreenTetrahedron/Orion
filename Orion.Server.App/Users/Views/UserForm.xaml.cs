@@ -6,6 +6,7 @@ using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using Orion.Models.UserModels;
+using Orion.Server.App.Users.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -27,15 +28,27 @@ namespace Orion.Server.App.Users.Views
     /// </summary>
     public partial class UserForm : Page, INotifyPropertyChanged
     {
+        private User _user;
+
+        public User User
+        {
+            get { return _user; }
+            set
+            {
+                _user = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public ObservableCollection<Roles> Roles;
+
         public event PropertyChangedEventHandler PropertyChanged = delegate { };
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        public ObservableCollection<Roles> Roles;
-
-        public event Action<string, string, Roles> OnSubmit = delegate { };
+        public event Action<User> OnSubmit = delegate { };
 
         public UserForm()
         {
@@ -51,7 +64,7 @@ namespace Orion.Server.App.Users.Views
 
         private void OnSubmitClicked(object sender, RoutedEventArgs e)
         {
-            OnSubmit.Invoke(usernameTextEntry.Text, passwordTextEntry.Text, (Roles)rolesComboBox.SelectedItem);
+            OnSubmit.Invoke(User);
         }
     }
 }

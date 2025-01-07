@@ -18,14 +18,16 @@
 
     <Page.Resources>
         <converters:BoolToVisibilityConverter x:Name="BoolToVisibilityConverter" />
+        <converters:GuidToStringConverter x:Name="GuidToStringConverter" />
     </Page.Resources>
     
     <StackPanel>
         <Button Click="OnAddUser">Add User</Button>
 
         <local:UserForm Visibility="{x:Bind Model.HideAddUserForm, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" OnSubmit="{x:Bind Model.AddUser}" />
+        <local:UserForm Visibility="{x:Bind Model.HideEditUserForm, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" OnSubmit="{x:Bind Model.UpdateUser}" User="{x:Bind Model.User, Mode=OneWay}" />
 
-        <ItemsControl ItemsSource="{x:Bind Model.Users, Mode=OneWay}">
+        <ListView ItemsSource="{x:Bind Model.Users, Mode=OneWay}">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
                     <StackPanel />
@@ -34,13 +36,19 @@
 
             <ItemsControl.ItemTemplate>
                 <DataTemplate x:DataType="model:UserProfile">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="{x:Bind UserId}" Width="400" />
-                        <TextBlock Text="|" />
-                        <TextBlock Text="{x:Bind Username}" />
-                    </StackPanel>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="auto" />
+                            <ColumnDefinition Width="auto" />
+                        </Grid.ColumnDefinitions>
+                        
+                        <TextBlock Grid.Column="0" Text="{x:Bind Username}" />
+                        <Button Grid.Column="1" Click="OnEditUser" Tag="{x:Bind UserId}">Edit</Button>
+                        <Button Grid.Column="2" Click="OnDeleteUser" Tag="{x:Bind UserId}">Delete</Button>
+                    </Grid>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
-        </ItemsControl>
+        </ListView>
     </StackPanel>
 </Page>

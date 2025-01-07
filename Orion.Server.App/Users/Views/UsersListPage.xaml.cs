@@ -28,9 +28,20 @@ namespace Orion.Server.App.Users.Views
             this.InitializeComponent();
         }
 
+
         private void OnAddUser(object sender, RoutedEventArgs e)
         {
             Model.HideAddUserForm = false;
+        }
+
+        private void OnEditUser(object sender, RoutedEventArgs e)
+        {
+            Model.OnEditUser((Guid)((Button)sender).Tag);
+        }
+
+        private void OnDeleteUser(object sender, RoutedEventArgs e)
+        {
+            Model.OnDeleteUser((Guid)((Button)sender).Tag);
         }
     }
 }

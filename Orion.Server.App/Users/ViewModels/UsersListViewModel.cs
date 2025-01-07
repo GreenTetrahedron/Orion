@@ -23,10 +23,16 @@ namespace Orion.Server.App.Users.ViewModels
         }
 
         [ObservableProperty]
+        private User _user;
+
+        [ObservableProperty]
         private bool _hideAddUserForm;
 
         [ObservableProperty]
         private bool _hideEditUserForm;
+
+        [ObservableProperty]
+        private bool _hideDeleteUserPopup;
 
         private DispatcherQueue _dispatcherQueue;
 
@@ -59,27 +65,82 @@ namespace Orion.Server.App.Users.ViewModels
             });
         }
 
-        public void AddUser(string username, string password, Roles role)
+        public void AddUser(User user)
         {
             _dispatcherQueue.TryEnqueue(async () =>
             {
-                var user = await App.Current.ConfigurationService.GetInstanceOfType<IUserRepository>()
+                var addedUser = await App.Current.ConfigurationService.GetInstanceOfType<IUserRepository>()
                     .AddUser(new UserInformation()
                     {
-                        Username = username,
-                        Password = password,
-                        Role = role
+                        Username = user.Username,
+                        Password = user.Password,
+                        Role = user.Role
                     });
 
                 Users.Add(new Models.UserProfile()
                 {
-                    UserId = user.UserId,
-                    Username = user.Username
+                    UserId = addedUser.UserId,
+                    Username = addedUser.Username
                 });
                 
                 HideAddUserForm = true;
             });
 
         }
+
+        public void OnEditUser(Guid userId)
+        {
+            _dispatcherQueue.TryEnqueue(async () =>
+            {
+                HideEditUserForm = false;
+
+                var user = await App.Current.ConfigurationService.GetInstanceOfType<IUserRepository>()
+                    .GetUserInformation(userId);
+
+                User = new User()
+                {
+                    UserId = user.UserId,
+                    Username = user.Username,
+                    Password = user.Password,
+                    Role = user.Role
+                };
+            });
+        }
+
+        public async void OnDeleteUser(Guid userId)
+        {
+            await DeleteUser(userId);
+        }
+
+        public async Task DeleteUser(Guid userId)
+        {
+            var result = await App.Current.ConfigurationService.GetInstanceOfType<IUserRepository>()
+                .DeleteUserById(userId);
+
+            if (!(result == true))
+                return;
+
+            Users.Remove(Users.First(user => user.UserId == userId));
+        }
+
+        public void UpdateUser(User user)
+        {
+            _dispatcherQueue.TryEnqueue(async () =>
+            {
+                var result = await App.Current.ConfigurationService.GetInstanceOfType<IUserRepository>()
+                    .UpdateUser(new UserInformation()
+                    {
+                        UserId = user.UserId,
+                        Username = user.Username,
+                        Password = user.Password,
+                        Role = user.Role
+                    });
+
+                if (result == true)
+                    HideEditUserForm = true;
+            });
+
+        }
+
     }
 }

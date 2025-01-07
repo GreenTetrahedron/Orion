@@ -15,7 +15,9 @@ namespace Orion.Server.Users.Repositories
 
         public Task<UserInformation?> GetUserInformation(Guid userId);
 
-        public Task<int> UpdateUser(UserInformation newUserInformation);
+        public Task<bool> UpdateUser(UserInformation updatedUserInformation);
+
+        public Task<bool> DeleteUserById(Guid id);
 
         public Task<List<UserDTO>> GetAllUsers();
 

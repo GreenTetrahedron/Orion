@@ -11,12 +11,12 @@
 
     <StackPanel>
         <TextBlock Text="Username" />
-        <TextBox x:Name="usernameTextEntry" />
+        <TextBox x:Name="usernameTextEntry" Text="{x:Bind User.Username, Mode=TwoWay}" />
 
         <TextBlock Text="Password" />
-        <TextBox x:Name ="passwordTextEntry" />
+        <TextBox x:Name ="passwordTextEntry" Text="{x:Bind User.Password, Mode=TwoWay}" />
         
-        <ComboBox x:Name="rolesComboBox" Header="Role" ItemsSource="{x:Bind Roles}"></ComboBox>
+        <ComboBox x:Name="rolesComboBox" Header="Role" ItemsSource="{x:Bind Roles}" SelectedItem="{x:Bind User.Role, Mode=TwoWay}"></ComboBox>
 
         <Button Click="OnSubmitClicked">Submit</Button>
     </StackPanel>

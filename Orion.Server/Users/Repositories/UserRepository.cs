@@ -9,6 +9,7 @@ using Orion.Models.ServerTransmissions.Results.Messages;
 using Orion.Models.UserModels;
 using Orion.Server.DataLayer;
 using Orion.Server.ServerTransmissionServices;
+using System.ComponentModel.DataAnnotations;
 using System.Text;
 
 namespace Orion.Server.Users.Repositories
@@ -175,17 +176,23 @@ namespace Orion.Server.Users.Repositories
             return new ServerResult(new OperationInformation<AuthenticationMessages>(Statuses.SUCCEEDED, AuthenticationMessages.VALID_CREDENTIALS, "Valid credentials"), user);
         }
 
-        public async Task<int> UpdateUser(UserInformation newUserInformation)
+        public async Task<bool> UpdateUser(UserInformation updatedUserInformation)
         {
-            _database.Users.Update(new User()
-            {
-                UserId = newUserInformation.UserId,
-                Username = newUserInformation.Username,
-                PasswordHash = _hashingService.Hash(Encoding.UTF8.GetBytes(newUserInformation.Password)),
-                Role = newUserInformation.Role
-            });
+            var user = await _database.Users
+                .Where(user => user.UserId == updatedUserInformation.UserId)
+                .AsTracking()
+                .SingleOrDefaultAsync();
 
-            return await _database.SaveChangesAsync();
+            user.UserId = updatedUserInformation.UserId;
+            user.Username = updatedUserInformation.Username;
+            
+            user.PasswordHash = !string.IsNullOrEmpty(updatedUserInformation.Password)
+                ? _hashingService.Hash(Encoding.UTF8.GetBytes(updatedUserInformation.Password))
+                : user.PasswordHash;
+
+            user.Role = updatedUserInformation.Role;
+
+            return await _database.SaveChangesAsync() > 0;
         }
 
         public async Task<UserInformation?> GetUserInformation(Guid userId)
@@ -214,6 +221,17 @@ namespace Orion.Server.Users.Repositories
                 .ToListAsync();
 
             return users;
+        }
+
+        public async Task<bool> DeleteUserById(Guid id)
+        {
+            var user = await _database.Users
+                .Where(user => user.UserId == id)
+                .SingleAsync();
+
+            _database.Users.Remove(user);
+
+            return await _database.SaveChangesAsync() > 0;
         }
     }
 }
