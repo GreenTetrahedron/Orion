@@ -21,7 +21,7 @@ namespace Orion.Server.Users.Repositories
 
         public Task<List<UserDTO>> GetAllUsers();
 
-        public Task<ServerResult<GetUserMessages>> GetUserProfileByUsername(string username);
+        public Task<ServerTransmission> GetUserProfileByUsername(string username);
 
         public Task<Roles?> GetRoleByUserId(Guid userId);
 

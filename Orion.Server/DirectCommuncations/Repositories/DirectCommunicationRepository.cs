@@ -56,7 +56,7 @@ namespace Orion.Server.DirectCommunications.Repositories
                 .NewSuccessfulResponseServerTransmission("NewDirectCommunicationResult", DirectCommunicationMessages.DIRECT_COMMUNICATION_CREATION_SUCCEEDED)
                 .AddResponseOperationMessage("New direct communication created...")
                 .AddResponseAffectedUser(newDirectCommunication.SenderId)
-                .AddPublish("NewDirectCommunication", (DirectCommunicationDTO)directCommunication, newDirectCommunication.ReceiverId);
+                .AddPublish("NewDirectCommunication", (DirectCommunicationDTO)directCommunication, [newDirectCommunication.ReceiverId, newDirectCommunication.SenderId]);
         }
 
         public async Task<DirectCommunicationDTO?> GetDirectCommunicationById(Guid id)

@@ -48,7 +48,11 @@ namespace Orion.Client.App.DirectCommunications.Views
 
         private async void FindUserByName(string username, Action<Guid> onCompletedSuccessfully)
         {
+            if (username == App.Current.CurrentUser.UserProfile.Username)
+                return;
+
             var subscriptable = await _userService.GetUserByUsername(username);
+            
             subscriptable.Subscribe(result =>
             {
                 if (result.OperationInformation.OperationMessageCode != GetUserMessages.USER_FOUND)
