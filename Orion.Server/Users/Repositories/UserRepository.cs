@@ -115,7 +115,7 @@ namespace Orion.Server.Users.Repositories
                 .SingleOrDefaultAsync();
         }
 
-        public async Task<ServerResult<GetUserMessages>> GetUserProfileByUsername(string username)
+        public async Task<ServerTransmission> GetUserProfileByUsername(string username)
         {
             var user = await _database.Users
                 .Where(user => user.Username == username)
@@ -130,13 +130,9 @@ namespace Orion.Server.Users.Repositories
                 ? ServerTransmissionService
                     .NewSuccessfulResponseServerTransmission("GetUserByUsernameResult", GetUserMessages.USER_NOT_FOUND)
                     .AddResponseOperationMessage($"No user found with username: {username}")
-                    .Response
-                    .ServerResult
                 : ServerTransmissionService
                     .NewSuccessfulResponseServerTransmission("GetUserByUsernameResult", GetUserMessages.USER_FOUND, user)
-                    .AddResponseOperationMessage($"User with username: {username} was found")
-                    .Response
-                    .ServerResult;
+                    .AddResponseOperationMessage($"User with username: {username} was found");
         }
 
         public async Task<Roles?> GetRoleByUserId(Guid userId)
@@ -226,10 +222,18 @@ namespace Orion.Server.Users.Repositories
         public async Task<bool> DeleteUserById(Guid id)
         {
             var user = await _database.Users
+                .Include(user => user.DirectCommunications)
+                .ThenInclude(directCommunication => directCommunication.Messages)
                 .Where(user => user.UserId == id)
                 .SingleAsync();
 
-            _database.Users.Remove(user);
+            user.DirectCommunications.ForEach(directCommunication =>
+            {
+                directCommunication.Messages.Clear();
+                _database.Remove(directCommunication);
+            });
+
+            _database.Remove(user);
 
             return await _database.SaveChangesAsync() > 0;
         }

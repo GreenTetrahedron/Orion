@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.UI.Dispatching;
+using Orion.Models.ServerTransmissions.Results;
 using Orion.Models.ServerTransmissions.Results.Messages;
 using Orion.Models.UserModels;
 using Orion.Server.App.Groups.Models;
@@ -40,8 +41,9 @@ namespace Orion.Server.App.Groups.ViewModels
         {
             _dispatcherQueue.TryEnqueue(async () =>
             {
-                var result = await App.Current.ConfigurationService.GetInstanceOfType<IUserRepository>()
-                    .GetUserProfileByUsername(username);
+                var result = (ServerResult<GetUserMessages>)(await App.Current.ConfigurationService.GetInstanceOfType<IUserRepository>()
+                    .GetUserProfileByUsername(username))
+                    .Response.ServerResult;
 
                 if (result.OperationInformation.OperationMessageCode == GetUserMessages.USER_NOT_FOUND)
                 {

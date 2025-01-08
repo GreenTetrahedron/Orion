@@ -9,13 +9,8 @@
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <Grid Background="#fff">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="*" />
-        </Grid.ColumnDefinitions>
-
+    <StackPanel>
         <TextBox x:Name="otherUserNameTextEntry" />
         <Button Click="AddDirectCommunication">Add Direct Communication</Button>
-    </Grid>
+    </StackPanel>
 </Page>
