@@ -43,7 +43,7 @@ namespace Orion.Server.App.Groups.Views
 
         private void OnDeleteGroup(object sender, RoutedEventArgs e)
         {
-            // Do something
+            Model.DeleteGroupById((Guid)((Button)sender).Tag);
         }
     }
 }

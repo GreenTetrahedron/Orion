@@ -15,6 +15,8 @@ namespace Orion.Server.Groups.Repositories
     {
         public Task<bool> AddGroup(GroupInformation newGroupInformation);
 
+        public Task<bool> DeleteGroupById(Guid id);
+
         public Task<GroupDTO?> GetGroupById(Guid id);
 
         public Task<List<GroupDTO>> GetAllGroups();

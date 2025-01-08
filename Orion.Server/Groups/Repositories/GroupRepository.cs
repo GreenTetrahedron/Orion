@@ -55,6 +55,21 @@ namespace Orion.Server.Groups.Repositories
             return await _database.SaveChangesAsync() > 0;
         }
 
+        public async Task<bool> DeleteGroupById(Guid id)
+        {
+            var group = await _database.Groups
+                .Include(group => group.Messages)
+                .Where(group => group.GroupId == id)
+                .SingleOrDefaultAsync();
+
+            if (group == null)
+                return false;
+
+            _database.Groups.Remove(group);
+
+            return await _database.SaveChangesAsync() > 0;
+        }
+
         public async Task<List<GroupDTO>> GetAllGroups()
         {
             return await _database.Groups

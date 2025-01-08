@@ -138,5 +138,19 @@ namespace Orion.Server.App.Groups.ViewModels
 
             HideEditGroupForm = true;
         }
+
+		public void DeleteGroupById(Guid groupId)
+		{
+			_dispatcherQueue.TryEnqueue(async () =>
+			{
+				var result = await App.Current.ConfigurationService.GetInstanceOfType<IGroupRepository>()
+					.DeleteGroupById(groupId);
+
+				if (result == false)
+					return;
+
+				Groups.Remove(Groups.First(group => group.GroupId ==  groupId));
+			});
+		}
     }
 }
