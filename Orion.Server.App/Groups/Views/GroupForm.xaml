@@ -23,11 +23,11 @@
     
     <StackPanel>
         <TextBlock Text="Group name" />
-        <TextBox x:Name="groupNameTextEntry" Text="{x:Bind Model.Group.GroupName, Mode=TwoWay}" />
+        <TextBox x:Name="groupNameTextEntry" Text="{x:Bind Group.GroupName, Mode=TwoWay}" />
 
         <TextBlock Text="Members" />
 
-        <ListView ItemsSource="{x:Bind Model.Group.MemberProfiles, Mode=OneWay}">
+        <ListView ItemsSource="{x:Bind Group.MemberProfiles, Mode=OneWay}">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
                     <StackPanel />
@@ -38,6 +38,8 @@
                 <DataTemplate x:DataType="usermodel:UserProfile">
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="{x:Bind Username}" />
+
+                        <Button Click="OnRemoveMember" Tag="{x:Bind UserId, Mode=OneWay}">Remove</Button>
                     </StackPanel>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>

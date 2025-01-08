@@ -27,11 +27,11 @@ namespace Orion.Server.Groups.Repositories
             _database = database;
         }
 
-        public async Task<bool> AddGroup(GroupInformation groupInformation)
+        public async Task<bool> AddGroup(GroupInformation newGroupInformation)
         {
             List<User> members = new();
 
-            foreach(var memberProfile in groupInformation.MemberProfiles)
+            foreach(var memberProfile in newGroupInformation.MemberProfiles)
             {
                 try
                 {
@@ -46,7 +46,7 @@ namespace Orion.Server.Groups.Repositories
             Group group = new Group()
             {
                 GroupId = Guid.NewGuid(),
-                GroupName = groupInformation.Name,
+                GroupName = newGroupInformation.Name,
                 Members = members
             };
 
@@ -114,6 +114,35 @@ namespace Orion.Server.Groups.Repositories
                 : ServerTransmissionService
                     .NewSuccessfulResponseServerTransmission("GetGroupMessagesByGroupIdResult", GetMessageMessages.SUCCESSFULLY_RETRIEVED_MESSAGE, messages)
                     .AddResponseOperationMessage("Messages were successfully retrieved");
+        }
+
+        public async Task<bool> UpdateGroup(GroupInformation newGroupInformation)
+        {
+            var group = await _database.Groups
+                .Include(group => group.Members)
+                .FirstOrDefaultAsync(group => group.GroupId == newGroupInformation.GroupId);
+
+            if (group == null)
+                return false;
+
+            group.GroupName = newGroupInformation.Name;
+
+            group.Members = new();
+            group.Members.Clear();
+
+            foreach (var member in newGroupInformation.MemberProfiles)
+            {
+                var user = await _database.Users.FindAsync(member.UserId);
+
+                if (user == null)
+                    throw new Exception($"User {member.Username} with id {member.UserId} not found...");
+
+                group.Members.Add(user);
+            }
+
+            _database.Update(group);
+
+            return await _database.SaveChangesAsync() > 0;
         }
     }
 }
