@@ -13,11 +13,15 @@ namespace Orion.Server.Groups.Repositories
 {
     public interface IGroupRepository
     {
-        public Task<bool> AddGroup(GroupInformation groupInformation);
+        public Task<GroupDTO?> AddGroup(GroupInformation newGroupInformation);
+
+        public Task<bool> DeleteGroupById(Guid id);
 
         public Task<GroupDTO?> GetGroupById(Guid id);
 
         public Task<List<GroupDTO>> GetAllGroups();
+
+        public Task<bool> UpdateGroup(GroupInformation newGroupInformation);
 
         public Task<ServerTransmission?> GetGroupMessagesByGroupId(GroupId id);
 

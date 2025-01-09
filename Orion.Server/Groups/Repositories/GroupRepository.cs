@@ -6,6 +6,7 @@ using Orion.Models.MessageModels;
 using Orion.Models.ServerTransmissions;
 using Orion.Models.ServerTransmissions.Results;
 using Orion.Models.ServerTransmissions.Results.Messages;
+using Orion.Models.UserModels;
 using Orion.Server.DataLayer;
 using Orion.Server.Exceptions;
 using Orion.Server.ServerTransmissionServices;
@@ -27,11 +28,11 @@ namespace Orion.Server.Groups.Repositories
             _database = database;
         }
 
-        public async Task<bool> AddGroup(GroupInformation groupInformation)
+        public async Task<GroupDTO?> AddGroup(GroupInformation newGroupInformation)
         {
             List<User> members = new();
 
-            foreach(var memberProfile in groupInformation.MemberProfiles)
+            foreach(var memberProfile in newGroupInformation.MemberProfiles)
             {
                 try
                 {
@@ -46,11 +47,33 @@ namespace Orion.Server.Groups.Repositories
             Group group = new Group()
             {
                 GroupId = Guid.NewGuid(),
-                GroupName = groupInformation.Name,
+                GroupName = newGroupInformation.Name,
                 Members = members
             };
 
             await _database.Groups.AddAsync(group);
+
+            return await _database.SaveChangesAsync() > 0
+                ? new GroupDTO()
+                {
+                    GroupId = group.GroupId,
+                    Name = group.GroupName,
+                    MemberProfiles = group.Members.Select(member => new UserProfile { UserId = member.UserId, Username = member.Username }).ToList()
+                }
+                : null;
+        }
+
+        public async Task<bool> DeleteGroupById(Guid id)
+        {
+            var group = await _database.Groups
+                .Include(group => group.Messages)
+                .Where(group => group.GroupId == id)
+                .SingleOrDefaultAsync();
+
+            if (group == null)
+                return false;
+
+            _database.Groups.Remove(group);
 
             return await _database.SaveChangesAsync() > 0;
         }
@@ -114,6 +137,35 @@ namespace Orion.Server.Groups.Repositories
                 : ServerTransmissionService
                     .NewSuccessfulResponseServerTransmission("GetGroupMessagesByGroupIdResult", GetMessageMessages.SUCCESSFULLY_RETRIEVED_MESSAGE, messages)
                     .AddResponseOperationMessage("Messages were successfully retrieved");
+        }
+
+        public async Task<bool> UpdateGroup(GroupInformation newGroupInformation)
+        {
+            var group = await _database.Groups
+                .Include(group => group.Members)
+                .FirstOrDefaultAsync(group => group.GroupId == newGroupInformation.GroupId);
+
+            if (group == null)
+                return false;
+
+            group.GroupName = newGroupInformation.Name;
+
+            group.Members = new();
+            group.Members.Clear();
+
+            foreach (var member in newGroupInformation.MemberProfiles)
+            {
+                var user = await _database.Users.FindAsync(member.UserId);
+
+                if (user == null)
+                    throw new Exception($"User {member.Username} with id {member.UserId} not found...");
+
+                group.Members.Add(user);
+            }
+
+            _database.Update(group);
+
+            return await _database.SaveChangesAsync() > 0;
         }
     }
 }

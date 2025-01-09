@@ -24,16 +24,23 @@ namespace Orion.Server.App.Groups.ViewModels
 		}
 
 		[ObservableProperty]
-		private bool _hideGroupForm;
+		private Group _group;
 
-		private DispatcherQueue _dispatcherQueue;
+		[ObservableProperty]
+		private bool _hideAddGroupForm;
+
+        [ObservableProperty]
+        private bool _hideEditGroupForm;
+
+        private DispatcherQueue _dispatcherQueue;
 
 		public GroupsListViewModel()
 		{
 			Groups = new();
-			_hideGroupForm = true;
+			HideAddGroupForm = true;
+            HideEditGroupForm = true;
 
-			_dispatcherQueue = DispatcherQueue.GetForCurrentThread();
+            _dispatcherQueue = DispatcherQueue.GetForCurrentThread();
 			InitialiseGroups();
 		}
 
@@ -65,7 +72,7 @@ namespace Orion.Server.App.Groups.ViewModels
 
 		public async Task AddGroup(Group group)
 		{
-            bool groupAdded = await App.Current.ConfigurationService.GetInstanceOfType<IGroupRepository>()
+            var addedGroup = await App.Current.ConfigurationService.GetInstanceOfType<IGroupRepository>()
                 .AddGroup(new Orion.Models.GroupModels.GroupInformation()
                 {
                     MemberProfiles = group.MemberProfiles.Select(user => new Orion.Models.UserModels.UserProfile()
@@ -76,12 +83,77 @@ namespace Orion.Server.App.Groups.ViewModels
                     Name = group.GroupName
                 });
 
-			if (!groupAdded)
+			if (addedGroup == null)
 				return;
-			
+
+			group.GroupId = addedGroup.GroupId;
+
 			Groups.Add(group);
 
-			HideGroupForm = true;
+
+			HideAddGroupForm = true;
         }
-	}
+
+		public void OnEditGroup(Guid groupId)
+		{
+			_dispatcherQueue.TryEnqueue(async () =>
+			{
+				HideEditGroupForm = false;
+
+				var group = await App.Current.ConfigurationService.GetInstanceOfType<IGroupRepository>()
+					.GetGroupById(groupId);
+
+				if (group == null) return;
+
+				Group = new Group()
+				{
+					GroupId = group.GroupId,
+					GroupName = group.Name
+				};
+
+
+				group.MemberProfiles.Select(member => new Users.Models.UserProfile()
+				{
+					UserId = member.UserId,
+					Username = member.Username
+				}).ToList().ForEach(Group.MemberProfiles.Add);
+			});
+        }
+
+        public async Task UpdateGroup(Group newGroup)
+        {
+            bool groupUpdated = await App.Current.ConfigurationService.GetInstanceOfType<IGroupRepository>()
+                .UpdateGroup(new Orion.Models.GroupModels.GroupInformation()
+                {
+					GroupId = newGroup.GroupId,
+                    MemberProfiles = newGroup.MemberProfiles.Select(user => new Orion.Models.UserModels.UserProfile()
+                    {
+                        UserId = user.UserId,
+                        Username = user.Username
+                    }).ToList(),
+                    Name = newGroup.GroupName
+                });
+
+            if (!groupUpdated)
+                return;
+
+            Groups[Groups.IndexOf(Groups.First(group => group.GroupId == newGroup.GroupId))] = newGroup;
+
+            HideEditGroupForm = true;
+        }
+
+		public void DeleteGroupById(Guid groupId)
+		{
+			_dispatcherQueue.TryEnqueue(async () =>
+			{
+				var result = await App.Current.ConfigurationService.GetInstanceOfType<IGroupRepository>()
+					.DeleteGroupById(groupId);
+
+				if (result == false)
+					return;
+
+				Groups.Remove(Groups.First(group => group.GroupId ==  groupId));
+			});
+		}
+    }
 }
