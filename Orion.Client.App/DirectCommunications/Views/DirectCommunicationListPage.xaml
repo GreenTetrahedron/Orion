@@ -16,6 +16,7 @@
     <Page.Resources>
         <converters:BoolToVisibilityConverter x:Name="BoolToVisibilityConverter" />
         <converters:UsernameToAbbreviationConverter x:Name="UsernameToAbbreviationConverter" />
+        <converters:StringPrefixConverter x:Name="StringPrefixConverter" />
 
 
         <Style TargetType="TextBlock" BasedOn="{StaticResource DefaultText}" x:Key="UserProfilePhoto">
@@ -64,7 +65,7 @@
             <Setter Property="ItemTemplate">
                 <Setter.Value>
                     <DataTemplate x:DataType="model:DirectCommunication">
-                        <TextBlock Style="{StaticResource DirectCommunicationProfileThing}" Text="{x:Bind ReceiverProfile.Username, Mode=OneWay}" />
+                        <TextBlock Style="{StaticResource DirectCommunicationProfileThing}" Text="{x:Bind ReceiverProfile.Username, Converter={StaticResource StringPrefixConverter}, ConverterParameter='15', Mode=OneWay}" />
                     </DataTemplate>
                 </Setter.Value>
             </Setter>

@@ -86,9 +86,11 @@
 
             <Setter Property="FontSize" Value="12" />
 
+            <Setter Property="PlaceholderForeground" Value="#bbb" />
+
             <Setter Property="Foreground">
                 <Setter.Value>
-                    <SolidColorBrush Color="#bbb" />
+                    <SolidColorBrush Color="#c5c5c5" />
                 </Setter.Value>
             </Setter>
         </Style>
@@ -187,12 +189,12 @@
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
 
-                <TextBox Grid.Row="1" Grid.Column="0" x:Name="messageEntryTextEntry" Style="{StaticResource MessageEntryTextBox}" Text="{x:Bind Model.SendingMessageContent, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                <TextBox Grid.Row="1" Grid.Column="0" x:Name="messageEntryTextEntry" Style="{StaticResource MessageEntryTextBox}" PlaceholderText="Type a message..." Text="{x:Bind Model.SendingMessageContent, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
                     <TextBox.Resources>
                         <SolidColorBrush x:Key="TextControlBackgroundPointerOver" Color="#303030" />
                         <SolidColorBrush x:Key="TextControlBackgroundFocused" Color="#303030" />
-                        <SolidColorBrush x:Key="TextControlForegroundPointerOver" Color="#bbb" />
-                        <SolidColorBrush x:Key="TextControlForegroundFocused" Color="#bbb" />
+                        <SolidColorBrush x:Key="TextControlForegroundPointerOver" Color="#c5c5c5" />
+                        <SolidColorBrush x:Key="TextControlForegroundFocused" Color="#c5c5c5" />
                         <SolidColorBrush x:Key="TextControlForegroundDisabled" Color="#bbb" />
                     </TextBox.Resources>
                 </TextBox>

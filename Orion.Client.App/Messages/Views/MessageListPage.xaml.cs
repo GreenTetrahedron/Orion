@@ -56,7 +56,7 @@ namespace Orion.Client.App.Messages.Views
             if (!Model.SendingMessageContentLengthValid)
                 return;
 
-            OnSendMessage.Invoke(Model.SendingMessageContent);
+            OnSendMessage.Invoke(Model.SendingMessageContent.Trim());
 
             messageEntryTextEntry.Text = "";
         }

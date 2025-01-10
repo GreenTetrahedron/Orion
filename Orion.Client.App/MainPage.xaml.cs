@@ -47,6 +47,8 @@ namespace Orion.Client.App
             {
                 NavigateToGroupPage();
             };
+
+            GroupListViewModel.Selected = GroupListViewModel.Items[0];
         }
 
         private void NavigateToGroupPage()

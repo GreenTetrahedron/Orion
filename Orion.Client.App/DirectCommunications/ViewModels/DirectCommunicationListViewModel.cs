@@ -13,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reflection;
 
 namespace Orion.Client.App.DirectCommunications.ViewModels
 {
@@ -34,6 +35,9 @@ namespace Orion.Client.App.DirectCommunications.ViewModels
             MessageListViewModel = new();
 
             OnSelectedChanged += StartToPopulateMessages;
+            
+            if (Items.Count > 0)
+                Selected = Items[0];
         }
 
         private async void StartToPopulateMessages(DirectCommunication directCommunication)

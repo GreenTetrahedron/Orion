@@ -10,7 +10,7 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Grid>
-        <TextBlock>
+        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center">
             It seems like this page is still being developed! Hopefully it's done soon.
         </TextBlock>
     </Grid>
