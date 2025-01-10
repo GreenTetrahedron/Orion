@@ -15,9 +15,8 @@
         <converters:BoolToVisibilityConverter x:Name="BoolToVisibilityConverter" />
 
         <Style TargetType="Grid" x:Key="MainContentGrid">
-            <Setter Property="CornerRadius" Value="8 0 0 0" />
-            <Setter Property="Background" Value="Transparent" />
             <Setter Property="Padding" Value="0" />
+            <Setter Property="Background" Value="#262626" />
         </Style>
 
         <Style TargetType="TextBlock" BasedOn="{StaticResource DefaultText}" x:Key="DirectCommunicationProfileThing">
@@ -34,7 +33,6 @@
 
         <Style TargetType="StackPanel" x:Key="Header">
             <Setter Property="Orientation" Value="Horizontal" />
-            <Setter Property="Background" Value="#262626" />
             <Setter Property="BorderBrush" Value="#404040" />
             <Setter Property="BorderThickness" Value="0 0 0 0.5" />
             <Setter Property="Height" Value="50" />
