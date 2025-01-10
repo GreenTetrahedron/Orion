@@ -15,10 +15,23 @@
     <Page.Resources>
         <converters:DateTimeToStringConverter x:Name="DateTimeToStringConverter" />
         <converters:BoolToVisibilityConverter x:Name="BoolToVisibilityConverter" />
+        <converters:UsernameToAbbreviationConverter x:Name="UsernameToAbbreviationConverter" />
 
         <Style TargetType="StackPanel" x:Key="MessageUserProfile">
             <Setter Property="Orientation" Value="Horizontal" />
             <Setter Property="Spacing" Value="5" />
+        </Style>
+        <Style TargetType="TextBlock" BasedOn="{StaticResource DefaultText}" x:Key="MessageProfilePhoto">
+            <Setter Property="FontSize" Value="17" />
+            <Setter Property="TextAlignment" Value="Center" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+        <Style TargetType="Grid" x:Key="MessageProfilePhotoContainer">
+            <Setter Property="VerticalAlignment" Value="Top" />
+            <Setter Property="Width" Value="40" />
+            <Setter Property="Height" Value="40" />
+            <Setter Property="Background" Value="#303030" />
+            <Setter Property="CornerRadius" Value="20" />
         </Style>
         <Style TargetType="TextBlock" BasedOn="{StaticResource DefaultText}" x:Key="MessageUserProfileUsername">
             <Setter Property="FontSize" Value="14" />
@@ -34,15 +47,18 @@
         <Style TargetType="TextBlock" BasedOn="{StaticResource DefaultText}" x:Key="MessageContent">
             <Setter Property="Foreground" Value="#ccc" />
             <Setter Property="FontSize" Value="12" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
         </Style>
 
-        <Style TargetType="StackPanel" x:Key="MessageContainer">
-            <Setter Property="Orientation" Value="Horizontal" />
-            <Setter Property="Spacing" Value="10" />
+        <Style TargetType="Grid" x:Key="MessageContainer">
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="ColumnSpacing" Value="15" />
         </Style>
         <Style TargetType="StackPanel" x:Key="Message">
             <Setter Property="Orientation" Value="Vertical" />
             <Setter Property="Spacing" Value="5" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
         </Style>
 
         <Style TargetType="Grid" x:Key="MessageEntryBox">
@@ -80,14 +96,17 @@
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
                 <DataTemplate x:DataType="model:Message">
-                    <StackPanel Style="{StaticResource MessageContainer}">
-                        <Ellipse Width="40" Height="40">
-                            <Ellipse.Fill>
-                                <ImageBrush Stretch="UniformToFill" ImageSource="/Assets/tim-stief-YFFGkE3y4F8-unsplash.jpg" />
-                            </Ellipse.Fill>
-                        </Ellipse>
+                    <Grid Style="{StaticResource MessageContainer}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
                         
-                        <StackPanel Style="{StaticResource Message}">
+                        <Grid Grid.Column="0" Style="{StaticResource MessageProfilePhotoContainer}">
+                            <TextBlock Style="{StaticResource MessageProfilePhoto}" Text="{x:Bind SenderProfile.Username, Converter={StaticResource UsernameToAbbreviationConverter}}" />
+                        </Grid>
+
+                        <StackPanel Grid.Column="1" Style="{StaticResource Message}">
                             <StackPanel Style="{StaticResource MessageUserProfile}" >
                                 <TextBlock Style="{StaticResource MessageUserProfileUsername}" Text="{x:Bind SenderProfile.Username, Mode=OneWay}" />
                                 <TextBlock Style="{StaticResource MessageUserProfileDate}" Text="{x:Bind LastUpdated, Mode=OneWay, Converter={StaticResource DateTimeToStringConverter}, ConverterParameter='dd/mm/yyyy HH:mm'}" />
@@ -95,7 +114,7 @@
 
                             <TextBlock Style="{StaticResource MessageContent}" Text="{x:Bind Content, Mode=OneWay}" />
                         </StackPanel>
-                    </StackPanel>
+                    </Grid>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ListView>

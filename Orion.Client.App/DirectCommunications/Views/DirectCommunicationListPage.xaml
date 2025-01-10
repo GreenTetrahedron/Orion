@@ -15,6 +15,20 @@
 
     <Page.Resources>
         <converters:BoolToVisibilityConverter x:Name="BoolToVisibilityConverter" />
+        <converters:UsernameToAbbreviationConverter x:Name="UsernameToAbbreviationConverter" />
+
+
+        <Style TargetType="TextBlock" BasedOn="{StaticResource DefaultText}" x:Key="UserProfilePhoto">
+            <Setter Property="FontSize" Value="15" />
+            <Setter Property="TextAlignment" Value="Center" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+        <Style TargetType="Grid" x:Key="UserProfilePhotoContainer">
+            <Setter Property="Width" Value="37" />
+            <Setter Property="Height" Value="37" />
+            <Setter Property="Background" Value="#303030" />
+            <Setter Property="CornerRadius" Value="20" />
+        </Style>
 
         <Style TargetType="Grid" x:Key="MainContentGrid">
             <Setter Property="CornerRadius" Value="8 0 0 0" />
@@ -76,12 +90,10 @@
         <ListView Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" Style="{StaticResource ListView}" ItemsSource="{x:Bind Model.Items, Mode=OneWay}" SelectedItem="{x:Bind Model.Selected, Mode=TwoWay}" />
 
         <StackPanel Grid.Column="1" Grid.Row="0" Style="{StaticResource Header}" Visibility="{x:Bind Path=Model.HasSelected, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=ffasdf, Mode=OneWay}">
-            <Ellipse Height="30" Width="30">
-                <Ellipse.Fill>
-                    <ImageBrush Stretch="UniformToFill" ImageSource="/Assets/zach-lezniewicz-BH2QtVjBedg-unsplash (1).jpg" />
-                </Ellipse.Fill>
-            </Ellipse>
-            
+            <Grid Style="{StaticResource UserProfilePhotoContainer}">
+                <TextBlock Style="{StaticResource UserProfilePhoto}" Text="{x:Bind Model.Selected.ReceiverProfile.Username, Converter={StaticResource UsernameToAbbreviationConverter}, Mode=OneWay}" />
+            </Grid>
+
             <TextBlock Style="{StaticResource UserProfileHeader}" Text="{x:Bind Model.Selected.ReceiverProfile.Username, Mode=OneWay}" />
         </StackPanel>
 
