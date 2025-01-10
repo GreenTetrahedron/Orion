@@ -6,6 +6,8 @@ using Orion.Client.Users.Services;
 using Orion.Models.ServerTransmissions.Results.Messages;
 using Orion.Models.UserModels;
 using Orion.Models.DirectCommunicationModels;
+using Orion.Models.ServerTransmissions.Results;
+using System.Linq;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -19,6 +21,8 @@ namespace Orion.Client.App.DirectCommunications.Views
     {
         private readonly IDirectCommunicationService _directCommunicationService;
         private readonly IUserService _userService;
+
+        public event Action OnAddDirectCommunicationSuccessful = delegate { };
 
         public AddDirectCommunicationPage()
         {
@@ -41,14 +45,16 @@ namespace Orion.Client.App.DirectCommunications.Views
 
                 subscriptable.Subscribe(result =>
                 {
-                    // Do something
+                    if (result.OperationInformation.OperationMessageCode == DirectCommunicationMessages.DIRECT_COMMUNICATION_CREATION_SUCCEEDED)
+                        OnAddDirectCommunicationSuccessful();
                 });
             });
         }
 
         private async void FindUserByName(string username, Action<Guid> onCompletedSuccessfully)
         {
-            if (username == App.Current.CurrentUser.UserProfile.Username)
+            if (username == App.Current.CurrentUser.UserProfile.Username
+                || App.Current.CurrentUser.DirectCommunications.Any(directCommunication => directCommunication.ReceiverProfile.Username == username))
                 return;
 
             var subscriptable = await _userService.GetUserByUsername(username);

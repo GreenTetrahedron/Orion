@@ -16,6 +16,12 @@ namespace Orion.Client.App.DirectCommunications.Views
         {
             InitializeComponent();
             App.Current.CurrentUser.DirectCommunicationListViewModel = Model;
+
+            AddDirectCommunicationPopup.KeyDown += (a, b) =>
+            {
+                if(b.Key == Windows.System.VirtualKey.Escape && AddDirectCommunicationPopup.IsOpen);
+                    AddDirectCommunicationPopup.IsOpen = false;
+            };
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
@@ -27,6 +33,16 @@ namespace Orion.Client.App.DirectCommunications.Views
         {
             Model.Selected = null;
             App.Current.CurrentUser.DirectCommunicationListViewModel = Model;
+        }
+
+        private void OnAddDirectCommunicationSuccessful()
+        {
+            if (AddDirectCommunicationPopup.IsOpen) AddDirectCommunicationPopup.IsOpen = false;
+        }
+
+        private void OnAddDirectCommunication(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+        {
+            if (!AddDirectCommunicationPopup.IsOpen) AddDirectCommunicationPopup.IsOpen = true;
         }
     }
 }

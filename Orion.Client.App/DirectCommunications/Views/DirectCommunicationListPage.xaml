@@ -70,6 +70,23 @@
                 </Setter.Value>
             </Setter>
         </Style>
+
+        <Style TargetType="Grid" x:Key="ChatHeaderContainer">
+            <Setter Property="Padding" Value="20 10 10 10" />
+            
+        </Style>
+
+        <Style TargetType="Button" x:Key="AddDirectCommunicationButton" BasedOn="{StaticResource DefaultButton}">
+            <Setter Property="Width" Value="30" />
+            <Setter Property="Height" Value="30" />
+            <Setter Property="CornerRadius" Value="2" />
+            <Setter Property="Padding" Value="0" />
+        </Style>
+        <Style TargetType="TextBlock" x:Key="ChatHeaderText" BasedOn="{StaticResource DefaultText}">
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="FontWeight" Value="Medium" />
+            <Setter Property="FontSize" Value="13" />
+        </Style>
     </Page.Resources>
     
     <Page.DataContext>
@@ -82,20 +99,43 @@
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <ListView Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" Style="{StaticResource ListView}" ItemsSource="{x:Bind Model.Items, Mode=OneWay}" SelectedItem="{x:Bind Model.Selected, Mode=TwoWay}" />
-
-        <StackPanel Grid.Column="1" Grid.Row="0" Style="{StaticResource Header}" Visibility="{x:Bind Path=Model.HasSelected, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=ffasdf, Mode=OneWay}">
-            <Grid Style="{StaticResource UserProfilePhotoContainer}">
-                <TextBlock Style="{StaticResource UserProfilePhoto}" Text="{x:Bind Model.Selected.ReceiverProfile.Username, Converter={StaticResource UsernameToAbbreviationConverter}, Mode=OneWay}" />
+        <Popup x:Name="AddDirectCommunicationPopup" DesiredPlacement="RightEdgeAlignedTop" IsLightDismissEnabled="True">
+            <local:AddDirectCommunicationPage OnAddDirectCommunicationSuccessful="OnAddDirectCommunicationSuccessful" />
+        </Popup>
+        
+        <StackPanel>
+            <Grid Style="{StaticResource ChatHeaderContainer}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="auto" />
+                </Grid.ColumnDefinitions>
+                
+                <TextBlock Grid.Column="0" Style="{StaticResource ChatHeaderText}" Text="Direct Messages" />
+                <Button Grid.Column="1" Content="+" Style="{StaticResource AddDirectCommunicationButton}" Click="OnAddDirectCommunication" />
             </Grid>
+            <Rectangle HorizontalAlignment="Stretch" Height="0.5" Fill="#ccc" />
 
-            <TextBlock Style="{StaticResource UserProfileHeader}" Text="{x:Bind Model.Selected.ReceiverProfile.Username, Mode=OneWay}" />
+            <ListView Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" Style="{StaticResource ListView}" ItemsSource="{x:Bind Model.Items, Mode=OneWay}" SelectedItem="{x:Bind Model.Selected, Mode=TwoWay}" />
         </StackPanel>
 
-        <messageviews:MessageListPage Visibility="{x:Bind Path=Model.HasSelected, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=true, Mode=OneWay}" Grid.Column="1" Grid.Row="1" Model="{x:Bind Model.MessageListViewModel, Mode=OneWay}" OnSendMessage="{x:Bind Model.SendMessage}" />
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            
+            <StackPanel Style="{StaticResource Header}" Visibility="{x:Bind Path=Model.HasSelected, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=ffasdf, Mode=OneWay}">
+                <Grid Style="{StaticResource UserProfilePhotoContainer}">
+                    <TextBlock Style="{StaticResource UserProfilePhoto}" Text="{x:Bind Model.Selected.ReceiverProfile.Username, Converter={StaticResource UsernameToAbbreviationConverter}, Mode=OneWay}" />
+                </Grid>
+
+                <TextBlock Style="{StaticResource UserProfileHeader}" Text="{x:Bind Model.Selected.ReceiverProfile.Username, Mode=OneWay}" />
+            </StackPanel>
+
+            <messageviews:MessageListPage Visibility="{x:Bind Path=Model.HasSelected, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=true, Mode=OneWay}" Grid.Row="1" Model="{x:Bind Model.MessageListViewModel, Mode=OneWay}" OnSendMessage="{x:Bind Model.SendMessage}" />
+        </Grid>
     </Grid>
 </Page>
