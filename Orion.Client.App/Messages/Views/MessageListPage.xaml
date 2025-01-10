@@ -16,6 +16,7 @@
         <converters:DateTimeToStringConverter x:Name="DateTimeToStringConverter" />
         <converters:BoolToVisibilityConverter x:Name="BoolToVisibilityConverter" />
         <converters:UsernameToAbbreviationConverter x:Name="UsernameToAbbreviationConverter" />
+        <converters:MessageLengthOverCapToVisibilityConverter x:Name="MessageLengthOverCapToVisibilityConverter" />
 
         <Style TargetType="StackPanel" x:Key="MessageUserProfile">
             <Setter Property="Orientation" Value="Horizontal" />
@@ -48,12 +49,14 @@
             <Setter Property="Foreground" Value="#ccc" />
             <Setter Property="FontSize" Value="12" />
             <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="VerticalAlignment" Value="Top" />
             <Setter Property="HorizontalAlignment" Value="Stretch" />
         </Style>
 
         <Style TargetType="Grid" x:Key="MessageContainer">
             <Setter Property="HorizontalAlignment" Value="Stretch" />
             <Setter Property="ColumnSpacing" Value="15" />
+            <Setter Property="Margin" Value="0 0 0 15" />
         </Style>
         <Style TargetType="StackPanel" x:Key="Message">
             <Setter Property="Orientation" Value="Vertical" />
@@ -63,35 +66,73 @@
 
         <Style TargetType="Grid" x:Key="MessageEntryBox">
             <Setter Property="ColumnSpacing" Value="8" />
+            <Setter Property="RowSpacing" Value="4" />
             <Setter Property="Padding" Value="15 0 15 7" />
         </Style>
         <Style TargetType="TextBox" BasedOn="{StaticResource DefaultTextBox}" x:Key="MessageEntryTextBox">
             <Setter Property="BorderThickness" Value="0" />
-            <Setter Property="CornerRadius" Value="2" />
-            <Setter Property="Padding" Value="10" />
+            <Setter Property="Background" Value="Transparent" />
+
+            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="AcceptsReturn" Value="True" />
+
+            <Setter Property="VerticalAlignment" Value="Stretch" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Margin" Value="0" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+
+            <Setter Property="MaxHeight" Value="50" />
+            <Setter Property="MinHeight" Value="0" />
+
+            <Setter Property="FontSize" Value="12" />
 
             <Setter Property="Foreground">
                 <Setter.Value>
-                    <SolidColorBrush Color="#ccc" />
+                    <SolidColorBrush Color="#bbb" />
                 </Setter.Value>
             </Setter>
         </Style>
+
+        <Style TargetType="Grid" x:Key="MessageEntryTextBoxContainer">
+            <Setter Property="Background" Value="#303030" />
+            <Setter Property="CornerRadius" Value="2" />
+            <Setter Property="Padding" Value="14 12" />
+            <Setter Property="ColumnSpacing" Value="15" />
+
+            <Setter Property="MaxHeight" Value="100" />
+            <Setter Property="MinHeight" Value="40" />
+        </Style>
+
         <Style TargetType="Button" BasedOn="{StaticResource DefaultButton}" x:Key="SendMessageButton">
             <Setter Property="CornerRadius" Value="2" />
             <Setter Property="Padding" Value="12" />
+
+            <Setter Property="Width" Value="40" />
+            <Setter Property="Height" Value="40" />
         </Style>
+
+        <Style TargetType="TextBlock" BasedOn="{StaticResource DefaultText}" x:Key="CounterText">
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="Foreground" Value="#555" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+        <Style TargetType="TextBlock" x:Key="ValidationText" BasedOn="{StaticResource DefaultText}">
+            <Setter Property="Foreground" Value="MediumVioletRed" />
+            <Setter Property="FontSize" Value="10" />
+        </Style>
+
     </Page.Resources>
 
     <Grid Background="#262626" Padding="15">
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
-            <RowDefinition Height="50px" />
+            <RowDefinition Height="auto" />
         </Grid.RowDefinitions>
 
-        <ListView x:Name="messageList" SelectionMode="None" Grid.Row="0" ItemsSource="{x:Bind Model.Messages, Mode=OneWay}">
+        <ListView x:Name="messageList"  SelectionMode="None" Grid.Row="0" ItemsSource="{x:Bind Model.Messages, Mode=OneWay}">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <StackPanel Spacing="25" Padding="0 0 0 50" />
+                    <ItemsStackPanel ItemsUpdatingScrollMode="KeepLastItemInView" Margin="0 0 0 25" />
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
@@ -125,15 +166,46 @@
                 <ColumnDefinition Width="auto" />
             </Grid.ColumnDefinitions>
 
-            <TextBox Grid.Column="0" x:Name="messageEntryTextEntry" Style="{StaticResource MessageEntryTextBox}">
-                <TextBox.Resources>
-                    <SolidColorBrush x:Key="TextControlBackgroundPointerOver" Color="#303030" />
-                    <SolidColorBrush x:Key="TextControlBackgroundFocused" Color="#303030" />
-                </TextBox.Resources>
-            </TextBox>
-            <Button Grid.Column="1" Click="SendMessage" Style="{StaticResource SendMessageButton}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="auto" />
+            </Grid.RowDefinitions>
+
+            <TextBlock Grid.Row="1" Grid.Column="0" Style="{StaticResource ValidationText}" Visibility="{x:Bind Model.SendingMessageContentLengthValid, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                You have exceeded the character limit per message! Reduce the characters in your message to send it.
+            </TextBlock>
+
+            <Grid Style="{StaticResource MessageEntryTextBoxContainer}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="auto" />
+                </Grid.ColumnDefinitions>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <TextBox Grid.Row="1" Grid.Column="0" x:Name="messageEntryTextEntry" Style="{StaticResource MessageEntryTextBox}" Text="{x:Bind Model.SendingMessageContent, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                    <TextBox.Resources>
+                        <SolidColorBrush x:Key="TextControlBackgroundPointerOver" Color="#303030" />
+                        <SolidColorBrush x:Key="TextControlBackgroundFocused" Color="#303030" />
+                        <SolidColorBrush x:Key="TextControlForegroundPointerOver" Color="#bbb" />
+                        <SolidColorBrush x:Key="TextControlForegroundFocused" Color="#bbb" />
+                        <SolidColorBrush x:Key="TextControlForegroundDisabled" Color="#bbb" />
+                    </TextBox.Resources>
+                </TextBox>
+
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Visibility="{x:Bind Path=Model.MessageLength, Mode=OneWay, Converter={StaticResource MessageLengthOverCapToVisibilityConverter}, ConverterParameter='200'}">
+                    <TextBlock Style="{StaticResource CounterText}" Text="{x:Bind Model.MessageLength, Mode=OneWay}" />
+                    <TextBlock Style="{StaticResource CounterText}" Text="/" />
+                    <TextBlock Style="{StaticResource CounterText}" Text="{x:Bind Model.MaxMessageLength, Mode=OneWay}" />
+                </StackPanel>
+            </Grid>
+            
+            <Button Grid.Column="1" Click="SendMessage" Style="{StaticResource SendMessageButton}" IsEnabled="{x:Bind Model.SendingMessageContentLengthValid, Mode=OneWay}">
                 <Button.Resources>
                     <SolidColorBrush x:Key="ButtonBackgroundPointerOver" Color="#2e2e32" />
+                    <SolidColorBrush x:Key="ButtonBackgroundDisabled" Color="#2d2d2d" />
                 </Button.Resources>
                 
                 <Image Stretch="UniformToFill" Source="/Assets/paper-plane-solid.svg" />

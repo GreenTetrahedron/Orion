@@ -14,25 +14,58 @@ using System.Reflection.Metadata.Ecma335;
 
 namespace Orion.Client.App.Messages.ViewModels
 {
-    public class MessageListViewModel : ObservableObject
+    public partial class MessageListViewModel : ObservableObject
     {
-        private ObservableCollection<Message> messages;
+        private ObservableCollection<Message> _messages;
 
         public ObservableCollection<Message> Messages
         {
-            get { return messages; }
+            get { return _messages; }
+            private set
+            {
+                SetProperty(ref _messages, value);
+                _messages.CollectionChanged += (_, _) => OnMessageListChanged.Invoke();
+            }
+        }
+
+        [ObservableProperty]
+        private int _maxMessageLength;
+
+        [ObservableProperty]
+        private int _messageLength;
+
+        [ObservableProperty]
+        private bool _sendingMessageContentLengthValid;
+
+        private string _sendingMessageContent;
+
+        public string SendingMessageContent
+        {
+            get => _sendingMessageContent;
             set
             {
-                SetProperty(ref messages, value);
-                messages.CollectionChanged += (_, _) => OnMessageListChanged.Invoke();
+                SendingMessageContentLengthValid = !(value.Length > MaxMessageLength);
+                MessageLength = value.Length;
+
+                if (!SendingMessageContentLengthValid)
+                {
+                    OnMessageContentTooBig.Invoke();
+                    value = value[..MaxMessageLength];
+                }
+
+
+                SetProperty(ref _sendingMessageContent, value);
             }
         }
 
         public event Action OnMessageListChanged = delegate { };
+        public event Action OnMessageContentTooBig = delegate { };
 
         public MessageListViewModel()
         {
+            MaxMessageLength = 1000;
             Messages = new();
+            SendingMessageContentLengthValid = true;
         }
 
         public void PopulateMessages(ServerResult<GetMessageMessages> result)

@@ -33,7 +33,6 @@ namespace Orion.Client.App.Messages.Views
             {
                 model = value;
                 OnPropertyChanged(nameof(Model));
-                model.OnMessageListChanged += ScrollToBottom;
             }
         }
 
@@ -52,19 +51,12 @@ namespace Orion.Client.App.Messages.Views
             _messageService = App.Current.ConfigurationService.GetSingletonOfType<IMessageService>();
         }
 
-        private void ScrollToBottom()
-        {
-            if (messageList.Items.Count == 0)
-                return;
-
-            messageList.ScrollIntoView(messageList.Items.Count - 1);
-        }
-
         private void SendMessage(object sender, RoutedEventArgs e)
         {
-            var content = messageEntryTextEntry.Text;
+            if (!Model.SendingMessageContentLengthValid)
+                return;
 
-            OnSendMessage.Invoke(content);
+            OnSendMessage.Invoke(Model.SendingMessageContent);
 
             messageEntryTextEntry.Text = "";
         }
