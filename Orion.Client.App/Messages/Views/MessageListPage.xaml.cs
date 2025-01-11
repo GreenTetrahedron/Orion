@@ -36,7 +36,6 @@ namespace Orion.Client.App.Messages.Views
             }
         }
 
-
         public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
@@ -53,12 +52,7 @@ namespace Orion.Client.App.Messages.Views
 
         private void SendMessage(object sender, RoutedEventArgs e)
         {
-            if (!Model.SendingMessageContentLengthValid)
-                return;
-
-            OnSendMessage.Invoke(Model.SendingMessageContent.Trim());
-
-            messageEntryTextEntry.Text = "";
+            Model.SendMessage();
         }
     }
 }

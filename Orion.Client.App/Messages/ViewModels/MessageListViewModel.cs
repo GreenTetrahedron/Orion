@@ -11,13 +11,16 @@ using System.Text;
 using System.Threading.Tasks;
 using Orion.Client.App.Users.Models;
 using System.Reflection.Metadata.Ecma335;
+using Microsoft.UI.Xaml.Controls;
+using System.Reflection;
 
 namespace Orion.Client.App.Messages.ViewModels
 {
     public partial class MessageListViewModel : ObservableObject
     {
-        private ObservableCollection<Message> _messages;
+        public event Action<string, Action, Action> OnSendMessage;
 
+        private ObservableCollection<Message> _messages;
         public ObservableCollection<Message> Messages
         {
             get { return _messages; }
@@ -31,23 +34,46 @@ namespace Orion.Client.App.Messages.ViewModels
         [ObservableProperty]
         private int _maxMessageLength;
 
-        [ObservableProperty]
-        private int _messageLength;
+        private bool _isOnTimeout;
+        public bool IsOnTimeOut
+        {
+            get => _isOnTimeout;
+            private set
+            {
+                SetProperty(ref _isOnTimeout, value);
+                
+                OnPropertyChanged(nameof(CanSendMessage));
+            }
+        }
 
-        [ObservableProperty]
-        private bool _sendingMessageContentLengthValid;
+        public bool CanSendMessage => !IsOnTimeOut && ActualMessageContentLengthValid;
+
+        public int ActualMessageLength => ActualMessageContent.Length;
+        public bool ActualMessageContentLengthValid => !(ActualMessageLength > MaxMessageLength);
+
+        private string _actualMessageContent;
+
+        public string ActualMessageContent
+        {
+            get { return _actualMessageContent; }
+            set
+            {
+                SetProperty(ref _actualMessageContent, value);
+                SendingMessageContent = _actualMessageContent;
+
+                OnPropertyChanged(nameof(ActualMessageLength));
+                OnPropertyChanged(nameof(ActualMessageContentLengthValid));
+            }
+        }
 
         private string _sendingMessageContent;
 
         public string SendingMessageContent
         {
             get => _sendingMessageContent;
-            set
+            private set
             {
-                SendingMessageContentLengthValid = !(value.Length > MaxMessageLength);
-                MessageLength = value.Length;
-
-                if (!SendingMessageContentLengthValid)
+                if (!ActualMessageContentLengthValid)
                 {
                     OnMessageContentTooBig.Invoke();
                     value = value[..MaxMessageLength];
@@ -63,9 +89,12 @@ namespace Orion.Client.App.Messages.ViewModels
 
         public MessageListViewModel()
         {
+            IsOnTimeOut = false;
+
             MaxMessageLength = 1000;
+            ActualMessageContent = "";
+            
             Messages = new();
-            SendingMessageContentLengthValid = true;
         }
 
         public void PopulateMessages(ServerResult<GetMessageMessages> result)
@@ -82,6 +111,25 @@ namespace Orion.Client.App.Messages.ViewModels
         {
             Messages.Clear();
             messages.ForEach(AddMessageToMessages);
+        }
+
+        public void SendMessage()
+        {
+            if (!ActualMessageContentLengthValid)
+                return;
+            var content = SendingMessageContent.Trim();
+
+            if (string.IsNullOrEmpty(content))
+                return;
+
+            IsOnTimeOut = true;
+
+            Timer.Wait(0.3f, () =>
+            {
+                IsOnTimeOut = false;
+            });
+
+            OnSendMessage.Invoke(content, () => ActualMessageContent = "", null);
         }
 
         private void AddMessageToMessages(MessageDTO message)

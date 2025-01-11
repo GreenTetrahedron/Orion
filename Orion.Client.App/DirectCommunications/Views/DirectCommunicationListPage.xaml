@@ -135,7 +135,7 @@
                 <TextBlock Style="{StaticResource UserProfileHeader}" Text="{x:Bind Model.Selected.ReceiverProfile.Username, Mode=OneWay}" />
             </StackPanel>
 
-            <messageviews:MessageListPage Visibility="{x:Bind Path=Model.HasSelected, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=true, Mode=OneWay}" Grid.Row="1" Model="{x:Bind Model.MessageListViewModel, Mode=OneWay}" OnSendMessage="{x:Bind Model.SendMessage}" />
+            <messageviews:MessageListPage Visibility="{x:Bind Path=Model.HasSelected, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=true, Mode=OneWay}" Grid.Row="1" Model="{x:Bind Model.MessageListViewModel, Mode=OneWay}" />
         </Grid>
     </Grid>
 </Page>

@@ -17,12 +17,9 @@ namespace Orion.Client.App.Groups.ViewModels
 {
     public class GroupsListViewModel : MasterDetailViewModel<GroupProfile>
     {
-        private MessageListViewModel _messageListViewModel;
+        private readonly MessageListViewModel _messageListViewModel;
 
-        public MessageListViewModel MessageListViewModel
-        {
-            get { return _messageListViewModel; }
-        }
+        public MessageListViewModel MessageListViewModel => _messageListViewModel;
 
         private readonly IGroupService _groupService;
         private readonly IMessageService _messageService;
@@ -30,6 +27,8 @@ namespace Orion.Client.App.Groups.ViewModels
         public GroupsListViewModel()
         {
             _messageListViewModel = new();
+            _messageListViewModel.OnSendMessage += SendMessage;
+
 
             _groupService = App.Current.ConfigurationService.GetSingletonOfType<IGroupService>();
             _messageService = App.Current.ConfigurationService.GetSingletonOfType<IMessageService>();
@@ -48,7 +47,7 @@ namespace Orion.Client.App.Groups.ViewModels
             subscriptable.Subscribe(MessageListViewModel.PopulateMessages);
         }
 
-        public async void SendMessage(string content)
+        public async void SendMessage(string content, Action onSuccess, Action onFailure)
         {
             var subscriptable = await _messageService.SendGroupMessage(new NewGroupMessage()
             {
@@ -56,6 +55,17 @@ namespace Orion.Client.App.Groups.ViewModels
                 GroupId = Selected.GroupId,
                 SenderId = App.Current.CurrentUser.UserProfile.UserId,
                 LastUpdated = DateTime.Now
+            });
+
+            subscriptable.Subscribe(result =>
+            {
+                if (result.OperationInformation.OperationMessageCode == NewMessageMessages.MESSAGE_CREATED_SUCCESSFULLY)
+                {
+                    onSuccess?.Invoke();
+                    return;
+                }
+
+                onFailure?.Invoke();
             });
         }
     }

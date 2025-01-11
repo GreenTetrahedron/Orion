@@ -57,6 +57,6 @@
             <TextBlock Style="{StaticResource UserProfileHeader}" Text="{x:Bind Model.Selected.GroupName, Mode=OneWay}" />
         </StackPanel>
 
-        <messageview:MessageListPage Grid.Column="1" Grid.Row="1" Model="{x:Bind Model.MessageListViewModel, Mode=OneWay}" OnSendMessage="{x:Bind Model.SendMessage}" />
+        <messageview:MessageListPage Grid.Column="1" Grid.Row="1" Model="{x:Bind Model.MessageListViewModel, Mode=OneWay}" />
     </Grid>
 </Page>

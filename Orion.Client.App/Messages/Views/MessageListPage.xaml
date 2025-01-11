@@ -67,7 +67,7 @@
         <Style TargetType="Grid" x:Key="MessageEntryBox">
             <Setter Property="ColumnSpacing" Value="8" />
             <Setter Property="RowSpacing" Value="4" />
-            <Setter Property="Padding" Value="15 0 15 7" />
+            <Setter Property="Padding" Value="15 0 15 0" />
         </Style>
         <Style TargetType="TextBox" BasedOn="{StaticResource DefaultTextBox}" x:Key="MessageEntryTextBox">
             <Setter Property="BorderThickness" Value="0" />
@@ -125,6 +125,9 @@
         <Style TargetType="TextBlock" x:Key="ValidationText" BasedOn="{StaticResource DefaultText}">
             <Setter Property="Foreground" Value="MediumVioletRed" />
             <Setter Property="FontSize" Value="10" />
+            <Setter Property="FontStyle" Value="Italic" />
+            <Setter Property="Margin" Value="10 0" />
+            <Setter Property="Padding" Value="0" />
         </Style>
 
     </Page.Resources>
@@ -156,7 +159,7 @@
                         <StackPanel Grid.Column="1" Style="{StaticResource Message}">
                             <StackPanel Style="{StaticResource MessageUserProfile}" >
                                 <TextBlock Style="{StaticResource MessageUserProfileUsername}" Text="{x:Bind SenderProfile.Username, Mode=OneWay}" />
-                                <TextBlock Style="{StaticResource MessageUserProfileDate}" Text="{x:Bind LastUpdated, Mode=OneWay, Converter={StaticResource DateTimeToStringConverter}, ConverterParameter='dd/mm/yyyy HH:mm'}" />
+                                <TextBlock Style="{StaticResource MessageUserProfileDate}" Text="{x:Bind LastUpdated, Mode=OneWay, Converter={StaticResource DateTimeToStringConverter}, ConverterParameter='dd/MM/yyyy HH:mm'}" />
                             </StackPanel>
 
                             <TextBlock Style="{StaticResource MessageContent}" Text="{x:Bind Content, Mode=OneWay}" />
@@ -173,15 +176,15 @@
             </Grid.ColumnDefinitions>
 
             <Grid.RowDefinitions>
-                <RowDefinition Height="*" />
                 <RowDefinition Height="auto" />
+                <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
-            <TextBlock Grid.Row="1" Grid.Column="0" Style="{StaticResource ValidationText}" Visibility="{x:Bind Model.SendingMessageContentLengthValid, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+            <TextBlock Grid.Row="1" Grid.Column="0" Style="{StaticResource ValidationText}" Visibility="{x:Bind Model.ActualMessageContentLengthValid, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
                 You have exceeded the character limit per message! Reduce the characters in your message to send it.
             </TextBlock>
 
-            <Grid Style="{StaticResource MessageEntryTextBoxContainer}">
+            <Grid Grid.Row="0" Style="{StaticResource MessageEntryTextBoxContainer}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="auto" />
@@ -191,7 +194,7 @@
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
 
-                <TextBox Grid.Row="1" Grid.Column="0" x:Name="messageEntryTextEntry" Style="{StaticResource MessageEntryTextBox}" PlaceholderText="Type a message..." Text="{x:Bind Model.SendingMessageContent, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                <TextBox Grid.Row="1" Grid.Column="0" x:Name="messageEntryTextEntry" Style="{StaticResource MessageEntryTextBox}" PlaceholderText="Type a message..." Text="{x:Bind Model.ActualMessageContent, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
                     <TextBox.Resources>
                         <SolidColorBrush x:Key="TextControlBackgroundPointerOver" Color="#303030" />
                         <SolidColorBrush x:Key="TextControlBackgroundFocused" Color="#303030" />
@@ -201,14 +204,14 @@
                     </TextBox.Resources>
                 </TextBox>
 
-                <StackPanel Grid.Column="1" Orientation="Horizontal" Visibility="{x:Bind Path=Model.MessageLength, Mode=OneWay, Converter={StaticResource MessageLengthOverCapToVisibilityConverter}, ConverterParameter='200'}">
-                    <TextBlock Style="{StaticResource CounterText}" Text="{x:Bind Model.MessageLength, Mode=OneWay}" />
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Visibility="{x:Bind Path=Model.ActualMessageLength, Mode=OneWay, Converter={StaticResource MessageLengthOverCapToVisibilityConverter}, ConverterParameter='200'}">
+                    <TextBlock Style="{StaticResource CounterText}" Text="{x:Bind Model.ActualMessageLength, Mode=OneWay}" />
                     <TextBlock Style="{StaticResource CounterText}" Text="/" />
                     <TextBlock Style="{StaticResource CounterText}" Text="{x:Bind Model.MaxMessageLength, Mode=OneWay}" />
                 </StackPanel>
             </Grid>
             
-            <Button Grid.Column="1" Click="SendMessage" Style="{StaticResource SendMessageButton}" IsEnabled="{x:Bind Model.SendingMessageContentLengthValid, Mode=OneWay}">
+            <Button Grid.Row="0" Grid.Column="1" Click="SendMessage" Style="{StaticResource SendMessageButton}" IsEnabled="{x:Bind Model.CanSendMessage, Mode=OneWay}">
                 <Button.Resources>
                     <SolidColorBrush x:Key="ButtonBackgroundPointerOver" Color="#2e2e32" />
                     <SolidColorBrush x:Key="ButtonBackgroundDisabled" Color="#2d2d2d" />
