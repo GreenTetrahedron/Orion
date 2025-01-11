@@ -26,6 +26,7 @@ namespace Orion.Client.App.DirectCommunications.ViewModels
         private readonly IDirectCommunicationService _directCommunicationService;
         private readonly IMessageService _messageService;
 
+        public readonly AddDirectCommunicationViewModel AddDirectCommunicationViewModel;
 
         public DirectCommunicationListViewModel()
         {
@@ -33,6 +34,9 @@ namespace Orion.Client.App.DirectCommunications.ViewModels
             _messageService = App.Current.ConfigurationService.GetSingletonOfType<IMessageService>();
 
             App.Current.CurrentUser.DirectCommunications.ToList().ForEach(directCommunication => AddItem(directCommunication));
+            
+            AddDirectCommunicationViewModel = new AddDirectCommunicationViewModel();
+            
             MessageListViewModel = new();
 
             MessageListViewModel.OnSendMessage += SendMessage;

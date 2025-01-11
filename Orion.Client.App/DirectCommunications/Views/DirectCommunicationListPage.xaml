@@ -87,6 +87,13 @@
             <Setter Property="FontWeight" Value="Medium" />
             <Setter Property="FontSize" Value="13" />
         </Style>
+
+        <Style TargetType="Popup" x:Name="AddDirectCommunicationPopupStyle">
+            <Setter Property="IsLightDismissEnabled" Value="True" />
+            <Setter Property="CanDrag" Value="False" />
+            <Setter Property="VerticalOffset" Value="10" />
+            <Setter Property="HorizontalOffset" Value="180" />
+        </Style>
     </Page.Resources>
     
     <Page.DataContext>
@@ -102,8 +109,8 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <Popup x:Name="AddDirectCommunicationPopup" DesiredPlacement="RightEdgeAlignedTop" IsLightDismissEnabled="True">
-            <local:AddDirectCommunicationPage OnAddDirectCommunicationSuccessful="OnAddDirectCommunicationSuccessful" />
+        <Popup x:Name="AddDirectCommunicationPopup" Style="{StaticResource AddDirectCommunicationPopupStyle}">
+            <local:AddDirectCommunicationPage OnAddDirectCommunicationSuccessful="OnAddDirectCommunicationSuccessful" Model="{x:Bind Model.AddDirectCommunicationViewModel, Mode=OneWay}"/>
         </Popup>
         
         <StackPanel>

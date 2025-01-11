@@ -1,6 +1,7 @@
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
 using System.Linq;
+using Windows.System.Preview;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -21,6 +22,11 @@ namespace Orion.Client.App.DirectCommunications.Views
             {
                 if(b.Key == Windows.System.VirtualKey.Escape && AddDirectCommunicationPopup.IsOpen);
                     AddDirectCommunicationPopup.IsOpen = false;
+            };
+
+            AddDirectCommunicationPopup.Closed += (a, b) =>
+            {
+                Model.AddDirectCommunicationViewModel.ClearForm();
             };
         }
 

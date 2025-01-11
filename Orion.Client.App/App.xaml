@@ -14,6 +14,13 @@
                 <Setter Property="FontFamily" Value="\assets\assets\fonts\#Roboto" />
                 <Setter Property="FontSize" Value="14" />
             </Style>
+            <Style TargetType="TextBlock" x:Key="ValidationText" BasedOn="{StaticResource DefaultText}">
+                <Setter Property="Foreground" Value="MediumVioletRed" />
+                <Setter Property="FontSize" Value="10" />
+                <Setter Property="FontStyle" Value="Italic" />
+                <Setter Property="Padding" Value="0" />
+            </Style>
+
             <Style TargetType="TextBox" x:Key="DefaultTextBox" BasedOn="{StaticResource THignsd}">
                 <Setter Property="FontFamily" Value="\assets\assets\fonts\#Roboto" />
                 <Setter Property="Padding" Value="0" />

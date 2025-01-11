@@ -4,13 +4,85 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:Orion.Client.App.DirectCommunications.Views"
+    xmlns:viewmodel="using:Orion.Client.App.DirectCommunications.ViewModels"
+    xmlns:converter="using:Orion.Client.App.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <StackPanel>
-        <TextBox x:Name="otherUserNameTextEntry" />
-        <Button Click="AddDirectCommunication">Add Direct Communication</Button>
+    <Page.Resources>
+        <converter:BoolToVisibilityConverter x:Name="BoolToVisibilityConverter" />
+
+        <Style TargetType="StackPanel" x:Name="AddDirectCommunicationFormContainer">
+            <Setter Property="Background" Value="#2e2e2e" />
+            <Setter Property="CornerRadius" Value="0 4 4 4" />
+            <Setter Property="VerticalAlignment" Value="Stretch" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="Padding" Value="10" />
+            <Setter Property="Opacity" Value="1" />
+            <Setter Property="Spacing" Value="5" />
+        </Style>
+        <Style TargetType="Grid" x:Name="AddDirectCommunicationForm">
+            <Setter Property="RowSpacing" Value="10" />
+        </Style>
+
+        <Style TargetType="TextBox" BasedOn="{StaticResource DefaultTextBox}" x:Name="UsernameTextBox">
+            <Setter Property="Opacity" Value="1" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="CornerRadius" Value="2" />
+            <Setter Property="Background" Value="#3d3d3d" />
+            <Setter Property="Height" Value="32" />
+            <Setter Property="Padding" Value="10 9" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="MaxWidth" Value="300" />
+            <Setter Property="MinWidth" Value="200" />
+
+            <Setter Property="PlaceholderForeground" Value="#ccc" />
+            <Setter Property="Foreground" Value="#eee" />
+
+            <Setter Property="MaxLength" Value="100" />
+        </Style>
+
+        <Style TargetType="Button" BasedOn="{StaticResource DefaultButton}" x:Name="AddDirectCommunicationButton">
+            <Setter Property="Opacity" Value="1" />
+            <Setter Property="CornerRadius" Value="2" />
+            <Setter Property="FontSize" Value="10" />
+            <Setter Property="FontWeight" Value="Medium" />
+            <Setter Property="Background" Value="#5f56c2" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+        </Style>
+    </Page.Resources>
+
+    <StackPanel Style="{StaticResource AddDirectCommunicationFormContainer}">
+        <TextBlock Style="{StaticResource ValidationText}" Visibility="{x:Bind Model.IsValid, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" Text="{x:Bind Model.ErrorMessage, Mode=OneWay}" />
+        
+        <Grid Style="{StaticResource AddDirectCommunicationForm}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <TextBox Grid.Row="0" x:Name="otherUserNameTextEntry" Style="{StaticResource UsernameTextBox}" PlaceholderText="Username" Text="{x:Bind Model.GivenUsername, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                <TextBox.Resources>
+                    <SolidColorBrush x:Key="TextControlBackgroundPointerOver" Color="#3e3e3e" />
+                    <SolidColorBrush x:Key="TextControlBackgroundFocused" Color="#3e3e3e" />
+                    <SolidColorBrush x:Key="TextControlBorderBrushFocused" Color="#ccd" />
+                    <SolidColorBrush x:Key="TextControlForegroundPointerOver" Color="#eee" />
+                    <SolidColorBrush x:Key="TextControlForegroundFocused" Color="#eee" />
+                </TextBox.Resources>
+            </TextBox>
+            <Button Grid.Row="1" Click="AddDirectCommunication" Style="{StaticResource AddDirectCommunicationButton}" IsEnabled="{x:Bind Model.IsNotOnTimeOut, Mode=OneWay}">
+                <Button.Content>
+                    Add DM
+                </Button.Content>
+                <Button.Resources>
+                    <SolidColorBrush x:Key="ButtonBackgroundPointerOver" Color="#726bc1" />
+                </Button.Resources>
+            </Button>
+        </Grid>
     </StackPanel>
 </Page>

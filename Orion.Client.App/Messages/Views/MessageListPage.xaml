@@ -122,12 +122,8 @@
             <Setter Property="Foreground" Value="#555" />
             <Setter Property="VerticalAlignment" Value="Bottom" />
         </Style>
-        <Style TargetType="TextBlock" x:Key="ValidationText" BasedOn="{StaticResource DefaultText}">
-            <Setter Property="Foreground" Value="MediumVioletRed" />
-            <Setter Property="FontSize" Value="10" />
-            <Setter Property="FontStyle" Value="Italic" />
+        <Style TargetType="TextBlock" x:Key="MessageInvalidText" BasedOn="{StaticResource ValidationText}">
             <Setter Property="Margin" Value="10 0" />
-            <Setter Property="Padding" Value="0" />
         </Style>
 
     </Page.Resources>
@@ -180,7 +176,7 @@
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
-            <TextBlock Grid.Row="1" Grid.Column="0" Style="{StaticResource ValidationText}" Visibility="{x:Bind Model.ActualMessageContentLengthValid, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+            <TextBlock Grid.Row="1" Grid.Column="0" Style="{StaticResource MessageInvalidText}" Visibility="{x:Bind Model.ActualMessageContentLengthValid, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
                 You have exceeded the character limit per message! Reduce the characters in your message to send it.
             </TextBlock>
 
