@@ -73,6 +73,9 @@ namespace Orion.Server.App.Groups.Views
         private void OnSubmitClicked(object sender, RoutedEventArgs e)
         {
             OnSubmit.Invoke(Model.Group);
+
+            Group = new();
+            Model.Group = new();
         }
     }
 }

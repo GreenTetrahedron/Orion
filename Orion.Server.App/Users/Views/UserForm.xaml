@@ -9,15 +9,29 @@
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <StackPanel>
-        <TextBlock Text="Username" />
-        <TextBox x:Name="usernameTextEntry" Text="{x:Bind User.Username, Mode=TwoWay}" />
+    <Page.Resources>
+        <Style TargetType="ComboBox" x:Key="FormComboBox">
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="FontFamily" Value="\assets\assets\fonts\#Roboto" />
+            <Setter Property="FontWeight" Value="Light" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="CornerRadius" Value="2" />
+        </Style>
+    </Page.Resources>
+    
+    <StackPanel Style="{StaticResource Form}">
+        <StackPanel>
+            <TextBlock Style="{StaticResource FormLabel}" Text="Username" />
+            <TextBox Style="{StaticResource FormTextBox}" x:Name="usernameTextEntry" Text="{x:Bind User.Username, Mode=TwoWay}" />
+        </StackPanel>
 
-        <TextBlock Text="Password" />
-        <TextBox x:Name ="passwordTextEntry" Text="{x:Bind User.Password, Mode=TwoWay}" />
+        <StackPanel>
+            <TextBlock Style="{StaticResource FormLabel}" Text="Password (leave blank to not change)" />
+            <TextBox Style="{StaticResource FormTextBox}" x:Name ="passwordTextEntry" Text="{x:Bind User.Password, Mode=TwoWay}" />
+        </StackPanel>
         
-        <ComboBox x:Name="rolesComboBox" Header="Role" ItemsSource="{x:Bind Roles}" SelectedItem="{x:Bind User.Role, Mode=TwoWay}"></ComboBox>
+        <ComboBox Style="{StaticResource FormComboBox}" x:Name="rolesComboBox" Header="Role" ItemsSource="{x:Bind Roles}" SelectedItem="{x:Bind User.Role, Mode=TwoWay}"></ComboBox>
 
-        <Button Click="OnSubmitClicked">Submit</Button>
+        <Button Style="{StaticResource SubmitButton}" Click="OnSubmitClicked">Submit</Button>
     </StackPanel>
 </Page>
