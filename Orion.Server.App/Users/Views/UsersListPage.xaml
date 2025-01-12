@@ -19,15 +19,80 @@
     <Page.Resources>
         <converters:BoolToVisibilityConverter x:Name="BoolToVisibilityConverter" />
         <converters:GuidToStringConverter x:Name="GuidToStringConverter" />
+
+        <Style TargetType="Grid" x:Name="UsersPageContainer">
+            <Setter Property="Padding" Value="35 25" />
+            <Setter Property="RowSpacing" Value="5" />
+        </Style>
+
+        <Style TargetType="Button" BasedOn="{StaticResource DefaultButton}" x:Name="AddUserButton">
+            <Setter Property="Height" Value="30" />
+            <Setter Property="Width" Value="30" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="CornerRadius" Value="2" />
+            <Setter Property="FontWeight" Value="Thin" />
+            <Setter Property="FontSize" Value="20" />
+        </Style>
+
+        <Style TargetType="ListView" x:Name="UsersListView">
+            <Setter Property="SelectionMode" Value="None" />
+        </Style>
+
+        <Style TargetType="TextBlock" BasedOn="{StaticResource DefaultText}" x:Name="PageTitle">
+            <Setter Property="FontSize" Value="40" />
+            <Setter Property="FontWeight" Value="Bold" />
+        </Style>
+
+        <Style TargetType="Rectangle" x:Name="Separator">
+            <Setter Property="Height" Value="0.5" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="Fill" Value="#ccc" />
+            <Setter Property="Margin" Value="0 0 0 15" />
+        </Style>
+
+        <Style TargetType="Grid" x:Name="UserItem">
+            <Setter Property="ColumnSpacing" Value="5" />
+            <Setter Property="BorderThickness" Value="0 0 0 0.4" />
+            <Setter Property="BorderBrush" Value="#bbb" />
+            <Setter Property="Margin" Value="0 0 0 5" />
+        </Style>
+
+        <Style TargetType="Button" BasedOn="{StaticResource DefaultButton}" x:Name="ActionButton">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="VerticalContentAlignment" Value="Bottom" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="CornerRadius" Value="2" />
+        </Style>
+        <Style TargetType="TextBlock" BasedOn="{StaticResource DefaultText}" x:Name="Username">
+            <Setter Property="VerticalAlignment" Value="Bottom" />
+            <Setter Property="Padding" Value="0 5" />
+        </Style>
     </Page.Resources>
     
-    <StackPanel>
-        <Button Click="OnAddUser">Add User</Button>
+    <Grid Style="{StaticResource UsersPageContainer}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="auto" />
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Style="{StaticResource PageTitle}" Text="ALL USERS" />
+
+            <Button Grid.Column="1" Click="OnAddUser" Style="{StaticResource AddUserButton}">+</Button>
+        </Grid>
+
+        <Rectangle Grid.Row="1" Style="{StaticResource Separator}" />
 
         <local:UserForm Visibility="{x:Bind Model.HideAddUserForm, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" OnSubmit="{x:Bind Model.AddUser}" />
         <local:UserForm Visibility="{x:Bind Model.HideEditUserForm, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" OnSubmit="{x:Bind Model.UpdateUser}" User="{x:Bind Model.User, Mode=OneWay}" />
 
-        <ListView ItemsSource="{x:Bind Model.Users, Mode=OneWay}">
+        <ListView Grid.Row="2" Style="{StaticResource UsersListView}" ItemsSource="{x:Bind Model.Users, Mode=OneWay}">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
                     <StackPanel />
@@ -36,19 +101,19 @@
 
             <ItemsControl.ItemTemplate>
                 <DataTemplate x:DataType="model:UserProfile">
-                    <Grid>
+                    <Grid Style="{StaticResource UserItem}">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="auto" />
                             <ColumnDefinition Width="auto" />
                         </Grid.ColumnDefinitions>
                         
-                        <TextBlock Grid.Column="0" Text="{x:Bind Username}" />
-                        <Button Grid.Column="1" Click="OnEditUser" Tag="{x:Bind UserId}">Edit</Button>
-                        <Button Grid.Column="2" Click="OnDeleteUser" Tag="{x:Bind UserId}">Delete</Button>
+                        <TextBlock Grid.Column="0" Style="{StaticResource Username}" Text="{x:Bind Username}" />
+                        <Button Grid.Column="1" Style="{StaticResource ActionButton}" Click="OnEditUser" Tag="{x:Bind UserId}">Edit</Button>
+                        <Button Grid.Column="2" Style="{StaticResource ActionButton}" Click="OnDeleteUser" Tag="{x:Bind UserId}">Delete</Button>
                     </Grid>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ListView>
-    </StackPanel>
+    </Grid>
 </Page>

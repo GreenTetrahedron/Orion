@@ -18,6 +18,13 @@
 
     <Page.Resources>
         <converters:BoolToVisibilityConverter x:Name="BoolToVisibilityConverter" />
+
+        <Style TargetType="ListView" x:Name="GroupsListView">
+            <Setter Property="SelectionMode" Value="None" />
+        </Style>
+
+        <Style TargetType="Grid" x:Name="GroupItem">
+        </Style>
     </Page.Resources>
 
     <StackPanel>
@@ -26,7 +33,7 @@
         <local:GroupForm Visibility="{x:Bind Model.HideAddGroupForm, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" OnSubmit="{x:Bind Model.AddGroup}" />
         <local:GroupForm Visibility="{x:Bind Model.HideEditGroupForm, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" OnSubmit="{x:Bind Model.UpdateGroup}" Group="{x:Bind Model.Group, Mode=OneWay}" />
 
-        <ListView ItemsSource="{x:Bind Model.Groups, Mode=OneWay}">
+        <ListView Style="{StaticResource GroupsListView}" ItemsSource="{x:Bind Model.Groups, Mode=OneWay}">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
                     <StackPanel />
@@ -35,11 +42,17 @@
 
             <ItemsControl.ItemTemplate>
                 <DataTemplate x:DataType="model:Group">
-                    <StackPanel Orientation="Horizontal">
+                    <Grid Style="{StaticResource GroupItem}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="auto" />
+                            <ColumnDefinition Width="auto" />
+                        </Grid.ColumnDefinitions>
+                        
                         <TextBlock Text="{x:Bind GroupName}" />
                         <Button Grid.Column="1" Click="OnEditGroup" Tag="{x:Bind GroupId}">Edit</Button>
                         <Button Grid.Column="2" Click="OnDeleteGroup" Tag="{x:Bind GroupId}">Delete</Button>
-                    </StackPanel>
+                    </Grid>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ListView>
