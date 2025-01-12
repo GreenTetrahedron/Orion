@@ -28,10 +28,16 @@ namespace Orion.Server.DirectCommunications.Repositories
             var receiver = await _database.Users.FindAsync(newDirectCommunication.ReceiverId);
 
             if (sender == null)
-                throw new UserNotFoundException("Sender was null");
+                return ServerTransmissionService
+                    .NewSuccessfulExceptionResponseServerTransmission("NewDirectCommunicationResult",
+                    DirectCommunicationMessages.DIRECT_COMMUNICATION_CREATION_FAILED,
+                    "Sender was not found...");
 
             if (receiver == null)
-                throw new UserNotFoundException("Receiver was null");
+                return ServerTransmissionService
+                    .NewSuccessfulExceptionResponseServerTransmission("NewDirectCommunicationResult",
+                    DirectCommunicationMessages.DIRECT_COMMUNICATION_CREATION_FAILED,
+                    "Receiver was not found...");
 
             var directCommunication = new DirectCommunication()
             {
