@@ -10,6 +10,11 @@ namespace Orion.Server.ServerTransmissionServices
             return new ServerTransmission(new ServerResponse(topic, new ServerResult<T>(new OperationInformation<T>(Statuses.SUCCEEDED, operationMessageCode), data)));
         }
 
+        public static ServerTransmission NewSuccessfulExceptionResponseServerTransmission<T>(string topic, T operationMessageCode, string operationMessage) where T : Enum
+        {
+            return new ServerTransmission(new ServerResponse(topic, new ServerResult<T>(new OperationInformation<T>(Statuses.SUCCEEDED, operationMessageCode, operationMessage))));
+        }
+
         public static ServerTransmission AddResponseOperationMessage(this ServerTransmission serverTransmission, string? operationMessage = null)
         {
             serverTransmission.Response.ServerResult.OperationInformation.OperationMessage = operationMessage;

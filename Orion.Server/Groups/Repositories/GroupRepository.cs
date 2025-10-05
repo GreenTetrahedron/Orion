@@ -34,14 +34,12 @@ namespace Orion.Server.Groups.Repositories
 
             foreach(var memberProfile in newGroupInformation.MemberProfiles)
             {
-                try
-                {
-                    members.Add(await _database.Users.FindAsync(memberProfile.UserId));
-                }
-                catch
-                {
+                var user = await _database.Users.FindAsync(memberProfile.UserId);
+
+                if (user == null)
                     throw new UserNotFoundException($"{memberProfile.Username} was not found...");
-                }
+
+                members.Add(user);
             }
 
             Group group = new Group()

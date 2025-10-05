@@ -11,27 +11,89 @@ using System.Text;
 using System.Threading.Tasks;
 using Orion.Client.App.Users.Models;
 using System.Reflection.Metadata.Ecma335;
+using Microsoft.UI.Xaml.Controls;
+using System.Reflection;
 
 namespace Orion.Client.App.Messages.ViewModels
 {
-    public class MessageListViewModel : ObservableObject
+    public partial class MessageListViewModel : ObservableObject
     {
-        private ObservableCollection<Message> messages;
+        public event Action<string, Action, Action> OnSendMessage;
 
+        private ObservableCollection<Message> _messages;
         public ObservableCollection<Message> Messages
         {
-            get { return messages; }
+            get { return _messages; }
+            private set
+            {
+                SetProperty(ref _messages, value);
+                _messages.CollectionChanged += (_, _) => OnMessageListChanged.Invoke();
+            }
+        }
+
+        [ObservableProperty]
+        private int _maxMessageLength;
+
+        private bool _isOnTimeout;
+        public bool IsOnTimeOut
+        {
+            get => _isOnTimeout;
+            private set
+            {
+                SetProperty(ref _isOnTimeout, value);
+                
+                OnPropertyChanged(nameof(CanSendMessage));
+            }
+        }
+
+        public bool CanSendMessage => !IsOnTimeOut && ActualMessageContentLengthValid;
+
+        public int ActualMessageLength => ActualMessageContent.Length;
+        public bool ActualMessageContentLengthValid => !(ActualMessageLength > MaxMessageLength);
+
+        private string _actualMessageContent;
+
+        public string ActualMessageContent
+        {
+            get { return _actualMessageContent; }
             set
             {
-                SetProperty(ref messages, value);
-                messages.CollectionChanged += (_, _) => OnMessageListChanged.Invoke();
+                SetProperty(ref _actualMessageContent, value);
+                SendingMessageContent = _actualMessageContent;
+
+                OnPropertyChanged(nameof(ActualMessageLength));
+                OnPropertyChanged(nameof(ActualMessageContentLengthValid));
+            }
+        }
+
+        private string _sendingMessageContent;
+
+        public string SendingMessageContent
+        {
+            get => _sendingMessageContent;
+            private set
+            {
+                if (!ActualMessageContentLengthValid)
+                {
+                    OnMessageContentTooBig.Invoke();
+                    value = value[..MaxMessageLength];
+                }
+
+
+                SetProperty(ref _sendingMessageContent, value);
             }
         }
 
         public event Action OnMessageListChanged = delegate { };
+        public event Action OnMessageContentTooBig = delegate { };
 
         public MessageListViewModel()
         {
+            IsOnTimeOut = false;
+
+            MaxMessageLength = 1000;
+            ActualMessageContent = "";
+            
             Messages = new();
         }
 
@@ -49,6 +111,25 @@ namespace Orion.Client.App.Messages.ViewModels
         {
             Messages.Clear();
             messages.ForEach(AddMessageToMessages);
+        }
+
+        public void SendMessage()
+        {
+            if (!ActualMessageContentLengthValid)
+                return;
+            var content = SendingMessageContent.Trim();
+
+            if (string.IsNullOrEmpty(content))
+                return;
+
+            IsOnTimeOut = true;
+
+            Timer.Wait(0.3f, () =>
+            {
+                IsOnTimeOut = false;
+            });
+
+            OnSendMessage.Invoke(content, () => ActualMessageContent = "", null);
         }
 
         private void AddMessageToMessages(MessageDTO message)

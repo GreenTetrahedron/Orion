@@ -95,11 +95,18 @@ namespace Orion.Router
                 return;
             }
 
-            ClientTransmission? clientTransmission;
+            ClientTransmission? clientTransmission = null;
 
             while (true)
             {
-                clientTransmission = await ReceiveClientTransmission(connection);
+                try
+                {
+                    clientTransmission = await ReceiveClientTransmission(connection);
+                }
+                catch (Exception e)
+                {
+                    connection.SendTransmission("Invalid request format...");
+                }
 
                 if (clientTransmission == null)
                     break;
@@ -123,7 +130,10 @@ namespace Orion.Router
         public async Task ServerConnection(LifeSupport connection)
         {
             if (_serverConnection != null)
-                throw new InvalidOperationException("Server already connected...");
+            {
+                connection.SendTransmission("Server already connected you dolt.");
+                return;
+            }
 
             _serverConnection = connection;
             Console.WriteLine("Server connected...");

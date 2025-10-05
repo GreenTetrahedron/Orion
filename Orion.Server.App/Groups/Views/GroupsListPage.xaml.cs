@@ -37,13 +37,23 @@ namespace Orion.Server.App.Groups.Views
         private void OnEditGroup(object sender, RoutedEventArgs e)
         {
             Model.OnEditGroup((Guid)((Button)sender).Tag);
-            Model.HideEditGroupForm = false;
 
+            Model.HideEditGroupForm = false;
         }
 
         private void OnDeleteGroup(object sender, RoutedEventArgs e)
         {
             Model.DeleteGroupById((Guid)((Button)sender).Tag);
+        }
+
+        private void CloseAddGroupForm(object sender, RoutedEventArgs e)
+        {
+            Model.HideAddGroupForm = true;
+        }
+
+        private void CloseEditGroupForm(object sender, RoutedEventArgs e)
+        {
+            Model.HideEditGroupForm = true;
         }
     }
 }

@@ -21,10 +21,18 @@
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
-        <StackPanel>
-            <Frame Grid.Column="0" x:Name="navigationFrame" />
-            <grouplocal:GroupsListPage Model="{x:Bind GroupListViewModel, Mode=OneWay}" />
-        </StackPanel>
-        <Frame Grid.Column="1" x:Name="contentFrame" />
+        <Grid RowSpacing="15">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <local:NavbarPage Model="{x:Bind CurrentUser, Mode=OneWay}" ContentFrame="{x:Bind contentFrame}" />
+            <Rectangle Grid.Row="1" Height="0.4" HorizontalAlignment="Stretch" Fill="#333" />
+            <grouplocal:GroupsListPage Grid.Row="2" Model="{x:Bind GroupListViewModel, Mode=OneWay}" />
+        </Grid>
+        
+        <Frame Grid.Column="1" Background="Transparent" CornerRadius="8 0 0 0" x:Name="contentFrame" />
     </Grid>
 </Page>

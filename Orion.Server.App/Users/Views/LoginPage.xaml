@@ -20,12 +20,12 @@
         </Style>
 
         <Style TargetType="TextBlock" x:Key="HeroTitle" BasedOn="{StaticResource DefaultText}">
-            <Setter Property="FontSize" Value="50" />
-            <Setter Property="LineHeight" Value="75" />
+            <Setter Property="FontSize" Value="47" />
+            <Setter Property="LineHeight" Value="65" />
             <Setter Property="FontWeight" Value="Bold" />
         </Style>
         <Style TargetType="TextBlock" x:Key="HeroText" BasedOn="{StaticResource DefaultText}">
-            <Setter Property="FontSize" Value="12" />
+            <Setter Property="FontSize" Value="11" />
         </Style>
         <Style TargetType="TextBlock" x:Key="ValidationText" BasedOn="{StaticResource DefaultText}">
             <Setter Property="Foreground" Value="MediumVioletRed" />
@@ -79,7 +79,7 @@
 
         <StackPanel Grid.Column="0" Style="{StaticResource LoginContainer}" >
             <StackPanel>
-                <TextBlock Style="{StaticResource HeroTitle}" Text="SIGN IN" />
+                <TextBlock Style="{StaticResource HeroTitle}" Text="ORION ADMIN" />
                 <TextBlock Style="{StaticResource HeroText}" Text="Sign into the admin portal below." />
             </StackPanel>
 

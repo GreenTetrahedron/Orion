@@ -68,26 +68,33 @@ namespace Orion.Server
 
         private async Task<ServerTransmission?> HandleRequest(ServerRequest request)
         {
-            var handler = _topicHandlerService.GetTopicHandler(request.Topic);
-
-            if (handler == null)
-                throw new ApplicationException($"No handler found for topic: {request.Topic}");
-
-            var roles = _topicHandlerService.GetAuthorisedRoleByTopic(request.Topic);
-            
-            if (roles > Roles.USER && request.RequesterId != null)
+            try
             {
-                var role = await _userRepository.GetRoleByUserId(request.RequesterId.Value);
+                var handler = _topicHandlerService.GetTopicHandler(request.Topic);
 
-                if (role < roles)
-                    return new ServerTransmission(new ServerResponse(request.Topic + "Result", new ServerResult(new OperationInformation(Statuses.FAILED, "UNAUTHORISED"))));
+                if (handler == null)
+                    throw new ApplicationException($"No handler found for topic: {request.Topic}");
+
+                var roles = _topicHandlerService.GetAuthorisedRoleByTopic(request.Topic);
+            
+                if (roles > Roles.USER && request.RequesterId != null)
+                {
+                    var role = await _userRepository.GetRoleByUserId(request.RequesterId.Value);
+
+                    if (role < roles)
+                        return new ServerTransmission(new ServerResponse(request.Topic + "Result", new ServerResult(new OperationInformation(Statuses.FAILED, "UNAUTHORISED"))));
+                }
+
+                var authorisedRole = _topicHandlerService.GetAuthorisedRoleByTopic(request.Topic);
+
+                ServerTransmission result = await handler.Invoke(request.Data);
+                result.Response.RequestId = request.RequestId;
+                return result;
             }
-
-            var authorisedRole = _topicHandlerService.GetAuthorisedRoleByTopic(request.Topic);
-
-            ServerTransmission result = await handler.Invoke(request.Data);
-            result.Response.RequestId = request.RequestId;
-            return result;
+            catch (Exception e)
+            {
+                return new ServerTransmission(new ServerResponse(request.Topic + "Result", new ServerResult(new OperationInformation(Statuses.FAILED, $"An error occurred: {e.Message}"))));
+            }
         }
 
         private async Task<ServerRequest?> ReceiveRequest()

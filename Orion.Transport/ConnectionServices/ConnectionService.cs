@@ -130,9 +130,11 @@ namespace Orion.Transport.ConnectionServices
             if (_socket != null)
             {
                 if (_socket.Connected)
+                {
                     _socket.Shutdown(SocketShutdown.Both);
+                    _socket.Disconnect(false);
+                }
                 
-                _socket.Disconnect(false);
                 _socket.Close();
                 _socket.Dispose();
             }

@@ -67,6 +67,8 @@ namespace Orion.Server.App.Users.Views
         private void OnSubmitClicked(object sender, RoutedEventArgs e)
         {
             OnSubmit.Invoke(User);
+
+            User = new();
         }
     }
 }

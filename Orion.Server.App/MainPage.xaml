@@ -9,6 +9,12 @@
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
+    <Page.Resources>
+        <Style TargetType="Frame" x:Name="MainContent">
+            <Setter Property="CornerRadius" Value="8 0 0 0" />
+        </Style>
+    </Page.Resources>
+    
     <Grid Background="#1a1a19">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="auto" />
@@ -16,6 +22,6 @@
         </Grid.ColumnDefinitions>
 
         <Frame Grid.Column="0" x:Name="navigationFrame" />
-        <Frame Grid.Column="1" x:Name="contentFrame" />
+        <Frame Style="{StaticResource MainContent}" Grid.Column="1" x:Name="contentFrame" />
     </Grid>
 </Page>
