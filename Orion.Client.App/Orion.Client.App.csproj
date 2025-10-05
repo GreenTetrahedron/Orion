@@ -34,6 +34,7 @@
     <None Remove="Messages\Views\MessageListPage.xaml" />
     <None Remove="NavbarPage.xaml" />
     <None Remove="Users\Views\LoginPage.xaml" />
+    <None Remove="Users\Views\UserDetailsPage.xaml" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Assets\Assets\Logo\purple.png" />
@@ -126,6 +127,11 @@
     <Content Update="Assets\tim-stief-YFFGkE3y4F8-unsplash.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Users\Views\UserDetailsPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Page Update="Groups\Views\GroupPage.xaml">

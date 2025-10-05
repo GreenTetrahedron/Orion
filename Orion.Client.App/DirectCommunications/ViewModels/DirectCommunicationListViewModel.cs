@@ -13,6 +13,8 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reflection;
+using System.Threading.Tasks;
 
 namespace Orion.Client.App.DirectCommunications.ViewModels
 {
@@ -24,6 +26,7 @@ namespace Orion.Client.App.DirectCommunications.ViewModels
         private readonly IDirectCommunicationService _directCommunicationService;
         private readonly IMessageService _messageService;
 
+        public readonly AddDirectCommunicationViewModel AddDirectCommunicationViewModel;
 
         public DirectCommunicationListViewModel()
         {
@@ -31,9 +34,17 @@ namespace Orion.Client.App.DirectCommunications.ViewModels
             _messageService = App.Current.ConfigurationService.GetSingletonOfType<IMessageService>();
 
             App.Current.CurrentUser.DirectCommunications.ToList().ForEach(directCommunication => AddItem(directCommunication));
+            
+            AddDirectCommunicationViewModel = new AddDirectCommunicationViewModel();
+            
             MessageListViewModel = new();
 
+            MessageListViewModel.OnSendMessage += SendMessage;
+
             OnSelectedChanged += StartToPopulateMessages;
+            
+            if (Items.Count > 0)
+                Selected = Items[0];
         }
 
         private async void StartToPopulateMessages(DirectCommunication directCommunication)
@@ -45,14 +56,25 @@ namespace Orion.Client.App.DirectCommunications.ViewModels
             subscriptable.Subscribe(MessageListViewModel.PopulateMessages);
         }
 
-        public void SendMessage(string content)
+        public async void SendMessage(string content, Action onSuccess = null, Action onFailure = null)
         {
-            var subscriptable = _messageService.SendDirectMessage(new NewDirectMessage()
+            var subscriptable = await _messageService.SendDirectMessage(new NewDirectMessage()
             {
                 Content = content,
                 DirectCommunicationId = Selected.DirectCommunicationId,
                 SenderId = App.Current.CurrentUser.UserProfile.UserId,
                 LastUpdated = DateTime.Now
+            });
+
+            subscriptable.Subscribe(result =>
+            {
+                if (result.OperationInformation.OperationMessageCode == NewMessageMessages.MESSAGE_CREATED_SUCCESSFULLY)
+                {
+                    onSuccess?.Invoke();
+                    return;
+                }
+
+                onFailure?.Invoke();
             });
         }
     }

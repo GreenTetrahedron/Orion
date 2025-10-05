@@ -18,30 +18,136 @@
 
     <Page.Resources>
         <converters:BoolToVisibilityConverter x:Name="BoolToVisibilityConverter" />
+
+        <Style TargetType="ListView" x:Name="GroupsListView">
+            <Setter Property="SelectionMode" Value="None" />
+        </Style>
+        <Style TargetType="Grid" x:Name="GroupPageContainer">
+            <Setter Property="Padding" Value="35 25" />
+            <Setter Property="RowSpacing" Value="5" />
+        </Style>
+
+        <Style TargetType="Button" BasedOn="{StaticResource DefaultButton}" x:Name="AddGroupButton">
+            <Setter Property="Height" Value="30" />
+            <Setter Property="Width" Value="30" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="CornerRadius" Value="2" />
+            <Setter Property="FontWeight" Value="Thin" />
+            <Setter Property="FontSize" Value="20" />
+        </Style>
+
+        <Style TargetType="Rectangle" x:Name="Separator">
+            <Setter Property="Height" Value="0.5" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="Fill" Value="#ccc" />
+            <Setter Property="Margin" Value="0 0 0 15" />
+        </Style>
+
+        <Style TargetType="Grid" x:Name="GroupItem">
+            <Setter Property="ColumnSpacing" Value="5" />
+            <Setter Property="BorderThickness" Value="0 0 0 0.4" />
+            <Setter Property="BorderBrush" Value="#bbb" />
+            <Setter Property="Margin" Value="0 0 0 5" />
+        </Style>
+
+        <Style TargetType="Button" BasedOn="{StaticResource DefaultButton}" x:Name="ActionButton">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="VerticalContentAlignment" Value="Bottom" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="CornerRadius" Value="2" />
+        </Style>
+        <Style TargetType="TextBlock" BasedOn="{StaticResource DefaultText}" x:Name="Groupname">
+            <Setter Property="VerticalAlignment" Value="Bottom" />
+            <Setter Property="Padding" Value="0 5" />
+        </Style>
     </Page.Resources>
 
-    <StackPanel>
-        <Button Click="OnAddGroup">Add Group</Button>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
 
-        <local:GroupForm Visibility="{x:Bind Model.HideAddGroupForm, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" OnSubmit="{x:Bind Model.AddGroup}" />
-        <local:GroupForm Visibility="{x:Bind Model.HideEditGroupForm, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" OnSubmit="{x:Bind Model.UpdateGroup}" Group="{x:Bind Model.Group, Mode=OneWay}" />
+        <Grid Style="{StaticResource GroupPageContainer}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
 
-        <ListView ItemsSource="{x:Bind Model.Groups, Mode=OneWay}">
-            <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <StackPanel />
-                </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="auto" />
+                </Grid.ColumnDefinitions>
 
-            <ItemsControl.ItemTemplate>
-                <DataTemplate x:DataType="model:Group">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="{x:Bind GroupName}" />
-                        <Button Grid.Column="1" Click="OnEditGroup" Tag="{x:Bind GroupId}">Edit</Button>
-                        <Button Grid.Column="2" Click="OnDeleteGroup" Tag="{x:Bind GroupId}">Delete</Button>
-                    </StackPanel>
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
-        </ListView>
-    </StackPanel>
+                <TextBlock Style="{StaticResource PageTitle}" Text="ALL GROUPS" />
+
+                <Button Grid.Column="1" Style="{StaticResource AddGroupButton}" Click="OnAddGroup">+</Button>
+            </Grid>
+
+            <Rectangle Grid.Row="1" Style="{StaticResource Separator}" />
+
+            <ListView Grid.Row="2" Style="{StaticResource GroupsListView}" ItemsSource="{x:Bind Model.Groups, Mode=OneWay}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="model:Group">
+                        <Grid Style="{StaticResource GroupItem}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="auto" />
+                                <ColumnDefinition Width="auto" />
+                            </Grid.ColumnDefinitions>
+                        
+                            <TextBlock Style="{StaticResource Groupname}" Text="{x:Bind GroupName}" />
+                            <Button Grid.Column="1" Style="{StaticResource ActionButton}" Click="OnEditGroup" Tag="{x:Bind GroupId}">Edit</Button>
+                            <Button Grid.Column="2" Style="{StaticResource ActionButton}" Click="OnDeleteGroup" Tag="{x:Bind GroupId}">Delete</Button>
+                        </Grid>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ListView>
+        </Grid>
+        
+        <Border Visibility="{x:Bind Model.HideAddGroupForm, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" Style="{StaticResource PopupBorder}">
+            <Grid Style="{StaticResource FullPagePopupContent}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="auto" />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Style="{StaticResource PopupTitle}" Text="ADD GROUP" />
+                <Button Grid.Column="1" Style="{StaticResource PopupCloseButton}" Click="CloseAddGroupForm">=</Button>
+
+                <local:GroupForm Grid.Row="1" Grid.ColumnSpan="2" OnSubmit="{x:Bind Model.AddGroup}" />
+            </Grid>
+        </Border>
+        <Border Visibility="{x:Bind Model.HideEditGroupForm, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" Style="{StaticResource PopupBorder}">
+            <Grid Style="{StaticResource FullPagePopupContent}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="auto" />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Style="{StaticResource PageTitle}" Text="EDIT GROUP" />
+                <Button Grid.Column="1" Style="{StaticResource PopupCloseButton}" Click="CloseEditGroupForm">=</Button>
+
+                <local:GroupForm Grid.Row="1" Grid.ColumnSpan="2" OnSubmit="{x:Bind Model.UpdateGroup}" Group="{x:Bind Model.Group, Mode=OneWay}" />
+            </Grid>
+        </Border>
+    </Grid>
 </Page>

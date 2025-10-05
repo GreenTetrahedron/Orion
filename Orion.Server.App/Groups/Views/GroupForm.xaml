@@ -19,38 +19,121 @@
 
     <Page.Resources>
         <converters:BoolToVisibilityConverter x:Name="BoolToVisibilityConverter" />
+
+        <Style TargetType="ListView" x:Name="UsersListView">
+            <Setter Property="SelectionMode" Value="None" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="MaxHeight" Value="100" />
+        </Style>
+        <Style TargetType="Grid" x:Name="UserItem">
+            <Setter Property="ColumnSpacing" Value="5" />
+            <Setter Property="BorderThickness" Value="0 0 0 0.4" />
+            <Setter Property="BorderBrush" Value="#bbb" />
+            <Setter Property="Margin" Value="0 0 0 5" />
+        </Style>
+
+        <Style TargetType="Button" BasedOn="{StaticResource DefaultButton}" x:Name="ActionButton">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="VerticalContentAlignment" Value="Bottom" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="CornerRadius" Value="2" />
+        </Style>
+        <Style TargetType="TextBlock" BasedOn="{StaticResource DefaultText}" x:Name="Username">
+            <Setter Property="VerticalAlignment" Value="Bottom" />
+            <Setter Property="Padding" Value="0 5" />
+        </Style>
+
+        <Style TargetType="ListViewItem" x:Key="UserListItem">
+            <Setter Property="Padding" Value="10 0" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        </Style>
+        <Style TargetType="TextBlock" x:Key="ValidationText" BasedOn="{StaticResource DefaultText}">
+            <Setter Property="Foreground" Value="MediumVioletRed" />
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="FontStyle" Value="Italic" />
+        </Style>
+
+        <Style TargetType="Button" BasedOn="{StaticResource DefaultButton}" x:Key="AddMemberButton">
+            <Setter Property="CornerRadius" Value="2" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="VerticalAlignment" Value="Stretch" />
+            <Setter Property="Padding" Value="15 0" />
+        </Style>
+        <Style TargetType="Grid" x:Key="AddMemberFieldContainer">
+            <Setter Property="ColumnSpacing" Value="10" />
+        </Style>
     </Page.Resources>
     
-    <StackPanel>
-        <TextBlock Text="Group name" />
-        <TextBox x:Name="groupNameTextEntry" Text="{x:Bind Group.GroupName, Mode=TwoWay}" />
-
-        <TextBlock Text="Members" />
-
-        <ListView ItemsSource="{x:Bind Group.MemberProfiles, Mode=OneWay}">
-            <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <StackPanel />
-                </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
-
-            <ItemsControl.ItemTemplate>
-                <DataTemplate x:DataType="usermodel:UserProfile">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="{x:Bind Username}" />
-
-                        <Button Click="OnRemoveMember" Tag="{x:Bind UserId, Mode=OneWay}">Remove</Button>
-                    </StackPanel>
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
-        </ListView>
-
-        <TextBlock Text="User not found!" Visibility="{x:Bind Model.UserExists, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" />
-        <StackPanel Orientation="Horizontal">
-            <TextBox x:Name="memberUsernameTextEntry" PlaceholderText="Username" />
-            <Button Click="OnAddMember">Add Member</Button>
+    <StackPanel Style="{StaticResource Form}">
+        <StackPanel Spacing="5">
+            <TextBlock Style="{StaticResource FormLabel}" Text="Group name" />
+            <TextBox x:Name="groupNameTextEntry" Style="{StaticResource FormTextBox}" Text="{x:Bind Group.GroupName, Mode=TwoWay}">
+                <TextBox.Resources>
+                    <SolidColorBrush x:Key="TextControlBackgroundPointerOver" Color="#303030" />
+                    <SolidColorBrush x:Key="TextControlBackgroundFocused" Color="#303030" />
+                    <SolidColorBrush x:Key="TextControlForegroundPointerOver" Color="#c5c5c5" />
+                    <SolidColorBrush x:Key="TextControlForegroundFocused" Color="#c5c5c5" />
+                    <SolidColorBrush x:Key="TextControlForegroundDisabled" Color="#bbb" />
+                </TextBox.Resources>
+            </TextBox>
         </StackPanel>
 
-        <Button Click="OnSubmitClicked">Submit</Button>
+        <StackPanel>
+            <TextBlock Style="{StaticResource FormLabel}" Text="Members" />
+
+            <ListView Style="{StaticResource UsersListView}" ItemsSource="{x:Bind Group.MemberProfiles, Mode=OneWay}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <ItemsStackPanel ItemsUpdatingScrollMode="KeepLastItemInView" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="ListViewItem" BasedOn="{StaticResource UserListItem}" />
+                </ListView.ItemContainerStyle>
+
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="usermodel:UserProfile">
+                        <Grid Style="{StaticResource UserItem}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="auto" />
+                            </Grid.ColumnDefinitions>
+                        
+                            <TextBlock Style="{StaticResource Username}" Text="{x:Bind Username}" />
+
+                            <Button Style="{StaticResource ActionButton}" Grid.Column="1" Click="OnRemoveMember" Tag="{x:Bind UserId, Mode=OneWay}">Remove</Button>
+                        </Grid>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ListView>
+        </StackPanel>
+
+        <Grid Style="{StaticResource AddMemberFieldContainer}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+            </Grid.RowDefinitions>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="auto" />
+            </Grid.ColumnDefinitions>
+            
+            <TextBlock Grid.ColumnSpan="2" Grid.Row="0" Text="User not found!" Style="{StaticResource ValidationText}" Visibility="{x:Bind Model.UserExists, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" />
+            <TextBox Grid.Row="1" Style="{StaticResource FormTextBox}" Grid.Column="0" x:Name="memberUsernameTextEntry" PlaceholderText="Username">
+                <TextBox.Resources>
+                    <SolidColorBrush x:Key="TextControlBackgroundPointerOver" Color="#303030" />
+                    <SolidColorBrush x:Key="TextControlBackgroundFocused" Color="#303030" />
+                    <SolidColorBrush x:Key="TextControlForegroundPointerOver" Color="#c5c5c5" />
+                    <SolidColorBrush x:Key="TextControlForegroundFocused" Color="#c5c5c5" />
+                    <SolidColorBrush x:Key="TextControlForegroundDisabled" Color="#bbb" />
+                </TextBox.Resources>
+            </TextBox>
+            <Button Grid.Row="1" Style="{StaticResource AddMemberButton}" Grid.Column="1" Click="OnAddMember">Add Member</Button>
+        </Grid>
+
+        <Button Style="{StaticResource SubmitButton}" Click="OnSubmitClicked">Submit</Button>
     </StackPanel>
 </Page>

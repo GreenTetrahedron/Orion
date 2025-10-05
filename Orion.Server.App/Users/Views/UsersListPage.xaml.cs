@@ -33,10 +33,19 @@ namespace Orion.Server.App.Users.Views
         {
             Model.HideAddUserForm = false;
         }
+        private void CloseAddUserForm(object sender, RoutedEventArgs e)
+        {
+            Model.HideAddUserForm = true;
+        }
+
 
         private void OnEditUser(object sender, RoutedEventArgs e)
         {
             Model.OnEditUser((Guid)((Button)sender).Tag);
+        }
+        private void CloseEditUserForm(object sender, RoutedEventArgs e)
+        {
+            Model.HideEditUserForm = true;
         }
 
         private void OnDeleteUser(object sender, RoutedEventArgs e)

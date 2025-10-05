@@ -4,17 +4,46 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:Orion.Client.App"
+    xmlns:converter="using:Orion.Client.App.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <StackPanel Padding="0 0 0 0" Spacing="15" Width="75" Background="#1a1a19">
-        <Button HorizontalAlignment="Center" FontSize="10" Height="47" Width="47" Click="LoadDirectCommunicationListPage">
-            DMs
+    <Page.Resources>
+        <converter:UsernameToAbbreviationConverter x:Name="UsernameToAbbreviationConverter" />
+
+        <Style TargetType="Button" BasedOn="{StaticResource DefaultButton}" x:Name="NavbarButton">
+            <Setter Property="FontSize" Value="10" />
+            <Setter Property="Width" Value="47"/>
+            <Setter Property="Height" Value="47"/>
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="CornerRadius" Value="4" />
+
+            <Setter Property="ToolTipService.Placement" Value="Right" />
+        </Style>
+
+        <Style TargetType="Button" BasedOn="{StaticResource NavbarButton}" x:Name="ProfileButton">
+            <Setter Property="FontSize" Value="17" />
+            <Setter Property="FontWeight" Value="Normal" />
+
+            <Setter Property="ToolTipService.Placement" Value="Right" />
+        </Style>
+        
+        <Style TargetType="StackPanel" x:Name="NavbarContainer">
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Spacing" Value="10" />
+            <Setter Property="Width" Value="75" />
+            <Setter Property="Background" Value="#1a1a19" />
+        </Style>
+    </Page.Resources>
+
+    <StackPanel Style="{StaticResource NavbarContainer}" >
+        <Button ToolTipService.ToolTip="{x:Bind Model.UserProfile.Username, Mode=OneWay}" Style="{StaticResource ProfileButton}" Click="LoadUserDetailsPage" Content="{x:Bind Model.UserProfile.Username, Mode=OneWay, Converter={StaticResource UsernameToAbbreviationConverter}}">
+            
         </Button>
-        <Button HorizontalAlignment="Center" FontSize="10" Height="47" Width="47" Click="LoadAddDirectCommunicationPage">
-            + DM
+        <Button ToolTipService.ToolTip="Direct Messages" Style="{StaticResource NavbarButton}" Click="LoadDirectCommunicationListPage">
+            DMs
         </Button>
     </StackPanel>
 </Page>
