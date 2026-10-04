@@ -1,0 +1,1 @@
+To start the app run the Router first and then the Server. They can only be run on a system with an IP Address of 192.168.0.26 (for now).
