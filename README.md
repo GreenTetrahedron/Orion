@@ -7,7 +7,7 @@ There is [documentation](Docs/Orion_Documentation.pdf) that details the project'
 
 
 ## Setup Instructions
-Shortcuts to executable files for each application are located in ["Final Executables/Backup Shortcuts"]("Final Executables/Backup Shortcuts").
+Shortcuts to executable files for each application are located in [Final Executables/Backup Shortcuts](Final%20Executables/Backup%20Shortcuts).
 
 To run the application, you will need to setup the database as described in the [documentation](Docs/Orion_Documentation.pdf) and change the connection strings in [Orion.Server/App.config](Orion.Server/App.config) and [Orion.Server.App/App.config](Orion.Server.App/App.config) accordingly. The database will also have to be seeded with an Administrator account.
 
